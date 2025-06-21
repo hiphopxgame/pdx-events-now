@@ -74,13 +74,13 @@ serve(async (req) => {
 
     console.log('Starting Eventbrite API sync...')
 
-    // Use the correct Eventbrite API endpoint - search for events by location
-    const eventbriteUrl = 'https://www.eventbriteapi.com/v3/events/search/'
+    // Fixed Eventbrite API endpoint - removed trailing slash
+    const eventbriteUrl = 'https://www.eventbriteapi.com/v3/events/search'
     const params = new URLSearchParams({
       'location.address': 'Portland, OR',
-      'location.within': '50mi',
+      'location.within': '25mi',
       'start_date.range_start': new Date().toISOString(),
-      'start_date.range_end': new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(), // Next 90 days
+      'start_date.range_end': new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString(), // Next 60 days
       'expand': 'venue,organizer,ticket_availability,category',
       'sort_by': 'date',
       'page_size': '50',
@@ -101,12 +101,28 @@ serve(async (req) => {
     if (!response.ok) {
       const errorText = await response.text()
       console.error(`Eventbrite API error response: ${errorText}`)
+      
+      // Update sync log with error
+      if (syncLog) {
+        await supabaseClient
+          .from('poreve_api_sync_log')
+          .update({
+            status: 'error',
+            error_message: `Eventbrite API error: ${response.status} - ${errorText}`,
+            completed_at: new Date().toISOString()
+          })
+          .eq('id', syncLog.id)
+      }
+      
       throw new Error(`Eventbrite API error: ${response.status} ${response.statusText}`)
     }
 
     const eventbriteData = await response.json()
     console.log(`Found ${eventbriteData.events?.length || 0} events from Eventbrite`)
-    console.log('Eventbrite response structure:', JSON.stringify(eventbriteData, null, 2))
+    
+    if (eventbriteData.events && eventbriteData.events.length > 0) {
+      console.log('Sample event structure:', JSON.stringify(eventbriteData.events[0], null, 2))
+    }
 
     // Process Eventbrite events
     if (eventbriteData.events && eventbriteData.events.length > 0) {
