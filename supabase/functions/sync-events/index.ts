@@ -57,6 +57,9 @@ serve(async (req) => {
       throw new Error('EVENTBRITE_API_KEY not found in secrets')
     }
 
+    console.log('API Key exists:', !!eventbriteApiKey)
+    console.log('API Key length:', eventbriteApiKey.length)
+
     // Log sync start
     const { data: syncLog } = await supabaseClient
       .from('poreve_api_sync_log')
@@ -74,51 +77,99 @@ serve(async (req) => {
 
     console.log('Starting Eventbrite API sync...')
 
-    // Fixed Eventbrite API endpoint - removed trailing slash
-    const eventbriteUrl = 'https://www.eventbriteapi.com/v3/events/search'
-    const params = new URLSearchParams({
-      'location.address': 'Portland, OR',
-      'location.within': '25mi',
-      'start_date.range_start': new Date().toISOString(),
-      'start_date.range_end': new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString(), // Next 60 days
-      'expand': 'venue,organizer,ticket_availability,category',
-      'sort_by': 'date',
-      'page_size': '50',
-      'status': 'live'
-    })
-
-    console.log(`Fetching from: ${eventbriteUrl}?${params}`)
-
-    const response = await fetch(`${eventbriteUrl}?${params}`, {
+    // Try the organizations/me endpoint first to verify API key
+    console.log('Testing API key with organizations endpoint...')
+    const testResponse = await fetch('https://www.eventbriteapi.com/v3/users/me/', {
       headers: {
         'Authorization': `Bearer ${eventbriteApiKey}`,
         'Content-Type': 'application/json'
       }
     })
 
-    console.log(`Eventbrite API response status: ${response.status}`)
+    console.log('Test API response status:', testResponse.status)
+    if (!testResponse.ok) {
+      const testErrorText = await testResponse.text()
+      console.error('API Key test failed:', testErrorText)
+    } else {
+      const testData = await testResponse.json()
+      console.log('API Key test successful. User:', testData.name || 'Unknown')
+    }
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error(`Eventbrite API error response: ${errorText}`)
+    // Try different event search approaches
+    const searchApproaches = [
+      // Approach 1: Simple search without location
+      {
+        url: 'https://www.eventbriteapi.com/v3/events/search',
+        params: new URLSearchParams({
+          'q': 'Portland',
+          'start_date.range_start': new Date().toISOString().split('T')[0],
+          'start_date.range_end': new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          'sort_by': 'date',
+          'page_size': '20',
+          'status': 'live'
+        })
+      },
+      // Approach 2: Location-based search
+      {
+        url: 'https://www.eventbriteapi.com/v3/events/search',
+        params: new URLSearchParams({
+          'location.address': 'Portland, OR, USA',
+          'location.within': '15mi',
+          'start_date.range_start': new Date().toISOString().split('T')[0],
+          'start_date.range_end': new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          'sort_by': 'date',
+          'page_size': '20',
+          'status': 'live'
+        })
+      }
+    ]
+
+    let eventbriteData = null
+    let successfulApproach = null
+
+    for (let i = 0; i < searchApproaches.length; i++) {
+      const approach = searchApproaches[i]
+      const fullUrl = `${approach.url}?${approach.params}`
       
+      console.log(`Trying approach ${i + 1}: ${fullUrl}`)
+
+      const response = await fetch(fullUrl, {
+        headers: {
+          'Authorization': `Bearer ${eventbriteApiKey}`,
+          'Content-Type': 'application/json'
+        }
+      })
+
+      console.log(`Approach ${i + 1} response status:`, response.status)
+
+      if (response.ok) {
+        eventbriteData = await response.json()
+        successfulApproach = i + 1
+        console.log(`Approach ${i + 1} successful! Found ${eventbriteData.events?.length || 0} events`)
+        break
+      } else {
+        const errorText = await response.text()
+        console.error(`Approach ${i + 1} failed:`, response.status, errorText)
+      }
+    }
+
+    if (!eventbriteData) {
       // Update sync log with error
       if (syncLog) {
         await supabaseClient
           .from('poreve_api_sync_log')
           .update({
             status: 'error',
-            error_message: `Eventbrite API error: ${response.status} - ${errorText}`,
+            error_message: 'All Eventbrite API approaches failed',
             completed_at: new Date().toISOString()
           })
           .eq('id', syncLog.id)
       }
       
-      throw new Error(`Eventbrite API error: ${response.status} ${response.statusText}`)
+      throw new Error('All Eventbrite API approaches failed')
     }
 
-    const eventbriteData = await response.json()
-    console.log(`Found ${eventbriteData.events?.length || 0} events from Eventbrite`)
+    console.log(`Using successful approach ${successfulApproach}`)
     
     if (eventbriteData.events && eventbriteData.events.length > 0) {
       console.log('Sample event structure:', JSON.stringify(eventbriteData.events[0], null, 2))
@@ -204,7 +255,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: true,
-        message: `Sync completed successfully`,
+        message: `Sync completed successfully using approach ${successfulApproach}`,
         stats: {
           processed: totalProcessed,
           added: totalAdded,
