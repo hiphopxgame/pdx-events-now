@@ -74,16 +74,20 @@ serve(async (req) => {
 
     console.log('Starting Eventbrite API sync...')
 
-    // Fetch events from Eventbrite API for Portland, Oregon
+    // Use the correct Eventbrite API endpoint - search for events by location
     const eventbriteUrl = 'https://www.eventbriteapi.com/v3/events/search/'
     const params = new URLSearchParams({
-      'location.address': 'Portland, Oregon',
-      'location.within': '25mi',
+      'location.address': 'Portland, OR',
+      'location.within': '50mi',
       'start_date.range_start': new Date().toISOString(),
+      'start_date.range_end': new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(), // Next 90 days
       'expand': 'venue,organizer,ticket_availability,category',
       'sort_by': 'date',
-      'page_size': '50'
+      'page_size': '50',
+      'status': 'live'
     })
+
+    console.log(`Fetching from: ${eventbriteUrl}?${params}`)
 
     const response = await fetch(`${eventbriteUrl}?${params}`, {
       headers: {
@@ -92,17 +96,24 @@ serve(async (req) => {
       }
     })
 
+    console.log(`Eventbrite API response status: ${response.status}`)
+
     if (!response.ok) {
+      const errorText = await response.text()
+      console.error(`Eventbrite API error response: ${errorText}`)
       throw new Error(`Eventbrite API error: ${response.status} ${response.statusText}`)
     }
 
     const eventbriteData = await response.json()
     console.log(`Found ${eventbriteData.events?.length || 0} events from Eventbrite`)
+    console.log('Eventbrite response structure:', JSON.stringify(eventbriteData, null, 2))
 
     // Process Eventbrite events
-    if (eventbriteData.events) {
+    if (eventbriteData.events && eventbriteData.events.length > 0) {
       for (const event of eventbriteData.events) {
         try {
+          console.log(`Processing event: ${event.name?.text || 'Unknown'}`)
+          
           // Map category ID to readable category
           const categoryMap: { [key: string]: string } = {
             '103': 'music',
@@ -120,10 +131,10 @@ serve(async (req) => {
           const eventData = {
             external_id: event.id,
             api_source: 'eventbrite',
-            title: event.name.text,
+            title: event.name?.text || 'Untitled Event',
             description: event.description?.text || '',
-            start_date: event.start.utc,
-            end_date: event.end?.utc,
+            start_date: event.start?.utc || new Date().toISOString(),
+            end_date: event.end?.utc || null,
             venue_name: event.venue?.name || 'TBA',
             venue_address: event.venue?.address?.address_1 || '',
             venue_city: event.venue?.address?.city || 'Portland',
@@ -134,7 +145,7 @@ serve(async (req) => {
             price_max: event.is_free ? 0 : (event.ticket_availability?.maximum_ticket_price?.major_value || 0),
             price_display: event.is_free ? 'Free' : (event.ticket_availability?.minimum_ticket_price ? `$${event.ticket_availability.minimum_ticket_price.major_value}` : 'TBA'),
             image_url: event.logo?.url || '/placeholder.svg',
-            ticket_url: event.url,
+            ticket_url: event.url || '',
             organizer_name: event.organizer?.name || 'Unknown',
             organizer_url: event.organizer?.url || ''
           }
@@ -146,7 +157,7 @@ serve(async (req) => {
           if (!error) {
             totalProcessed++
             totalAdded++
-            console.log(`Added event: ${event.name.text}`)
+            console.log(`Successfully added/updated event: ${event.name?.text}`)
           } else {
             console.error(`Error upserting event ${event.id}:`, error)
           }
@@ -154,21 +165,25 @@ serve(async (req) => {
           console.error(`Error processing event ${event.id}:`, eventError)
         }
       }
+    } else {
+      console.log('No events found in the API response')
     }
 
     // Update sync log
-    await supabaseClient
-      .from('poreve_api_sync_log')
-      .update({
-        status: 'success',
-        events_processed: totalProcessed,
-        events_added: totalAdded,
-        events_updated: totalUpdated,
-        completed_at: new Date().toISOString()
-      })
-      .eq('id', syncLog.id)
+    if (syncLog) {
+      await supabaseClient
+        .from('poreve_api_sync_log')
+        .update({
+          status: 'success',
+          events_processed: totalProcessed,
+          events_added: totalAdded,
+          events_updated: totalUpdated,
+          completed_at: new Date().toISOString()
+        })
+        .eq('id', syncLog.id)
+    }
 
-    console.log(`Sync completed: ${totalProcessed} events processed`)
+    console.log(`Sync completed: ${totalProcessed} events processed, ${totalAdded} added, ${totalUpdated} updated`)
 
     return new Response(
       JSON.stringify({
@@ -188,8 +203,13 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error syncing events:', error)
+    
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        success: false,
+        error: error.message,
+        details: error.toString()
+      }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,
