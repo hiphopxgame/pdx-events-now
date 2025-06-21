@@ -92,6 +92,8 @@ export const useEvents = (options: UseEventsOptions = {}) => {
 
       return data as Event[];
     },
+    refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
 
@@ -112,22 +114,5 @@ export const useCategories = () => {
 
       return data;
     },
-  });
-};
-
-export const useSyncEvents = () => {
-  return useQuery({
-    queryKey: ['sync-events'],
-    queryFn: async () => {
-      const { data, error } = await supabase.functions.invoke('sync-events');
-      
-      if (error) {
-        console.error('Error syncing events:', error);
-        throw error;
-      }
-
-      return data;
-    },
-    enabled: false, // Only run when manually triggered
   });
 };
