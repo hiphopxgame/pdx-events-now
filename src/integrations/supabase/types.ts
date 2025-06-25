@@ -253,10 +253,47 @@ export type Database = {
         }
         Relationships: []
       }
+      dc_credit_purchases: {
+        Row: {
+          amount_paid: number
+          created_at: string
+          credits_purchased: number
+          currency: string | null
+          id: string
+          status: string | null
+          stripe_session_id: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          amount_paid: number
+          created_at?: string
+          credits_purchased: number
+          currency?: string | null
+          id?: string
+          status?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount_paid?: number
+          created_at?: string
+          credits_purchased?: number
+          currency?: string | null
+          id?: string
+          status?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       dc_user_cash: {
         Row: {
           balance: number
           created_at: string
+          credits: number | null
           id: string
           updated_at: string
           user_id: string
@@ -264,6 +301,7 @@ export type Database = {
         Insert: {
           balance?: number
           created_at?: string
+          credits?: number | null
           id?: string
           updated_at?: string
           user_id: string
@@ -271,6 +309,7 @@ export type Database = {
         Update: {
           balance?: number
           created_at?: string
+          credits?: number | null
           id?: string
           updated_at?: string
           user_id?: string
@@ -877,6 +916,36 @@ export type Database = {
         }
         Relationships: []
       }
+      por_eve_profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string
+          full_name: string | null
+          id: string
+          updated_at: string
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email: string
+          full_name?: string | null
+          id: string
+          updated_at?: string
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
       poreve_api_sync_log: {
         Row: {
           api_source: string
@@ -1235,7 +1304,15 @@ export type Database = {
           venue_state?: string | null
           venue_zip?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_user_events_created_by"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "por_eve_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
