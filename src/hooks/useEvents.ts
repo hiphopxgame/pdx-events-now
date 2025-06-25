@@ -22,7 +22,7 @@ export const useEvents = (options: UseEventsOptions = {}) => {
       // Apply filters
       return applyEventFilters(allEvents, options);
     },
-    enabled: !apiLoading && !userLoading,
+    // Remove the conditional enabled to fix the hooks error
     refetchOnWindowFocus: false,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
