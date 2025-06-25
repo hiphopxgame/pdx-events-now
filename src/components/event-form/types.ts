@@ -1,0 +1,25 @@
+
+export interface EventFormData {
+  title: string;
+  description: string;
+  category: string;
+  venue_name: string;
+  venue_address: string;
+  venue_city: string;
+  venue_state: string;
+  venue_zip: string;
+  price_display: string;
+  price_min: number;
+  price_max: number;
+  organizer_name: string;
+  organizer_email: string;
+  organizer_phone: string;
+  ticket_url: string;
+  start_date: Date;
+  start_time: string;
+  end_time: string;
+  is_recurring: boolean;
+  recurrence_type: string;
+  recurrence_pattern: string;
+  recurrence_end_date: Date;
+}
