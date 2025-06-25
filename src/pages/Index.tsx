@@ -4,7 +4,6 @@ import { Header } from '@/components/Header';
 import { EventsGrid } from '@/components/EventsGrid';
 import { SearchFilters } from '@/components/SearchFilters';
 import { Hero } from '@/components/Hero';
-import { EventSync } from '@/components/EventSync';
 import { useEvents, useCategories } from '@/hooks/useEvents';
 import { Loader2 } from 'lucide-react';
 
@@ -71,8 +70,6 @@ const Index = () => {
           <EventsGrid events={transformedEvents} />
         )}
       </div>
-      
-      <EventSync />
     </div>
   );
 };
