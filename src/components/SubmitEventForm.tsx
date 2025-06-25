@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { supabase } from '@/integrations/supabase/client';
@@ -147,7 +146,7 @@ export const SubmitEventForm: React.FC = () => {
               <Checkbox 
                 id="recurring" 
                 checked={isRecurring}
-                onCheckedChange={setIsRecurring}
+                onCheckedChange={(checked) => setIsRecurring(checked === true)}
               />
               <Label htmlFor="recurring">This is a recurring event</Label>
             </div>
