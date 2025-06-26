@@ -30,6 +30,43 @@ export const SubmitEventForm: React.FC = () => {
         return;
       }
 
+      console.log('User authenticated:', user.id);
+
+      // Check if user profile exists, create if it doesn't
+      const { data: profile, error: profileError } = await supabase
+        .from('por_eve_profiles')
+        .select('id')
+        .eq('id', user.id)
+        .single();
+
+      console.log('Profile check result:', profile, profileError);
+
+      if (profileError && profileError.code === 'PGRST116') {
+        // Profile doesn't exist, create it
+        console.log('Creating profile for user:', user.id);
+        const { error: createProfileError } = await supabase
+          .from('por_eve_profiles')
+          .insert([{
+            id: user.id,
+            email: user.email,
+            full_name: user.user_metadata?.full_name || user.email,
+            username: user.user_metadata?.full_name 
+              ? user.user_metadata.full_name.toLowerCase().replace(/\s+/g, '_')
+              : user.email?.split('@')[0]
+          }]);
+
+        if (createProfileError) {
+          console.error('Error creating profile:', createProfileError);
+          toast({
+            title: "Profile Error",
+            description: "Failed to create user profile. Please try again.",
+            variant: "destructive",
+          });
+          return;
+        }
+        console.log('Profile created successfully');
+      }
+
       const eventData = {
         ...data,
         start_date: startDate?.toISOString().split('T')[0],
@@ -39,6 +76,8 @@ export const SubmitEventForm: React.FC = () => {
         recurrence_end_date: endDate?.toISOString().split('T')[0] || null,
         created_by: user.id,
       };
+
+      console.log('Submitting event data:', eventData);
 
       const { error } = await supabase
         .from('user_events')
