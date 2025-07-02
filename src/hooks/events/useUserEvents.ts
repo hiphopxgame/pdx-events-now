@@ -33,15 +33,17 @@ export const useApprovedUserEvents = () => {
   return useQuery({
     queryKey: ['approved-user-events'],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      
       const { data, error } = await supabase
         .from('user_events')
         .select('*')
-        .eq('status', 'approved')
+        .or(`status.eq.approved,and(created_by.eq.${user?.id || 'null'})`)
         .gte('start_date', new Date().toISOString().split('T')[0])
         .order('start_date', { ascending: true });
 
       if (error) {
-        console.error('Error fetching approved user events:', error);
+        console.error('Error fetching user events:', error);
         throw error;
       }
 
