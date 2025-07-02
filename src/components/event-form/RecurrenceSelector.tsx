@@ -66,6 +66,15 @@ export const RecurrenceSelector: React.FC<RecurrenceSelectorProps> = ({
             <SelectItem value="third-friday">Third Friday of Month</SelectItem>
             <SelectItem value="third-saturday">Third Saturday of Month</SelectItem>
             
+            {/* Monthly - Fourth Week */}
+            <SelectItem value="fourth-sunday">Fourth Sunday of Month</SelectItem>
+            <SelectItem value="fourth-monday">Fourth Monday of Month</SelectItem>
+            <SelectItem value="fourth-tuesday">Fourth Tuesday of Month</SelectItem>
+            <SelectItem value="fourth-wednesday">Fourth Wednesday of Month</SelectItem>
+            <SelectItem value="fourth-thursday">Fourth Thursday of Month</SelectItem>
+            <SelectItem value="fourth-friday">Fourth Friday of Month</SelectItem>
+            <SelectItem value="fourth-saturday">Fourth Saturday of Month</SelectItem>
+            
             {/* Monthly - Last Week */}
             <SelectItem value="last-sunday">Last Sunday of Month</SelectItem>
             <SelectItem value="last-monday">Last Monday of Month</SelectItem>
