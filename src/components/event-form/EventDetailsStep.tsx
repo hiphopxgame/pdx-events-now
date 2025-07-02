@@ -193,7 +193,7 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
             <Button type="button" variant="outline" onClick={onPrevious} className="flex-1">
               <ArrowLeft className="mr-2 h-4 w-4" /> Back
             </Button>
-            <Button type="button" onClick={onSubmit} className="flex-1">
+            <Button type="submit" onClick={onSubmit} className="flex-1">
               Submit Event for Review
             </Button>
           </div>
