@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Calendar, Plus, User, LogOut } from 'lucide-react';
+import { Calendar, Plus, User, LogOut, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import {
@@ -58,6 +58,12 @@ export const Header = () => {
                       <Link to="/my-events" className="flex items-center">
                         <Calendar className="mr-2 h-4 w-4" />
                         My Events
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/approve-events" className="flex items-center">
+                        <CheckCircle className="mr-2 h-4 w-4" />
+                        Approve Events
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={handleSignOut}>

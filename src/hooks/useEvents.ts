@@ -29,7 +29,7 @@ export const useEvents = (options: UseEventsOptions = {}) => {
 };
 
 // Re-export the individual hooks for direct use
-export { useUserEvents } from './events/useUserEvents';
+export { useUserEvents, usePendingEvents } from './events/useUserEvents';
 export { useCategories } from './events/useCategories';
 
 // Re-export types for convenience

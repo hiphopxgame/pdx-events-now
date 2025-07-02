@@ -8,6 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import SubmitEvent from "./pages/SubmitEvent";
 import MyEvents from "./pages/MyEvents";
+import ApproveEvents from "./pages/ApproveEvents";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -24,6 +25,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/submit-event" element={<SubmitEvent />} />
             <Route path="/my-events" element={<MyEvents />} />
+            <Route path="/approve-events" element={<ApproveEvents />} />
             <Route path="/auth" element={<Auth />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
