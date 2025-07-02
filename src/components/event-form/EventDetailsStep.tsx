@@ -1,21 +1,23 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Upload, X } from 'lucide-react';
 import { UseFormRegister, UseFormSetValue, FieldErrors } from 'react-hook-form';
 import { EventFormData } from './types';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface EventDetailsStepProps {
   register: UseFormRegister<EventFormData>;
   setValue: UseFormSetValue<EventFormData>;
   errors: FieldErrors<EventFormData>;
   onPrevious: () => void;
-  onSubmit: () => void;
+  onSubmit: (imageFile?: File) => void;
 }
 
 export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
@@ -25,6 +27,27 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
   onPrevious,
   onSubmit,
 }) => {
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>('');
+  const { toast } = useToast();
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    }
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setPreviewUrl('');
+  };
+
+  const handleSubmit = () => {
+    onSubmit(imageFile || undefined);
+  };
   return (
     <Card className="max-w-2xl mx-auto">
       <CardHeader>
@@ -32,6 +55,49 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
+          {/* Image Upload Section */}
+          <div className="space-y-4">
+            <Label>Event Image</Label>
+            
+            {previewUrl ? (
+              <div className="relative">
+                <img 
+                  src={previewUrl} 
+                  alt="Event preview"
+                  className="w-full h-48 object-cover rounded-lg"
+                />
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  className="absolute top-2 right-2"
+                  onClick={removeImage}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                <Upload className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                <p className="text-gray-600 mb-2">Upload an event image</p>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="hidden"
+                  id="image-upload"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => document.getElementById('image-upload')?.click()}
+                >
+                  Choose Image
+                </Button>
+              </div>
+            )}
+          </div>
+
           <div className="space-y-4">
             <div>
               <Label htmlFor="title">Event Title *</Label>
@@ -193,7 +259,7 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
             <Button type="button" variant="outline" onClick={onPrevious} className="flex-1">
               <ArrowLeft className="mr-2 h-4 w-4" /> Back
             </Button>
-            <Button type="submit" onClick={onSubmit} className="flex-1">
+            <Button type="submit" onClick={handleSubmit} className="flex-1">
               Submit Event for Review
             </Button>
           </div>
