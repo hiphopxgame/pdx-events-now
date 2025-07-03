@@ -10,6 +10,9 @@ import SubmitEvent from "./pages/SubmitEvent";
 import MyEvents from "./pages/MyEvents";
 import ApproveEvents from "./pages/ApproveEvents";
 import Auth from "./pages/Auth";
+import Event from "./pages/Event";
+import Events from "./pages/Events";
+import Venues from "./pages/Venues";
 import Venue from "./pages/Venue";
 import NotFound from "./pages/NotFound";
 
@@ -24,11 +27,14 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/events" element={<Events />} />
+            <Route path="/event/:eventId" element={<Event />} />
+            <Route path="/venues" element={<Venues />} />
+            <Route path="/venue/:venueName" element={<Venue />} />
             <Route path="/submit-event" element={<SubmitEvent />} />
             <Route path="/my-events" element={<MyEvents />} />
             <Route path="/approve-events" element={<ApproveEvents />} />
             <Route path="/auth" element={<Auth />} />
-            <Route path="/venue/:venueName" element={<Venue />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

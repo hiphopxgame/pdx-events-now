@@ -1,14 +1,12 @@
-
 import React, { useState } from 'react';
 import { Header } from '@/components/Header';
 import { EventsGrid } from '@/components/EventsGrid';
 import { SearchFilters } from '@/components/SearchFilters';
-import { Hero } from '@/components/Hero';
 import { useEvents, useCategories } from '@/hooks/useEvents';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 
-const Index = () => {
+const Events = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedDate, setSelectedDate] = useState('all');
@@ -32,13 +30,11 @@ const Index = () => {
 
   // Transform events to match the EventCard interface
   const transformedEvents = events.map(event => {
-    // Handle date parsing safely
     let formattedTime = 'TBA';
     let dateString = event.start_date;
     
     if (event.start_date) {
       try {
-        // If start_date includes timezone, use it directly
         const eventDate = new Date(event.start_date);
         if (!isNaN(eventDate.getTime())) {
           formattedTime = eventDate.toLocaleTimeString('en-US', { 
@@ -77,8 +73,13 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-orange-50">
       <Header />
-      <Hero />
+      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-gray-800 mb-4">All Events</h1>
+          <p className="text-gray-600">Discover what's happening in Portland</p>
+        </div>
+
         <SearchFilters
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
@@ -107,4 +108,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Events;
