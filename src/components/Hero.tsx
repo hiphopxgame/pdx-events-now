@@ -1,7 +1,22 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export const Hero = () => {
+  const navigate = useNavigate();
+
+  const handleBrowseEvents = () => {
+    // Scroll to events section
+    const eventsSection = document.querySelector('.grid');
+    if (eventsSection) {
+      eventsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleSubmitEvent = () => {
+    navigate('/submit-event');
+  };
+
   return (
     <div className="relative bg-gradient-to-r from-emerald-600 via-emerald-700 to-orange-600 text-white">
       <div className="absolute inset-0 bg-black/20"></div>
@@ -16,10 +31,16 @@ export const Hero = () => {
             find your next Portland experience here.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-white text-emerald-700 px-8 py-3 rounded-lg font-semibold hover:bg-emerald-50 transition-colors">
+            <button 
+              onClick={handleBrowseEvents}
+              className="bg-white text-emerald-700 px-8 py-3 rounded-lg font-semibold hover:bg-emerald-50 transition-colors"
+            >
               Browse Events
             </button>
-            <button className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-emerald-700 transition-colors">
+            <button 
+              onClick={handleSubmitEvent}
+              className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-emerald-700 transition-colors"
+            >
               Submit Event
             </button>
           </div>

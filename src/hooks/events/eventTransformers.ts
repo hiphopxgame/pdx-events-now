@@ -98,6 +98,8 @@ export const transformUserEventsToEvents = (userEvents: UserEvent[]): Event[] =>
   const events: Event[] = [];
   
   userEvents.forEach(event => {
+    console.log('Processing event:', event.title, 'is_recurring:', event.is_recurring, 'pattern:', event.recurrence_pattern);
+    
     if (event.is_recurring && event.recurrence_pattern) {
       // Generate recurring event instances
       const recurringDates = generateRecurringEventDates(
@@ -105,6 +107,8 @@ export const transformUserEventsToEvents = (userEvents: UserEvent[]): Event[] =>
         event.recurrence_pattern,
         event.recurrence_end_date || undefined
       );
+      
+      console.log('Generated recurring dates for', event.title, ':', recurringDates);
       
       recurringDates.forEach((date, index) => {
         events.push({
