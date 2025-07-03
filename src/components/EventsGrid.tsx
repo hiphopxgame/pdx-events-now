@@ -12,13 +12,21 @@ interface Event {
   price: string;
   imageUrl: string;
   description: string;
+  startDate?: string;
+  endDate?: string;
+  venueAddress?: string;
+  venueCity?: string;
+  venueState?: string;
+  ticketUrl?: string;
+  organizerName?: string;
 }
 
 interface EventsGridProps {
   events: Event[];
+  onEventClick?: (event: Event) => void;
 }
 
-export const EventsGrid: React.FC<EventsGridProps> = ({ events }) => {
+export const EventsGrid: React.FC<EventsGridProps> = ({ events, onEventClick }) => {
   if (events.length === 0) {
     return (
       <div className="text-center py-16">
@@ -41,7 +49,7 @@ export const EventsGrid: React.FC<EventsGridProps> = ({ events }) => {
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {events.map((event) => (
-          <EventCard key={event.id} event={event} />
+          <EventCard key={event.id} event={event} onEventClick={onEventClick} />
         ))}
       </div>
     </div>

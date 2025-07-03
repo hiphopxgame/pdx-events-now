@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Calendar, MapPin, Clock, Tag } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -14,20 +15,39 @@ interface Event {
   price: string;
   imageUrl: string;
   description: string;
+  startDate?: string;
+  endDate?: string;
+  venueAddress?: string;
+  venueCity?: string;
+  venueState?: string;
+  ticketUrl?: string;
+  organizerName?: string;
 }
 
 interface EventCardProps {
   event: Event;
+  onEventClick?: (event: Event) => void;
 }
 
-export const EventCard: React.FC<EventCardProps> = ({ event }) => {
+export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => {
+  const navigate = useNavigate();
+
+  const handleVenueClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/venue/${encodeURIComponent(event.venue)}`);
+  };
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'short', 
-      month: 'short', 
-      day: 'numeric' 
-    });
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return dateString;
+      return date.toLocaleDateString('en-US', { 
+        weekday: 'short', 
+        month: 'short', 
+        day: 'numeric' 
+      });
+    } catch {
+      return dateString;
+    }
   };
 
   const getCategoryColor = (category: string) => {
@@ -79,7 +99,12 @@ export const EventCard: React.FC<EventCardProps> = ({ event }) => {
           
           <div className="flex items-center text-gray-600">
             <MapPin className="h-4 w-4 mr-2 text-emerald-600" />
-            <span className="text-sm">{event.venue}</span>
+            <span 
+              className="text-sm cursor-pointer hover:text-emerald-600 hover:underline"
+              onClick={handleVenueClick}
+            >
+              {event.venue}
+            </span>
           </div>
         </div>
         
@@ -89,8 +114,11 @@ export const EventCard: React.FC<EventCardProps> = ({ event }) => {
       </CardContent>
       
       <CardFooter className="p-6 pt-0">
-        <button className="w-full bg-gradient-to-r from-emerald-600 to-orange-500 text-white py-3 rounded-lg font-semibold hover:from-emerald-700 hover:to-orange-600 transition-all duration-300 transform group-hover:scale-105">
-          Get Tickets
+        <button 
+          onClick={() => onEventClick?.(event)}
+          className="w-full bg-gradient-to-r from-emerald-600 to-orange-500 text-white py-3 rounded-lg font-semibold hover:from-emerald-700 hover:to-orange-600 transition-all duration-300 transform group-hover:scale-105"
+        >
+          Event Details
         </button>
       </CardFooter>
     </Card>

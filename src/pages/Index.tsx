@@ -4,6 +4,7 @@ import { Header } from '@/components/Header';
 import { EventsGrid } from '@/components/EventsGrid';
 import { SearchFilters } from '@/components/SearchFilters';
 import { Hero } from '@/components/Hero';
+import { EventDetailsModal } from '@/components/EventDetailsModal';
 import { useEvents, useCategories } from '@/hooks/useEvents';
 import { Loader2 } from 'lucide-react';
 
@@ -11,6 +12,13 @@ const Index = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedDate, setSelectedDate] = useState('all');
+  const [selectedEvent, setSelectedEvent] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleEventClick = (event: any) => {
+    setSelectedEvent(event);
+    setIsModalOpen(true);
+  };
 
   const { data: events = [], isLoading: eventsLoading, error: eventsError } = useEvents({
     searchTerm,
@@ -26,25 +34,45 @@ const Index = () => {
 
   // Transform events to match the EventCard interface
   const transformedEvents = events.map(event => {
-    // Parse the date in PST timezone to avoid date shifts
-    const [datePart, timePart] = event.start_date.split('T');
-    const eventDate = new Date(datePart + 'T' + (timePart || '00:00:00') + '-08:00'); // PST offset
+    // Handle date parsing safely
+    let formattedTime = 'TBA';
+    let dateString = event.start_date;
+    
+    if (event.start_date) {
+      try {
+        // If start_date includes timezone, use it directly
+        const eventDate = new Date(event.start_date);
+        if (!isNaN(eventDate.getTime())) {
+          formattedTime = eventDate.toLocaleTimeString('en-US', { 
+            hour: 'numeric', 
+            minute: '2-digit',
+            hour12: true,
+            timeZone: 'America/Los_Angeles'
+          });
+          dateString = eventDate.toISOString().split('T')[0];
+        }
+      } catch (error) {
+        console.error('Date parsing error:', error, event.start_date);
+      }
+    }
     
     return {
       id: event.id,
       title: event.title,
-      date: datePart, // Use the original date part to avoid timezone conversion
-      time: eventDate.toLocaleTimeString('en-US', { 
-        hour: 'numeric', 
-        minute: '2-digit',
-        hour12: true,
-        timeZone: 'America/Los_Angeles' // Ensure PST/PDT display
-      }),
+      date: dateString,
+      time: formattedTime,
       venue: event.venue_name,
       category: event.category,
       price: event.price_display || 'TBA',
       imageUrl: event.image_url || '/placeholder.svg',
       description: event.description || '',
+      startDate: event.start_date,
+      endDate: event.end_date,
+      venueAddress: event.venue_address,
+      venueCity: event.venue_city,
+      venueState: event.venue_state,
+      ticketUrl: event.ticket_url,
+      organizerName: event.organizer_name,
     };
   });
 
@@ -74,8 +102,14 @@ const Index = () => {
             </div>
           </div>
         ) : (
-          <EventsGrid events={transformedEvents} />
+          <EventsGrid events={transformedEvents} onEventClick={handleEventClick} />
         )}
+        
+        <EventDetailsModal
+          event={selectedEvent}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
       </div>
     </div>
   );
