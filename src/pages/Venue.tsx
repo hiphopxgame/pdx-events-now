@@ -7,7 +7,7 @@ import { useEvents } from '@/hooks/useEvents';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { MapPin, Phone, Globe, Calendar, ArrowLeft } from 'lucide-react';
+import { MapPin, Phone, Globe, Calendar, ArrowLeft, ExternalLink } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
 
 const Venue = () => {
@@ -160,6 +160,32 @@ const Venue = () => {
                 <p className="text-gray-700">
                   {upcomingEvents.length} upcoming events • {pastEvents.length} past events
                 </p>
+              </div>
+
+              {/* Venue Links */}
+              <div className="flex flex-wrap gap-2 pt-4">
+                {venueDetails.website && (
+                  <Button variant="outline" size="sm" asChild>
+                    <a href={venueDetails.website} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="h-3 w-3 mr-1" />
+                      Website
+                    </a>
+                  </Button>
+                )}
+                {venueDetails.facebook_url && (
+                  <Button variant="outline" size="sm" asChild>
+                    <a href={venueDetails.facebook_url} target="_blank" rel="noopener noreferrer">
+                      Facebook
+                    </a>
+                  </Button>
+                )}
+                {venueDetails.instagram_url && (
+                  <Button variant="outline" size="sm" asChild>
+                    <a href={venueDetails.instagram_url} target="_blank" rel="noopener noreferrer">
+                      Instagram
+                    </a>
+                  </Button>
+                )}
               </div>
             </div>
 

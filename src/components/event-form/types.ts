@@ -15,6 +15,9 @@ export interface EventFormData {
   organizer_email: string;
   organizer_phone: string;
   ticket_url: string;
+  website_url: string;
+  facebook_url: string;
+  instagram_url: string;
   start_date: Date;
   start_time: string;
   end_time: string;

@@ -128,6 +128,9 @@ export const transformUserEventsToEvents = (userEvents: UserEvent[]): Event[] =>
           price_display: event.price_display,
           image_url: event.image_url,
           ticket_url: event.ticket_url,
+          website_url: event.website_url,
+          facebook_url: event.facebook_url,
+          instagram_url: event.instagram_url,
           organizer_name: event.organizer_name,
           organizer_url: null,
           tags: null,
@@ -136,6 +139,7 @@ export const transformUserEventsToEvents = (userEvents: UserEvent[]): Event[] =>
           is_active: true,
           created_at: event.created_at,
           updated_at: event.updated_at,
+          website: null,
         });
       });
     } else {
@@ -157,6 +161,9 @@ export const transformUserEventsToEvents = (userEvents: UserEvent[]): Event[] =>
         price_display: event.price_display,
         image_url: event.image_url,
         ticket_url: event.ticket_url,
+        website_url: event.website_url,
+        facebook_url: event.facebook_url,
+        instagram_url: event.instagram_url,
         organizer_name: event.organizer_name,
         organizer_url: null,
         tags: null,
@@ -165,6 +172,7 @@ export const transformUserEventsToEvents = (userEvents: UserEvent[]): Event[] =>
         is_active: true,
         created_at: event.created_at,
         updated_at: event.updated_at,
+        website: null,
       });
     }
   });

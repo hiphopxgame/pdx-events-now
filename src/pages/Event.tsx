@@ -197,23 +197,43 @@ const Event = () => {
               </div>
             )}
 
-            {/* Action Buttons */}
-            <div className="flex gap-3">
-              {event.ticket_url ? (
-                <Button 
-                  asChild
-                  className="flex-1 bg-gradient-to-r from-emerald-600 to-orange-500 hover:from-emerald-700 hover:to-orange-600"
-                >
-                  <a href={event.ticket_url} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="h-4 w-4 mr-2" />
-                    Get Tickets
-                  </a>
-                </Button>
-              ) : (
-                <Button disabled className="flex-1">
-                  Tickets Not Available
-                </Button>
-              )}
+            {/* Links */}
+            <div className="mb-8">
+              <div className="flex flex-wrap gap-3">
+                {event.ticket_url && (
+                  <Button 
+                    asChild
+                    className="bg-gradient-to-r from-emerald-600 to-orange-500 hover:from-emerald-700 hover:to-orange-600"
+                  >
+                    <a href={event.ticket_url} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      Get Tickets
+                    </a>
+                  </Button>
+                )}
+                {event.website_url && (
+                  <Button variant="outline" asChild>
+                    <a href={event.website_url} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      Website
+                    </a>
+                  </Button>
+                )}
+                {event.facebook_url && (
+                  <Button variant="outline" asChild>
+                    <a href={event.facebook_url} target="_blank" rel="noopener noreferrer">
+                      Facebook
+                    </a>
+                  </Button>
+                )}
+                {event.instagram_url && (
+                  <Button variant="outline" asChild>
+                    <a href={event.instagram_url} target="_blank" rel="noopener noreferrer">
+                      Instagram
+                    </a>
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         </div>

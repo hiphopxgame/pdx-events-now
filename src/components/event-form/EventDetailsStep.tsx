@@ -253,6 +253,34 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
                 placeholder="https://example.com/tickets"
               />
             </div>
+
+            <div>
+              <Label htmlFor="website_url">Website URL</Label>
+              <Input 
+                id="website_url" 
+                {...register('website_url')}
+                placeholder="https://example.com"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="facebook_url">Facebook URL</Label>
+                <Input 
+                  id="facebook_url" 
+                  {...register('facebook_url')}
+                  placeholder="https://facebook.com/yourpage"
+                />
+              </div>
+              <div>
+                <Label htmlFor="instagram_url">Instagram URL</Label>
+                <Input 
+                  id="instagram_url" 
+                  {...register('instagram_url')}
+                  placeholder="https://instagram.com/yourpage"
+                />
+              </div>
+            </div>
           </div>
 
           <div className="flex gap-4">

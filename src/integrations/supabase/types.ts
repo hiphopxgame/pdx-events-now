@@ -661,6 +661,7 @@ export type Database = {
       }
       oregon_tires_appointments: {
         Row: {
+          assigned_employee_id: string | null
           created_at: string
           email: string
           first_name: string
@@ -676,6 +677,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          assigned_employee_id?: string | null
           created_at?: string
           email: string
           first_name: string
@@ -691,6 +693,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          assigned_employee_id?: string | null
           created_at?: string
           email?: string
           first_name?: string
@@ -705,7 +708,15 @@ export type Database = {
           status?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "oregon_tires_appointments_assigned_employee_id_fkey"
+            columns: ["assigned_employee_id"]
+            isOneToOne: false
+            referencedRelation: "oregon_tires_employees"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       oregon_tires_contact_messages: {
         Row: {
@@ -1089,8 +1100,10 @@ export type Database = {
           description: string | null
           end_date: string | null
           external_id: string
+          facebook_url: string | null
           id: string
           image_url: string | null
+          instagram_url: string | null
           is_active: boolean
           organizer_name: string | null
           organizer_url: string | null
@@ -1107,6 +1120,7 @@ export type Database = {
           venue_name: string
           venue_state: string | null
           venue_zip: string | null
+          website_url: string | null
         }
         Insert: {
           api_source: string
@@ -1115,8 +1129,10 @@ export type Database = {
           description?: string | null
           end_date?: string | null
           external_id: string
+          facebook_url?: string | null
           id?: string
           image_url?: string | null
+          instagram_url?: string | null
           is_active?: boolean
           organizer_name?: string | null
           organizer_url?: string | null
@@ -1133,6 +1149,7 @@ export type Database = {
           venue_name: string
           venue_state?: string | null
           venue_zip?: string | null
+          website_url?: string | null
         }
         Update: {
           api_source?: string
@@ -1141,8 +1158,10 @@ export type Database = {
           description?: string | null
           end_date?: string | null
           external_id?: string
+          facebook_url?: string | null
           id?: string
           image_url?: string | null
+          instagram_url?: string | null
           is_active?: boolean
           organizer_name?: string | null
           organizer_url?: string | null
@@ -1159,6 +1178,7 @@ export type Database = {
           venue_name?: string
           venue_state?: string | null
           venue_zip?: string | null
+          website_url?: string | null
         }
         Relationships: []
       }
@@ -1168,7 +1188,9 @@ export type Database = {
           capacity: number | null
           city: string | null
           created_at: string
+          facebook_url: string | null
           id: string
+          instagram_url: string | null
           latitude: number | null
           longitude: number | null
           name: string
@@ -1184,7 +1206,9 @@ export type Database = {
           capacity?: number | null
           city?: string | null
           created_at?: string
+          facebook_url?: string | null
           id?: string
+          instagram_url?: string | null
           latitude?: number | null
           longitude?: number | null
           name: string
@@ -1200,7 +1224,9 @@ export type Database = {
           capacity?: number | null
           city?: string | null
           created_at?: string
+          facebook_url?: string | null
           id?: string
+          instagram_url?: string | null
           latitude?: number | null
           longitude?: number | null
           name?: string
@@ -1283,8 +1309,10 @@ export type Database = {
           created_by: string | null
           description: string | null
           end_time: string | null
+          facebook_url: string | null
           id: string
           image_url: string | null
+          instagram_url: string | null
           is_recurring: boolean | null
           organizer_email: string | null
           organizer_name: string | null
@@ -1306,6 +1334,7 @@ export type Database = {
           venue_name: string
           venue_state: string | null
           venue_zip: string | null
+          website_url: string | null
         }
         Insert: {
           category: string
@@ -1313,8 +1342,10 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           end_time?: string | null
+          facebook_url?: string | null
           id?: string
           image_url?: string | null
+          instagram_url?: string | null
           is_recurring?: boolean | null
           organizer_email?: string | null
           organizer_name?: string | null
@@ -1336,6 +1367,7 @@ export type Database = {
           venue_name: string
           venue_state?: string | null
           venue_zip?: string | null
+          website_url?: string | null
         }
         Update: {
           category?: string
@@ -1343,8 +1375,10 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           end_time?: string | null
+          facebook_url?: string | null
           id?: string
           image_url?: string | null
+          instagram_url?: string | null
           is_recurring?: boolean | null
           organizer_email?: string | null
           organizer_name?: string | null
@@ -1366,6 +1400,7 @@ export type Database = {
           venue_name?: string
           venue_state?: string | null
           venue_zip?: string | null
+          website_url?: string | null
         }
         Relationships: [
           {
