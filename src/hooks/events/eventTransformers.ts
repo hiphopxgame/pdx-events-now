@@ -115,8 +115,8 @@ export const transformUserEventsToEvents = (userEvents: UserEvent[]): Event[] =>
           id: `${event.id}-${index}`,
           title: event.title,
           description: event.description,
-          start_date: `${date}T${event.start_time || '00:00:00'}`,
-          end_date: event.start_time && event.end_time ? `${date}T${event.end_time}` : null,
+          start_date: `${date}T${event.start_time || '00:00:00'}-08:00`, // Add PST timezone offset
+          end_date: event.start_time && event.end_time ? `${date}T${event.end_time}-08:00` : null,
           venue_name: event.venue_name,
           venue_address: event.venue_address,
           venue_city: event.venue_city,
@@ -144,8 +144,8 @@ export const transformUserEventsToEvents = (userEvents: UserEvent[]): Event[] =>
         id: event.id,
         title: event.title,
         description: event.description,
-        start_date: `${event.start_date}T${event.start_time || '00:00:00'}`,
-        end_date: event.start_time && event.end_time ? `${event.start_date}T${event.end_time}` : null,
+        start_date: `${event.start_date}T${event.start_time || '00:00:00'}-08:00`, // Add PST timezone offset
+        end_date: event.start_time && event.end_time ? `${event.start_date}T${event.end_time}-08:00` : null,
         venue_name: event.venue_name,
         venue_address: event.venue_address,
         venue_city: event.venue_city,

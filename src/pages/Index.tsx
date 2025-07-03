@@ -25,21 +25,28 @@ const Index = () => {
   }
 
   // Transform events to match the EventCard interface
-  const transformedEvents = events.map(event => ({
-    id: event.id,
-    title: event.title,
-    date: event.start_date.split('T')[0],
-    time: new Date(event.start_date).toLocaleTimeString('en-US', { 
-      hour: 'numeric', 
-      minute: '2-digit',
-      hour12: true 
-    }),
-    venue: event.venue_name,
-    category: event.category,
-    price: event.price_display || 'TBA',
-    imageUrl: event.image_url || '/placeholder.svg',
-    description: event.description || '',
-  }));
+  const transformedEvents = events.map(event => {
+    // Parse the date in PST timezone to avoid date shifts
+    const [datePart, timePart] = event.start_date.split('T');
+    const eventDate = new Date(datePart + 'T' + (timePart || '00:00:00') + '-08:00'); // PST offset
+    
+    return {
+      id: event.id,
+      title: event.title,
+      date: datePart, // Use the original date part to avoid timezone conversion
+      time: eventDate.toLocaleTimeString('en-US', { 
+        hour: 'numeric', 
+        minute: '2-digit',
+        hour12: true,
+        timeZone: 'America/Los_Angeles' // Ensure PST/PDT display
+      }),
+      venue: event.venue_name,
+      category: event.category,
+      price: event.price_display || 'TBA',
+      imageUrl: event.image_url || '/placeholder.svg',
+      description: event.description || '',
+    };
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-orange-50">
