@@ -62,6 +62,45 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_messages: {
+        Row: {
+          company: string | null
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          phone: string | null
+          service_type: string | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          phone?: string | null
+          service_type?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          phone?: string | null
+          service_type?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       customer_vehicles: {
         Row: {
           created_at: string
@@ -925,7 +964,9 @@ export type Database = {
       }
       oregon_tires_appointments: {
         Row: {
+          actual_duration_minutes: number | null
           assigned_employee_id: string | null
+          completed_at: string | null
           created_at: string
           customer_address: string | null
           customer_city: string | null
@@ -943,6 +984,7 @@ export type Database = {
           preferred_time: string
           service: string
           service_location: string | null
+          started_at: string | null
           status: string
           tire_size: string | null
           travel_cost_estimate: number | null
@@ -952,7 +994,9 @@ export type Database = {
           vin: string | null
         }
         Insert: {
+          actual_duration_minutes?: number | null
           assigned_employee_id?: string | null
+          completed_at?: string | null
           created_at?: string
           customer_address?: string | null
           customer_city?: string | null
@@ -970,6 +1014,7 @@ export type Database = {
           preferred_time: string
           service: string
           service_location?: string | null
+          started_at?: string | null
           status?: string
           tire_size?: string | null
           travel_cost_estimate?: number | null
@@ -979,7 +1024,9 @@ export type Database = {
           vin?: string | null
         }
         Update: {
+          actual_duration_minutes?: number | null
           assigned_employee_id?: string | null
+          completed_at?: string | null
           created_at?: string
           customer_address?: string | null
           customer_city?: string | null
@@ -997,6 +1044,7 @@ export type Database = {
           preferred_time?: string
           service?: string
           service_location?: string | null
+          started_at?: string | null
           status?: string
           tire_size?: string | null
           travel_cost_estimate?: number | null
@@ -1417,6 +1465,48 @@ export type Database = {
           id?: string
           setting_key?: string
           setting_value?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string | null
+          customer_email: string
+          customer_name: string
+          id: string
+          service_type: string | null
+          status: string | null
+          stripe_payment_intent_id: string | null
+          stripe_session_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string | null
+          customer_email: string
+          customer_name: string
+          id?: string
+          service_type?: string | null
+          status?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string | null
+          customer_email?: string
+          customer_name?: string
+          id?: string
+          service_type?: string | null
+          status?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -1940,6 +2030,10 @@ export type Database = {
     Functions: {
       create_admin_user: {
         Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      handle_community_purchase: {
+        Args: { p_user_id: string; p_cash_amount: number }
         Returns: undefined
       }
       has_role: {

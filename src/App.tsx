@@ -16,6 +16,7 @@ import Venues from "./pages/Venues";
 import Venue from "./pages/Venue";
 import AdminUsers from "./pages/AdminUsers";
 import AdminVenues from "./pages/AdminVenues";
+import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,8 +37,8 @@ const App = () => (
             <Route path="/submit-event" element={<SubmitEvent />} />
             <Route path="/my-events" element={<MyEvents />} />
             <Route path="/approve-events" element={<ApproveEvents />} />
-            <Route path="/admin/users" element={<AdminUsers />} />
-            <Route path="/admin/venues" element={<AdminVenues />} />
+            <Route path="/admin/users" element={<AdminProtectedRoute><AdminUsers /></AdminProtectedRoute>} />
+            <Route path="/admin/venues" element={<AdminProtectedRoute><AdminVenues /></AdminProtectedRoute>} />
             <Route path="/auth" element={<Auth />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
