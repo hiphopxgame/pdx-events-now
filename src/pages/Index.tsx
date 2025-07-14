@@ -48,7 +48,12 @@ const Index = () => {
             hour12: true,
             timeZone: 'America/Los_Angeles'
           });
-          dateString = eventDate.toISOString().split('T')[0];
+          dateString = eventDate.toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short', 
+            day: 'numeric',
+            year: 'numeric'
+          });
         }
       } catch (error) {
         console.error('Date parsing error:', error, event.start_date);

@@ -108,11 +108,25 @@ const MyEvents = () => {
                     <div className="space-y-2 mb-4">
                       <div className="flex items-center text-gray-600">
                         <Calendar className="h-4 w-4 mr-2" />
-                        <span className="text-sm">{event.start_date}</span>
+                        <span className="text-sm">
+                          {new Date(event.start_date).toLocaleDateString('en-US', {
+                            weekday: 'short',
+                            month: 'short', 
+                            day: 'numeric',
+                            year: 'numeric'
+                          })}
+                        </span>
                         {event.start_time && (
                           <>
                             <Clock className="h-4 w-4 ml-4 mr-2" />
-                            <span className="text-sm">{event.start_time}</span>
+                            <span className="text-sm">
+                              {new Date(`${event.start_date}T${event.start_time}`).toLocaleTimeString('en-US', {
+                                hour: 'numeric',
+                                minute: '2-digit',
+                                hour12: true,
+                                timeZone: 'America/Los_Angeles'
+                              })}
+                            </span>
                           </>
                         )}
                       </div>
