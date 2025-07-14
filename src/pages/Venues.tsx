@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
 import { useEvents } from '@/hooks/useEvents';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -154,6 +155,7 @@ const Venues = () => {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 };

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Header } from '@/components/Header';
 import { EventsGrid } from '@/components/EventsGrid';
 import { SearchFilters } from '@/components/SearchFilters';
+import { Footer } from '@/components/Footer';
 import { useEvents, useCategories } from '@/hooks/useEvents';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
@@ -104,6 +105,7 @@ const Events = () => {
           <EventsGrid events={transformedEvents} onEventClick={handleEventClick} />
         )}
       </div>
+      <Footer />
     </div>
   );
 };

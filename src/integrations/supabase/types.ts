@@ -7,8 +7,52 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instanciate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "12.2.3 (519615d)"
+  }
   public: {
     Tables: {
+      customer_vehicles: {
+        Row: {
+          created_at: string
+          customer_email: string
+          customer_name: string
+          id: string
+          license_plate: string | null
+          make: string | null
+          model: string | null
+          updated_at: string
+          vin: string | null
+          year: number | null
+        }
+        Insert: {
+          created_at?: string
+          customer_email: string
+          customer_name: string
+          id?: string
+          license_plate?: string | null
+          make?: string | null
+          model?: string | null
+          updated_at?: string
+          vin?: string | null
+          year?: number | null
+        }
+        Update: {
+          created_at?: string
+          customer_email?: string
+          customer_name?: string
+          id?: string
+          license_plate?: string | null
+          make?: string | null
+          model?: string | null
+          updated_at?: string
+          vin?: string | null
+          year?: number | null
+        }
+        Relationships: []
+      }
       dc_ad_stats: {
         Row: {
           ad_id: string
@@ -659,54 +703,259 @@ export type Database = {
         }
         Relationships: []
       }
+      hiphopworld_card_collections: {
+        Row: {
+          card_id: string
+          collected_at: string
+          collector_user_id: string
+          id: string
+          individual_balance: number
+        }
+        Insert: {
+          card_id: string
+          collected_at?: string
+          collector_user_id: string
+          id?: string
+          individual_balance?: number
+        }
+        Update: {
+          card_id?: string
+          collected_at?: string
+          collector_user_id?: string
+          id?: string
+          individual_balance?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hiphopworld_card_collections_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "hiphopworld_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hiphopworld_card_collections_collector_user_id_fkey"
+            columns: ["collector_user_id"]
+            isOneToOne: false
+            referencedRelation: "hiphopworld_profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      hiphopworld_cards: {
+        Row: {
+          card_type: string
+          content_url: string | null
+          created_at: string
+          description: string | null
+          id: string
+          individual_balance: number
+          is_public: boolean
+          title: string
+          total_balance: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          card_type: string
+          content_url?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          individual_balance?: number
+          is_public?: boolean
+          title: string
+          total_balance?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          card_type?: string
+          content_url?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          individual_balance?: number
+          is_public?: boolean
+          title?: string
+          total_balance?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hiphopworld_cards_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "hiphopworld_profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      hiphopworld_communities: {
+        Row: {
+          community_id: number
+          created_at: string
+          id: string
+          land_id: number
+          owner_user_id: string | null
+          price: number
+          purchased_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          community_id: number
+          created_at?: string
+          id?: string
+          land_id: number
+          owner_user_id?: string | null
+          price: number
+          purchased_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          community_id?: number
+          created_at?: string
+          id?: string
+          land_id?: number
+          owner_user_id?: string | null
+          price?: number
+          purchased_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hiphopworld_communities_owner_user_id_fkey"
+            columns: ["owner_user_id"]
+            isOneToOne: false
+            referencedRelation: "hiphopworld_profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      hiphopworld_profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          communities_owned: number
+          created_at: string
+          display_name: string | null
+          hip_hop_cards_owned: number
+          hip_hop_cash_balance: number
+          id: string
+          updated_at: string
+          user_id: string
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          communities_owned?: number
+          created_at?: string
+          display_name?: string | null
+          hip_hop_cards_owned?: number
+          hip_hop_cash_balance?: number
+          id?: string
+          updated_at?: string
+          user_id: string
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          communities_owned?: number
+          created_at?: string
+          display_name?: string | null
+          hip_hop_cards_owned?: number
+          hip_hop_cash_balance?: number
+          id?: string
+          updated_at?: string
+          user_id?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
       oregon_tires_appointments: {
         Row: {
           assigned_employee_id: string | null
           created_at: string
+          customer_address: string | null
+          customer_city: string | null
+          customer_state: string | null
+          customer_zip: string | null
           email: string
           first_name: string
           id: string
           language: string
           last_name: string
+          license_plate: string | null
           message: string | null
           phone: string | null
           preferred_date: string
           preferred_time: string
           service: string
+          service_location: string | null
           status: string
+          tire_size: string | null
+          travel_cost_estimate: number | null
+          travel_distance_miles: number | null
           updated_at: string
+          vehicle_id: string | null
+          vin: string | null
         }
         Insert: {
           assigned_employee_id?: string | null
           created_at?: string
+          customer_address?: string | null
+          customer_city?: string | null
+          customer_state?: string | null
+          customer_zip?: string | null
           email: string
           first_name: string
           id?: string
           language?: string
           last_name: string
+          license_plate?: string | null
           message?: string | null
           phone?: string | null
           preferred_date: string
           preferred_time: string
           service: string
+          service_location?: string | null
           status?: string
+          tire_size?: string | null
+          travel_cost_estimate?: number | null
+          travel_distance_miles?: number | null
           updated_at?: string
+          vehicle_id?: string | null
+          vin?: string | null
         }
         Update: {
           assigned_employee_id?: string | null
           created_at?: string
+          customer_address?: string | null
+          customer_city?: string | null
+          customer_state?: string | null
+          customer_zip?: string | null
           email?: string
           first_name?: string
           id?: string
           language?: string
           last_name?: string
+          license_plate?: string | null
           message?: string | null
           phone?: string | null
           preferred_date?: string
           preferred_time?: string
           service?: string
+          service_location?: string | null
           status?: string
+          tire_size?: string | null
+          travel_cost_estimate?: number | null
+          travel_distance_miles?: number | null
           updated_at?: string
+          vehicle_id?: string | null
+          vin?: string | null
         }
         Relationships: [
           {
@@ -714,6 +963,13 @@ export type Database = {
             columns: ["assigned_employee_id"]
             isOneToOne: false
             referencedRelation: "oregon_tires_employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "oregon_tires_appointments_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "customer_vehicles"
             referencedColumns: ["id"]
           },
         ]
@@ -790,6 +1046,97 @@ export type Database = {
         }
         Relationships: []
       }
+      oregon_tires_email_logs: {
+        Row: {
+          appointment_id: string | null
+          body: string
+          created_at: string
+          email_type: string
+          id: string
+          recipient_email: string
+          recipient_name: string
+          recipient_type: string
+          resend_message_id: string | null
+          sent_at: string
+          subject: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          body: string
+          created_at?: string
+          email_type: string
+          id?: string
+          recipient_email: string
+          recipient_name: string
+          recipient_type: string
+          resend_message_id?: string | null
+          sent_at?: string
+          subject: string
+        }
+        Update: {
+          appointment_id?: string | null
+          body?: string
+          created_at?: string
+          email_type?: string
+          id?: string
+          recipient_email?: string
+          recipient_name?: string
+          recipient_type?: string
+          resend_message_id?: string | null
+          sent_at?: string
+          subject?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "oregon_tires_email_logs_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "oregon_tires_appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      oregon_tires_employee_schedules: {
+        Row: {
+          created_at: string
+          employee_id: string
+          end_time: string
+          id: string
+          is_available: boolean
+          start_time: string
+          updated_at: string
+          work_date: string
+        }
+        Insert: {
+          created_at?: string
+          employee_id: string
+          end_time?: string
+          id?: string
+          is_available?: boolean
+          start_time?: string
+          updated_at?: string
+          work_date: string
+        }
+        Update: {
+          created_at?: string
+          employee_id?: string
+          end_time?: string
+          id?: string
+          is_available?: boolean
+          start_time?: string
+          updated_at?: string
+          work_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "oregon_tires_employee_schedules_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "oregon_tires_employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       oregon_tires_employees: {
         Row: {
           created_at: string
@@ -816,6 +1163,42 @@ export type Database = {
           is_active?: boolean
           name?: string
           phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      oregon_tires_gallery_images: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number | null
+          id: string
+          image_url: string
+          is_active: boolean
+          language: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_url: string
+          is_active?: boolean
+          language?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_url?: string
+          is_active?: boolean
+          language?: string
+          title?: string
           updated_at?: string
         }
         Relationships: []
@@ -1443,21 +1826,25 @@ export type Database = {
   }
 }
 
-type DefaultSchema = Database[Extract<keyof Database, "public">]
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
@@ -1475,14 +1862,16 @@ export type Tables<
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
@@ -1498,14 +1887,16 @@ export type TablesInsert<
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
@@ -1521,14 +1912,16 @@ export type TablesUpdate<
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
-> = DefaultSchemaEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
@@ -1536,14 +1929,16 @@ export type Enums<
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
-> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never

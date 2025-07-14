@@ -4,6 +4,7 @@ import { Header } from '@/components/Header';
 import { EventsGrid } from '@/components/EventsGrid';
 import { SearchFilters } from '@/components/SearchFilters';
 import { Hero } from '@/components/Hero';
+import { Footer } from '@/components/Footer';
 import { useEvents, useCategories } from '@/hooks/useEvents';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
@@ -103,6 +104,7 @@ const Index = () => {
           <EventsGrid events={transformedEvents} onEventClick={handleEventClick} />
         )}
       </div>
+      <Footer />
     </div>
   );
 };
