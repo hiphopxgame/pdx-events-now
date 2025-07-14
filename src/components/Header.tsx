@@ -1,9 +1,10 @@
 
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Calendar, Plus, User, LogOut, CheckCircle, MapPin } from 'lucide-react';
+import { Calendar, Plus, User, LogOut, CheckCircle, MapPin, Shield, Users, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
+import { useUserRoles } from '@/hooks/useUserRoles';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +22,7 @@ import {
 
 export const Header = () => {
   const { user, signOut } = useAuth();
+  const { isAdmin } = useUserRoles();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -102,6 +104,22 @@ export const Header = () => {
                         Approve Events
                       </Link>
                     </DropdownMenuItem>
+                    {isAdmin && (
+                      <>
+                        <DropdownMenuItem asChild>
+                          <Link to="/admin/users" className="flex items-center">
+                            <Users className="mr-2 h-4 w-4" />
+                            Manage Users
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/admin/venues" className="flex items-center">
+                            <Building2 className="mr-2 h-4 w-4" />
+                            Manage Venues
+                          </Link>
+                        </DropdownMenuItem>
+                      </>
+                    )}
                     <DropdownMenuItem onClick={handleSignOut}>
                       <LogOut className="mr-2 h-4 w-4" />
                       Sign Out

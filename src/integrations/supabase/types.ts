@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      bitcoin_payments: {
+        Row: {
+          btc_amount: number
+          cash_amount: number
+          community_id: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          land_id: number
+          nowpayments_order_id: string | null
+          nowpayments_payment_id: string | null
+          payment_address: string | null
+          payment_status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          btc_amount: number
+          cash_amount: number
+          community_id: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          land_id: number
+          nowpayments_order_id?: string | null
+          nowpayments_payment_id?: string | null
+          payment_address?: string | null
+          payment_status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          btc_amount?: number
+          cash_amount?: number
+          community_id?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          land_id?: number
+          nowpayments_order_id?: string | null
+          nowpayments_payment_id?: string | null
+          payment_address?: string | null
+          payment_status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       customer_vehicles: {
         Row: {
           created_at: string
@@ -1795,6 +1843,96 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      venues: {
+        Row: {
+          address: string | null
+          approved_at: string | null
+          approved_by: string | null
+          city: string | null
+          created_at: string
+          google_photos: string[] | null
+          google_place_id: string | null
+          google_rating: number | null
+          google_review_count: number | null
+          id: string
+          latitude: number | null
+          longitude: number | null
+          name: string
+          phone: string | null
+          state: string | null
+          status: string | null
+          updated_at: string
+          website: string | null
+          zip_code: string | null
+        }
+        Insert: {
+          address?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          city?: string | null
+          created_at?: string
+          google_photos?: string[] | null
+          google_place_id?: string | null
+          google_rating?: number | null
+          google_review_count?: number | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          phone?: string | null
+          state?: string | null
+          status?: string | null
+          updated_at?: string
+          website?: string | null
+          zip_code?: string | null
+        }
+        Update: {
+          address?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          city?: string | null
+          created_at?: string
+          google_photos?: string[] | null
+          google_place_id?: string | null
+          google_rating?: number | null
+          google_review_count?: number | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          phone?: string | null
+          state?: string | null
+          status?: string | null
+          updated_at?: string
+          website?: string | null
+          zip_code?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -1803,6 +1941,13 @@ export type Database = {
       create_admin_user: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      has_role: {
+        Args: {
+          _user_id: string
+          _role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
       }
       is_current_user_admin: {
         Args: Record<PropertyKey, never>
@@ -1816,9 +1961,13 @@ export type Database = {
         Args: { user_email: string }
         Returns: undefined
       }
+      setup_admin_user: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1945,6 +2094,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const
