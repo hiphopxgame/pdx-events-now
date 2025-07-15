@@ -14,6 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
+      bitcoin_crypto_data: {
+        Row: {
+          cmc_id: number
+          created_at: string
+          id: string
+          last_updated: string
+          logo_url: string | null
+          market_cap: number
+          name: string
+          percent_change_1h: number | null
+          percent_change_24h: number | null
+          percent_change_30d: number | null
+          percent_change_7d: number | null
+          price: number
+          rank: number
+          slug: string
+          symbol: string
+          updated_at: string
+          volume_24h: number
+        }
+        Insert: {
+          cmc_id: number
+          created_at?: string
+          id?: string
+          last_updated: string
+          logo_url?: string | null
+          market_cap: number
+          name: string
+          percent_change_1h?: number | null
+          percent_change_24h?: number | null
+          percent_change_30d?: number | null
+          percent_change_7d?: number | null
+          price: number
+          rank: number
+          slug: string
+          symbol: string
+          updated_at?: string
+          volume_24h: number
+        }
+        Update: {
+          cmc_id?: number
+          created_at?: string
+          id?: string
+          last_updated?: string
+          logo_url?: string | null
+          market_cap?: number
+          name?: string
+          percent_change_1h?: number | null
+          percent_change_24h?: number | null
+          percent_change_30d?: number | null
+          percent_change_7d?: number | null
+          price?: number
+          rank?: number
+          slug?: string
+          symbol?: string
+          updated_at?: string
+          volume_24h?: number
+        }
+        Relationships: []
+      }
       bitcoin_payments: {
         Row: {
           btc_amount: number

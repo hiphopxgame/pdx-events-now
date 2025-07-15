@@ -6,9 +6,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Upload, X } from 'lucide-react';
+import { RecurrenceSelector } from './event-form/RecurrenceSelector';
 
 interface EditEventDialogProps {
   event: any;
@@ -26,6 +28,11 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
   const [isUploading, setIsUploading] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>(event.image_url || '');
+  const [isRecurring, setIsRecurring] = useState(event.is_recurring || false);
+  const [recurringType, setRecurringType] = useState(event.recurrence_pattern || '');
+  const [endDate, setEndDate] = useState<Date | undefined>(
+    event.recurrence_end_date ? new Date(event.recurrence_end_date) : undefined
+  );
   const { toast } = useToast();
   
   const { register, handleSubmit, setValue, formState: { isSubmitting } } = useForm({
@@ -118,6 +125,10 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
         image_url: imageUrl,
         price_min: data.price_min ? parseFloat(data.price_min) : null,
         price_max: data.price_max ? parseFloat(data.price_max) : null,
+        is_recurring: isRecurring,
+        recurrence_type: isRecurring ? 'weekly' : null,
+        recurrence_pattern: isRecurring ? recurringType : null,
+        recurrence_end_date: endDate?.toISOString().split('T')[0] || null,
       };
 
       const { error } = await supabase
@@ -252,6 +263,27 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
                   <Label htmlFor="end_time">End Time</Label>
                   <Input type="time" {...register('end_time')} />
                 </div>
+              </div>
+
+              {/* Recurring Event Section */}
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="recurring" 
+                    checked={isRecurring}
+                    onCheckedChange={(checked) => setIsRecurring(checked === true)}
+                  />
+                  <Label htmlFor="recurring">This is a recurring event</Label>
+                </div>
+
+                {isRecurring && (
+                  <RecurrenceSelector
+                    recurringType={recurringType}
+                    setRecurringType={setRecurringType}
+                    endDate={endDate}
+                    setEndDate={setEndDate}
+                  />
+                )}
               </div>
             </div>
 

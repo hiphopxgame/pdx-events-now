@@ -106,8 +106,8 @@ export const SubmitEventForm: React.FC = () => {
         image_url: imageUrl,
         start_date: startDate?.toISOString().split('T')[0],
         is_recurring: isRecurring,
-        recurrence_type: recurringType,
-        recurrence_pattern: data.recurrence_pattern || null,
+        recurrence_type: isRecurring ? 'weekly' : null,
+        recurrence_pattern: isRecurring ? recurringType : null,
         recurrence_end_date: endDate?.toISOString().split('T')[0] || null,
         created_by: user.id,
       };
