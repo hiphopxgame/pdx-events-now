@@ -12,7 +12,7 @@ import { Users, Search, UserCheck, UserMinus, Loader2, Shield, User } from 'luci
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 const AdminUsers = () => {
-  const { isAdmin, loading: rolesLoading, updateUserRole } = useUserRoles();
+  const { isAdmin, loading: rolesLoading, updateUserRole, fetchAllUsers } = useUserRoles();
   const [users, setUsers] = useState<UserWithProfile[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<UserWithProfile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,7 +33,6 @@ const AdminUsers = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const { fetchAllUsers } = useUserRoles();
       const allUsers = await fetchAllUsers();
       setUsers(allUsers);
     } catch (error) {
