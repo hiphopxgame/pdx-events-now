@@ -1,9 +1,10 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, MapPin, Clock, Tag } from 'lucide-react';
+import { Calendar, MapPin, Clock, Tag, User, Repeat } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Event {
   id: string;
@@ -22,6 +23,9 @@ interface Event {
   venueState?: string;
   ticketUrl?: string;
   organizerName?: string;
+  submittedBy?: string;
+  recurrencePattern?: string;
+  createdBy?: string;
 }
 
 interface EventCardProps {
@@ -31,11 +35,32 @@ interface EventCardProps {
 
 export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => {
   const navigate = useNavigate();
+  const [submittedByUser, setSubmittedByUser] = useState<string>('');
+  const [organizerUser, setOrganizerUser] = useState<string>('');
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      if (event.createdBy) {
+        const { data } = await supabase
+          .from('por_eve_profiles')
+          .select('display_name, full_name, username')
+          .eq('id', event.createdBy)
+          .single();
+        
+        if (data) {
+          setSubmittedByUser(data.display_name || data.full_name || data.username || 'Unknown User');
+        }
+      }
+    };
+
+    fetchUserInfo();
+  }, [event.createdBy]);
 
   const handleVenueClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     navigate(`/venue/${encodeURIComponent(event.venue)}`);
   };
+
   const formatDate = (dateString: string) => {
     try {
       const date = new Date(dateString);
@@ -48,6 +73,21 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
     } catch {
       return dateString;
     }
+  };
+
+  const formatRecurrencePattern = (pattern: string | undefined) => {
+    if (!pattern) return null;
+    
+    const patterns: { [key: string]: string } = {
+      'weekly': 'Weekly',
+      'daily': 'Daily',
+      'monthly': 'Monthly',
+      'yearly': 'Yearly',
+      'weekdays': 'Weekdays',
+      'weekends': 'Weekends'
+    };
+    
+    return patterns[pattern] || pattern;
   };
 
   const getCategoryColor = (category: string) => {
@@ -90,11 +130,19 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
         </h3>
         
         <div className="space-y-2 mb-4">
-          <div className="flex items-center text-gray-600">
+          <div className="flex items-center text-gray-600 flex-wrap">
             <Calendar className="h-4 w-4 mr-2 text-emerald-600" />
             <span className="text-sm">{formatDate(event.date)}</span>
             <Clock className="h-4 w-4 ml-4 mr-2 text-emerald-600" />
             <span className="text-sm">{event.time}</span>
+            {event.recurrencePattern && (
+              <>
+                <Repeat className="h-4 w-4 ml-4 mr-1 text-orange-500" />
+                <span className="text-sm text-orange-600 font-medium">
+                  {formatRecurrencePattern(event.recurrencePattern)}
+                </span>
+              </>
+            )}
           </div>
           
           <div className="flex items-center text-gray-600">
@@ -105,6 +153,22 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
             >
               {event.venue}
             </span>
+          </div>
+
+          {/* User Information */}
+          <div className="space-y-1 pt-2 border-t border-gray-100">
+            {submittedByUser && (
+              <div className="flex items-center text-gray-500">
+                <User className="h-3 w-3 mr-2" />
+                <span className="text-xs">Submitted by {submittedByUser}</span>
+              </div>
+            )}
+            {event.organizerName && (
+              <div className="flex items-center text-gray-600">
+                <Tag className="h-3 w-3 mr-2" />
+                <span className="text-xs font-medium">Organizer: {event.organizerName}</span>
+              </div>
+            )}
           </div>
         </div>
         

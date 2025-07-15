@@ -68,6 +68,9 @@ const Events = () => {
       venueState: event.venue_state,
       ticketUrl: event.ticket_url,
       organizerName: event.organizer_name,
+      submittedBy: (event as any).created_by,
+      recurrencePattern: (event as any).recurrence_pattern,
+      createdBy: (event as any).created_by,
     };
   });
 
