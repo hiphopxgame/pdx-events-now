@@ -14,6 +14,8 @@ import Event from "./pages/Event";
 import Events from "./pages/Events";
 import Venues from "./pages/Venues";
 import Venue from "./pages/Venue";
+import Users from "./pages/Users";
+import Account from "./pages/Account";
 import AdminUsers from "./pages/AdminUsers";
 import AdminVenues from "./pages/AdminVenues";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
@@ -34,6 +36,8 @@ const App = () => (
             <Route path="/event/:eventId" element={<Event />} />
             <Route path="/venues" element={<Venues />} />
             <Route path="/venue/:venueName" element={<Venue />} />
+            <Route path="/users" element={<Users />} />
+            <Route path="/account" element={<Account />} />
             <Route path="/submit-event" element={<SubmitEvent />} />
             <Route path="/my-events" element={<MyEvents />} />
             <Route path="/approve-events" element={<ApproveEvents />} />
