@@ -25,6 +25,7 @@ export interface Event {
   api_source: string;
   external_id: string;
   is_active: boolean;
+  is_featured?: boolean;
   created_at: string;
   updated_at: string;
   website?: string | null;
@@ -59,6 +60,7 @@ export interface UserEvent {
   recurrence_pattern: string | null;
   recurrence_end_date: string | null;
   status: string;
+  is_featured?: boolean;
   created_at: string;
   updated_at: string;
   created_by: string | null;

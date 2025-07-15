@@ -5,6 +5,7 @@ import { EventsGrid } from '@/components/EventsGrid';
 import { SearchFilters } from '@/components/SearchFilters';
 import { Hero } from '@/components/Hero';
 import { Footer } from '@/components/Footer';
+import { FeaturedEvents } from '@/components/FeaturedEvents';
 import { useEvents, useCategories } from '@/hooks/useEvents';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
@@ -85,6 +86,8 @@ const Index = () => {
       <Header />
       <Hero />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <FeaturedEvents onEventClick={handleEventClick} />
+        
         <SearchFilters
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}

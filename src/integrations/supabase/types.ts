@@ -1686,6 +1686,7 @@ export type Database = {
           image_url: string | null
           instagram_url: string | null
           is_active: boolean
+          is_featured: boolean
           organizer_name: string | null
           organizer_url: string | null
           price_display: string | null
@@ -1715,6 +1716,7 @@ export type Database = {
           image_url?: string | null
           instagram_url?: string | null
           is_active?: boolean
+          is_featured?: boolean
           organizer_name?: string | null
           organizer_url?: string | null
           price_display?: string | null
@@ -1744,6 +1746,7 @@ export type Database = {
           image_url?: string | null
           instagram_url?: string | null
           is_active?: boolean
+          is_featured?: boolean
           organizer_name?: string | null
           organizer_url?: string | null
           price_display?: string | null
@@ -1894,6 +1897,7 @@ export type Database = {
           id: string
           image_url: string | null
           instagram_url: string | null
+          is_featured: boolean
           is_recurring: boolean | null
           organizer_email: string | null
           organizer_name: string | null
@@ -1927,6 +1931,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           instagram_url?: string | null
+          is_featured?: boolean
           is_recurring?: boolean | null
           organizer_email?: string | null
           organizer_name?: string | null
@@ -1960,6 +1965,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           instagram_url?: string | null
+          is_featured?: boolean
           is_recurring?: boolean | null
           organizer_email?: string | null
           organizer_name?: string | null

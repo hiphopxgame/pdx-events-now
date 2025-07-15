@@ -31,6 +31,7 @@ export const useEvents = (options: UseEventsOptions = {}) => {
 // Re-export the individual hooks for direct use
 export { useUserEvents, usePendingEvents } from './events/useUserEvents';
 export { useCategories } from './events/useCategories';
+export { useFeaturedEvents } from './events/useFeaturedEvents';
 
 // Re-export types for convenience
 export type { Event, UserEvent, UseEventsOptions } from './events/types';

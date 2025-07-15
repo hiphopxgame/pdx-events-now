@@ -7,8 +7,10 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useUserRoles } from '@/hooks/useUserRoles';
 import { Upload, X } from 'lucide-react';
 import { RecurrenceSelector } from './event-form/RecurrenceSelector';
 
@@ -33,7 +35,9 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
   const [endDate, setEndDate] = useState<Date | undefined>(
     event.recurrence_end_date ? new Date(event.recurrence_end_date) : undefined
   );
+  const [isFeatured, setIsFeatured] = useState(event.is_featured || false);
   const { toast } = useToast();
+  const { isAdmin } = useUserRoles();
   
   const { register, handleSubmit, setValue, formState: { isSubmitting } } = useForm({
     defaultValues: {
@@ -129,6 +133,7 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
         recurrence_type: isRecurring ? 'weekly' : null,
         recurrence_pattern: isRecurring ? recurringType : null,
         recurrence_end_date: endDate?.toISOString().split('T')[0] || null,
+        ...(isAdmin && { is_featured: isFeatured }),
       };
 
       const { error } = await supabase
@@ -350,6 +355,19 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
               </div>
             </div>
           </div>
+
+          {isAdmin && (
+            <div className="flex items-center space-x-2 pt-4 border-t">
+              <Switch
+                id="featured"
+                checked={isFeatured}
+                onCheckedChange={setIsFeatured}
+              />
+              <Label htmlFor="featured" className="text-sm font-medium">
+                Featured Event (appears highlighted on main page)
+              </Label>
+            </div>
+          )}
 
           <div className="flex gap-4 pt-4">
             <Button type="button" variant="outline" onClick={onClose} className="flex-1">
