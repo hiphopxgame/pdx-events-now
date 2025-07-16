@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { EventsGrid } from '@/components/EventsGrid';
 import { EventDetailsModal } from '@/components/EventDetailsModal';
+import { GoogleMap } from '@/components/GoogleMap';
 import { useEvents } from '@/hooks/useEvents';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -189,14 +190,12 @@ const Venue = () => {
               </div>
             </div>
 
-            {/* Map Placeholder */}
-            <div className="bg-gradient-to-br from-emerald-100 to-orange-100 rounded-lg h-64 flex items-center justify-center">
-              <div className="text-center">
-                <MapPin className="h-12 w-12 text-emerald-600 mx-auto mb-2" />
-                <p className="text-gray-600">Map integration coming soon</p>
-                <p className="text-sm text-gray-500">Google Maps & Reviews</p>
-              </div>
-            </div>
+            {/* Google Map */}
+            <GoogleMap
+              address={fullAddress}
+              venueName={venueDetails.venue_name}
+              className="w-full h-64 rounded-lg"
+            />
           </div>
         </div>
 
