@@ -38,8 +38,9 @@ export const GoogleMap: React.FC<GoogleMapProps> = ({
         }
 
         // Load Google Maps API
+        const apiKey = await getGoogleMapsApiKey();
         const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${getGoogleMapsApiKey()}&libraries=places`;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
         script.async = true;
         script.defer = true;
         
@@ -73,10 +74,25 @@ export const GoogleMap: React.FC<GoogleMapProps> = ({
       }
     };
 
-    const getGoogleMapsApiKey = () => {
-      // In a real implementation, this would come from environment variables
-      // For now, we'll use a placeholder - the actual key should be configured in Supabase secrets
-      return 'YOUR_GOOGLE_MAPS_API_KEY';
+    const getGoogleMapsApiKey = async () => {
+      try {
+        const response = await fetch('https://vtknmauyvmuaryttnenx.supabase.co/functions/v1/google-maps-config', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch API key');
+        }
+        
+        const data = await response.json();
+        return data.apiKey;
+      } catch (error) {
+        console.error('Error fetching Google Maps API key:', error);
+        throw error;
+      }
     };
 
     const initializeMap = async () => {
