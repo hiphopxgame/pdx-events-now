@@ -4,11 +4,18 @@ import { UserEvent, Event } from './types';
 const generateRecurringEventDates = (startDate: string, recurrencePattern: string, endDate?: string): string[] => {
   const dates: string[] = [];
   const start = new Date(startDate);
-  const threeMonthsFromNow = new Date();
-  threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Reset time to start of day
   
-  const endLimit = endDate ? new Date(endDate) : threeMonthsFromNow;
-  const finalEndDate = endLimit < threeMonthsFromNow ? endLimit : threeMonthsFromNow;
+  // Generate events for the next 6 months from today (or from start date if it's in the future)
+  const sixMonthsFromToday = new Date(today);
+  sixMonthsFromToday.setMonth(sixMonthsFromToday.getMonth() + 6);
+  
+  const endLimit = endDate ? new Date(endDate) : sixMonthsFromToday;
+  const finalEndDate = endLimit;
+  
+  // Start generating from today if the original start date is in the past
+  const generateFrom = start < today ? today : start;
 
   if (recurrencePattern.startsWith('every-')) {
     // Weekly recurrence
@@ -20,9 +27,9 @@ const generateRecurringEventDates = (startDate: string, recurrencePattern: strin
     
     const targetDay = dayMap[dayName];
     if (targetDay !== undefined) {
-      let currentDate = new Date(start);
+      let currentDate = new Date(generateFrom);
       
-      // Find the first occurrence of the target day
+      // Find the first occurrence of the target day from our generate date
       while (currentDate.getDay() !== targetDay) {
         currentDate.setDate(currentDate.getDate() + 1);
       }
@@ -43,11 +50,12 @@ const generateRecurringEventDates = (startDate: string, recurrencePattern: strin
     
     const targetDay = dayMap[dayName];
     if (targetDay !== undefined) {
-      let currentDate = new Date(start.getFullYear(), start.getMonth(), 1);
+      // Start from the month containing our generate date
+      let currentDate = new Date(generateFrom.getFullYear(), generateFrom.getMonth(), 1);
       
       while (currentDate <= finalEndDate) {
         const monthDate = findNthDayOfMonth(currentDate.getFullYear(), currentDate.getMonth(), occurrence, targetDay);
-        if (monthDate && monthDate >= start && monthDate <= finalEndDate) {
+        if (monthDate && monthDate >= generateFrom && monthDate <= finalEndDate) {
           dates.push(monthDate.toISOString().split('T')[0]);
         }
         currentDate.setMonth(currentDate.getMonth() + 1);
