@@ -30,8 +30,18 @@ const generateRecurringEventDates = (startDate: string, recurrencePattern: strin
       let currentDate = new Date(generateFrom);
       
       // Find the first occurrence of the target day from our generate date
-      while (currentDate.getDay() !== targetDay) {
-        currentDate.setDate(currentDate.getDate() + 1);
+      // If we're already on the target day and it's not in the past, use it
+      if (currentDate.getDay() === targetDay && currentDate >= today) {
+        // We're already on the right day
+      } else {
+        // Find the next occurrence of the target day
+        const daysUntilTarget = (targetDay - currentDate.getDay() + 7) % 7;
+        if (daysUntilTarget === 0 && currentDate < today) {
+          // If we're on the target day but it's in the past, move to next week
+          currentDate.setDate(currentDate.getDate() + 7);
+        } else if (daysUntilTarget > 0) {
+          currentDate.setDate(currentDate.getDate() + daysUntilTarget);
+        }
       }
       
       // Generate weekly occurrences
