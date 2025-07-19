@@ -8,8 +8,9 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Users, Search, UserCheck, UserMinus, Loader2, Shield, User } from 'lucide-react';
+import { Users, Search, UserCheck, UserMinus, Loader2, Shield, User, Edit } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import { EditUserDialog } from '@/components/EditUserDialog';
 
 const AdminUsers = () => {
   const { isAdmin, loading: rolesLoading, updateUserRole, fetchAllUsers } = useUserRoles();
@@ -18,6 +19,8 @@ const AdminUsers = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('all');
+  const [editingUser, setEditingUser] = useState<UserWithProfile | null>(null);
+  const [showEditDialog, setShowEditDialog] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -95,6 +98,15 @@ const AdminUsers = () => {
 
   const hasRole = (user: UserWithProfile, role: string) => {
     return user.roles.some(r => r.role === role);
+  };
+
+  const handleEditUser = (user: UserWithProfile) => {
+    setEditingUser(user);
+    setShowEditDialog(true);
+  };
+
+  const handleEditSuccess = () => {
+    fetchUsers();
   };
 
   if (rolesLoading || !isAdmin) {
@@ -209,6 +221,19 @@ const AdminUsers = () => {
                           )}
                         </div>
 
+                        {/* Action Buttons */}
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleEditUser(user)}
+                            className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                          >
+                            <Edit className="h-4 w-4 mr-1" />
+                            Edit
+                          </Button>
+                        </div>
+
                         {/* Role Management Buttons */}
                         <div className="flex gap-2">
                           {!hasRole(user, 'admin') && (
@@ -276,6 +301,13 @@ const AdminUsers = () => {
         
         <Footer />
       </div>
+
+      <EditUserDialog
+        user={editingUser}
+        open={showEditDialog}
+        onOpenChange={setShowEditDialog}
+        onSuccess={handleEditSuccess}
+      />
     </ProtectedRoute>
   );
 };

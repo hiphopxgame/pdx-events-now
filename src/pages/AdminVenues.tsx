@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { useUserRoles } from '@/hooks/useUserRoles';
-import { useGooglePlaces, GooglePlace } from '@/hooks/useGooglePlaces';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,8 +10,6 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { 
   MapPin, 
-  Search, 
-  Plus, 
   Star, 
   Phone, 
   Globe, 
@@ -20,9 +17,12 @@ import {
   X, 
   Loader2,
   Building2,
-  Eye
+  Eye,
+  Edit,
+  Plus
 } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import { EditVenueDialog } from '@/components/EditVenueDialog';
 
 interface Venue {
   id: string;
@@ -34,6 +34,10 @@ interface Venue {
   zip_code?: string;
   phone?: string;
   website?: string;
+  facebook_url?: string;
+  instagram_url?: string;
+  twitter_url?: string;
+  youtube_url?: string;
   latitude?: number;
   longitude?: number;
   google_rating?: number;
@@ -48,12 +52,11 @@ interface Venue {
 
 const AdminVenues = () => {
   const { isAdmin, loading: rolesLoading } = useUserRoles();
-  const { searchPlaces, getPlaceDetails, loading: googleLoading } = useGooglePlaces();
   const [venues, setVenues] = useState<Venue[]>([]);
-  const [searchResults, setSearchResults] = useState<GooglePlace[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
-  const [showGoogleSearch, setShowGoogleSearch] = useState(false);
+  const [editingVenue, setEditingVenue] = useState<Venue | null>(null);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -84,62 +87,72 @@ const AdminVenues = () => {
     }
   };
 
-  const handleGoogleSearch = async () => {
-    if (!searchQuery.trim()) return;
-    
-    try {
-      const results = await searchPlaces(`${searchQuery} Portland OR`);
-      setSearchResults(results);
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to search Google Places',
-        variant: 'destructive'
-      });
-    }
+  const handleEditVenue = (venue: Venue) => {
+    setEditingVenue(venue);
+    setShowEditDialog(true);
   };
 
-  const addVenueFromGoogle = async (place: GooglePlace) => {
-    try {
-      // Get detailed information about the place
-      const details = await getPlaceDetails(place.place_id);
-      
-      const venueData = {
-        name: place.name,
-        google_place_id: place.place_id,
-        address: place.formatted_address,
-        latitude: place.geometry?.location.lat,
-        longitude: place.geometry?.location.lng,
-        google_rating: place.rating,
-        google_review_count: place.user_ratings_total,
-        google_photos: place.photos?.map(photo => photo.photo_reference) || [],
-        phone: details?.formatted_phone_number,
-        website: details?.website,
-        status: 'pending'
-      };
+  const handleCreateVenue = () => {
+    const newVenue: Venue = {
+      id: '',
+      name: '',
+      address: '',
+      city: 'Portland',
+      state: 'Oregon',
+      zip_code: '',
+      phone: '',
+      website: '',
+      facebook_url: '',
+      instagram_url: '',
+      twitter_url: '',
+      youtube_url: '',
+      status: 'pending',
+      created_at: '',
+      updated_at: ''
+    };
+    setEditingVenue(newVenue);
+    setShowCreateDialog(true);
+  };
 
+  const handleSaveNewVenue = async (venueData: any) => {
+    try {
       const { error } = await supabase
         .from('venues')
-        .insert(venueData);
+        .insert({
+          name: venueData.name,
+          address: venueData.address || null,
+          city: venueData.city || 'Portland',
+          state: venueData.state || 'Oregon',
+          zip_code: venueData.zip_code || null,
+          phone: venueData.phone || null,
+          website: venueData.website || null,
+          facebook_url: venueData.facebook_url || null,
+          instagram_url: venueData.instagram_url || null,
+          twitter_url: venueData.twitter_url || null,
+          youtube_url: venueData.youtube_url || null,
+          status: 'pending'
+        });
 
       if (error) throw error;
 
       toast({
         title: 'Success',
-        description: 'Venue added successfully and is pending approval',
+        description: 'Venue created successfully',
       });
 
       fetchVenues();
-      setSearchResults([]);
-      setSearchQuery('');
     } catch (error) {
-      console.error('Error adding venue:', error);
+      console.error('Error creating venue:', error);
       toast({
         title: 'Error',
-        description: 'Failed to add venue',
+        description: 'Failed to create venue',
         variant: 'destructive'
       });
     }
+  };
+
+  const handleEditSuccess = () => {
+    fetchVenues();
   };
 
   const updateVenueStatus = async (venueId: string, status: 'approved' | 'rejected') => {
@@ -211,81 +224,17 @@ const AdminVenues = () => {
                 <Building2 className="h-8 w-8 mr-3 text-emerald-600" />
                 Venue Management
               </h1>
-              <p className="text-gray-600">Manage venues and Google Places integration</p>
+              <p className="text-gray-600">Manage venues and their details</p>
             </div>
             <Button 
-              onClick={() => setShowGoogleSearch(!showGoogleSearch)}
+              onClick={handleCreateVenue}
               className="bg-emerald-600 hover:bg-emerald-700"
             >
               <Plus className="h-4 w-4 mr-2" />
-              Add from Google
+              Create Venue
             </Button>
           </div>
 
-          {/* Google Places Search */}
-          {showGoogleSearch && (
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle>Search Google Places</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex gap-4 mb-4">
-                  <div className="flex-1">
-                    <Input
-                      placeholder="Search for venues in Portland..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && handleGoogleSearch()}
-                    />
-                  </div>
-                  <Button 
-                    onClick={handleGoogleSearch}
-                    disabled={googleLoading || !searchQuery.trim()}
-                  >
-                    {googleLoading ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Search className="h-4 w-4" />
-                    )}
-                    Search
-                  </Button>
-                </div>
-
-                {searchResults.length > 0 && (
-                  <div className="space-y-3">
-                    <h4 className="font-medium text-gray-700">Search Results:</h4>
-                    {searchResults.map((place) => (
-                      <div key={place.place_id} className="border rounded-lg p-4 flex justify-between items-start">
-                        <div className="flex-1">
-                          <h5 className="font-medium text-gray-800">{place.name}</h5>
-                          <p className="text-sm text-gray-600 mb-2">{place.formatted_address}</p>
-                          <div className="flex items-center gap-4 text-sm text-gray-500">
-                            {place.rating && (
-                              <div className="flex items-center gap-1">
-                                <Star className="h-4 w-4 text-yellow-500" />
-                                {place.rating} ({place.user_ratings_total} reviews)
-                              </div>
-                            )}
-                            {place.photos && place.photos.length > 0 && (
-                              <span>{place.photos.length} photos</span>
-                            )}
-                          </div>
-                        </div>
-                        <Button
-                          size="sm"
-                          onClick={() => addVenueFromGoogle(place)}
-                          className="ml-4"
-                        >
-                          <Plus className="h-4 w-4 mr-1" />
-                          Add Venue
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
 
           {/* Venues List */}
           {loading ? (
@@ -295,11 +244,11 @@ const AdminVenues = () => {
           ) : (
             <div className="space-y-4">
               {venues.length === 0 ? (
-                <Card>
+                  <Card>
                   <CardContent className="text-center py-12">
                     <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-gray-700 mb-2">No venues found</h3>
-                    <p className="text-gray-500">Add venues from Google Places to get started.</p>
+                    <p className="text-gray-500">Create venues to get started.</p>
                   </CardContent>
                 </Card>
               ) : (
@@ -359,6 +308,15 @@ const AdminVenues = () => {
                         </div>
                         
                         <div className="flex gap-2 ml-4">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleEditVenue(venue)}
+                            className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                          >
+                            <Edit className="h-4 w-4 mr-1" />
+                            Edit
+                          </Button>
                           {venue.status === 'pending' && (
                             <>
                               <Button
@@ -404,6 +362,16 @@ const AdminVenues = () => {
         
         <Footer />
       </div>
+
+      <EditVenueDialog
+        venue={editingVenue}
+        open={showEditDialog || showCreateDialog}
+        onOpenChange={(open) => {
+          setShowEditDialog(open);
+          setShowCreateDialog(open);
+        }}
+        onSuccess={handleEditSuccess}
+      />
     </ProtectedRoute>
   );
 };
