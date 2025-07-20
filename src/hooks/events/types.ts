@@ -52,6 +52,7 @@ export interface UserEvent {
   facebook_url: string | null;
   instagram_url: string | null;
   image_url: string | null;
+  image_urls: string[] | null;
   start_date: string;
   start_time: string | null;
   end_time: string | null;

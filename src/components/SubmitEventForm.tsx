@@ -45,13 +45,38 @@ export const SubmitEventForm: React.FC = () => {
     }
   };
 
-  const onSubmit = async (data: EventFormData, imageFile?: File) => {
+  const handleMultipleImageUpload = async (files: File[]) => {
+    try {
+      const uploadPromises = files.map(file => handleImageUpload(file));
+      const results = await Promise.all(uploadPromises);
+      return results.filter(url => url !== null) as string[];
+    } catch (error) {
+      console.error('Error uploading multiple images:', error);
+      toast({
+        title: "Upload Error",
+        description: "Failed to upload some images",
+        variant: "destructive",
+      });
+      return [];
+    }
+  };
+
+  const onSubmit = async (data: EventFormData, imageFiles?: File[]) => {
     try {
       let imageUrl = null;
+      let imageUrls: string[] = [];
 
-      // Upload image if provided
-      if (imageFile) {
-        imageUrl = await handleImageUpload(imageFile);
+      // Upload images if provided
+      if (imageFiles && imageFiles.length > 0) {
+        if (imageFiles.length === 1) {
+          // Single image for backward compatibility
+          imageUrl = await handleImageUpload(imageFiles[0]);
+          imageUrls = imageUrl ? [imageUrl] : [];
+        } else {
+          // Multiple images for recurring events
+          imageUrls = await handleMultipleImageUpload(imageFiles);
+          imageUrl = imageUrls[0] || null; // Use first image as primary for backward compatibility
+        }
       }
       const { data: { user } } = await supabase.auth.getUser();
       
@@ -104,6 +129,7 @@ export const SubmitEventForm: React.FC = () => {
       const eventData = {
         ...data,
         image_url: imageUrl,
+        image_urls: imageUrls.length > 0 ? imageUrls : null,
         start_date: startDate?.toISOString().split('T')[0],
         is_recurring: isRecurring,
         recurrence_type: isRecurring ? 'weekly' : null,
@@ -173,7 +199,8 @@ export const SubmitEventForm: React.FC = () => {
       setValue={setValue}
       errors={errors}
       onPrevious={prevStep}
-      onSubmit={(imageFile) => handleSubmit((data) => onSubmit(data, imageFile))()}
+      isRecurring={isRecurring}
+      onSubmit={(imageFiles) => handleSubmit((data) => onSubmit(data, imageFiles))()}
     />
   );
 };

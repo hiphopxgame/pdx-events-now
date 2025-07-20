@@ -17,7 +17,8 @@ interface EventDetailsStepProps {
   setValue: UseFormSetValue<EventFormData>;
   errors: FieldErrors<EventFormData>;
   onPrevious: () => void;
-  onSubmit: (imageFile?: File) => void;
+  onSubmit: (imageFiles?: File[]) => void;
+  isRecurring?: boolean;
 }
 
 export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
@@ -26,27 +27,41 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
   errors,
   onPrevious,
   onSubmit,
+  isRecurring = false,
 }) => {
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string>('');
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const { toast } = useToast();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
+    const files = e.target.files;
+    if (files) {
+      const newFiles = Array.from(files);
+      
+      if (isRecurring) {
+        // For recurring events, allow multiple images
+        setImageFiles(prev => [...prev, ...newFiles]);
+        const newUrls = newFiles.map(file => URL.createObjectURL(file));
+        setPreviewUrls(prev => [...prev, ...newUrls]);
+      } else {
+        // For single events, only allow one image
+        setImageFiles([newFiles[0]]);
+        setPreviewUrls([URL.createObjectURL(newFiles[0])]);
+      }
     }
   };
 
-  const removeImage = () => {
-    setImageFile(null);
-    setPreviewUrl('');
+  const removeImage = (index: number) => {
+    setImageFiles(prev => prev.filter((_, i) => i !== index));
+    setPreviewUrls(prev => {
+      // Clean up the URL object to prevent memory leaks
+      URL.revokeObjectURL(prev[index]);
+      return prev.filter((_, i) => i !== index);
+    });
   };
 
   const handleSubmit = () => {
-    onSubmit(imageFile || undefined);
+    onSubmit(imageFiles.length > 0 ? imageFiles : undefined);
   };
   return (
     <Card className="max-w-2xl mx-auto">
@@ -57,32 +72,65 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
         <div className="space-y-6">
           {/* Image Upload Section */}
           <div className="space-y-4">
-            <Label>Event Image</Label>
+            <Label>
+              {isRecurring ? 'Event Images (Multiple for variety)' : 'Event Image'}
+            </Label>
+            {isRecurring && (
+              <p className="text-sm text-muted-foreground">
+                Upload multiple images for your recurring event. Different images will be shown for each occurrence to add variety.
+              </p>
+            )}
             
-            {previewUrl ? (
-              <div className="relative">
-                <img 
-                  src={previewUrl} 
-                  alt="Event preview"
-                  className="w-full h-48 object-cover rounded-lg"
-                />
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="sm"
-                  className="absolute top-2 right-2"
-                  onClick={removeImage}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
+            {previewUrls.length > 0 ? (
+              <div className="space-y-4">
+                {previewUrls.map((url, index) => (
+                  <div key={index} className="relative">
+                    <img 
+                      src={url} 
+                      alt={`Event preview ${index + 1}`}
+                      className="w-full h-48 object-cover rounded-lg"
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      className="absolute top-2 right-2"
+                      onClick={() => removeImage(index)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+                {isRecurring && (
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple={isRecurring}
+                      onChange={handleFileChange}
+                      className="hidden"
+                      id="image-upload-additional"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => document.getElementById('image-upload-additional')?.click()}
+                    >
+                      Add More Images
+                    </Button>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
                 <Upload className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                <p className="text-gray-600 mb-2">Upload an event image</p>
+                <p className="text-gray-600 mb-2">
+                  {isRecurring ? 'Upload event images' : 'Upload an event image'}
+                </p>
                 <input
                   type="file"
                   accept="image/*"
+                  multiple={isRecurring}
                   onChange={handleFileChange}
                   className="hidden"
                   id="image-upload"
@@ -92,7 +140,7 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
                   variant="outline"
                   onClick={() => document.getElementById('image-upload')?.click()}
                 >
-                  Choose Image
+                  {isRecurring ? 'Choose Images' : 'Choose Image'}
                 </Button>
               </div>
             )}

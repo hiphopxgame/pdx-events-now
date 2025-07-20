@@ -129,6 +129,13 @@ export const transformUserEventsToEvents = (userEvents: UserEvent[]): Event[] =>
       console.log('Generated recurring dates for', event.title, ':', recurringDates);
       
       recurringDates.forEach((date, index) => {
+        // Select a random image from available images for variety
+        let selectedImageUrl = event.image_url;
+        if (event.image_urls && event.image_urls.length > 0) {
+          const randomIndex = Math.floor(Math.random() * event.image_urls.length);
+          selectedImageUrl = event.image_urls[randomIndex];
+        }
+
         events.push({
           id: `${event.id}-${index}`,
           title: event.title,
@@ -144,7 +151,7 @@ export const transformUserEventsToEvents = (userEvents: UserEvent[]): Event[] =>
           price_min: event.price_min,
           price_max: event.price_max,
           price_display: event.price_display,
-          image_url: event.image_url,
+          image_url: selectedImageUrl,
           ticket_url: event.ticket_url,
           website_url: event.website_url,
           facebook_url: event.facebook_url,

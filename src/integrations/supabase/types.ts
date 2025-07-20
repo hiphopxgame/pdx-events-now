@@ -1932,6 +1932,7 @@ export type Database = {
           facebook_url: string | null
           id: string
           image_url: string | null
+          image_urls: string[] | null
           instagram_url: string | null
           is_featured: boolean
           is_recurring: boolean | null
@@ -1968,6 +1969,7 @@ export type Database = {
           facebook_url?: string | null
           id?: string
           image_url?: string | null
+          image_urls?: string[] | null
           instagram_url?: string | null
           is_featured?: boolean
           is_recurring?: boolean | null
@@ -2004,6 +2006,7 @@ export type Database = {
           facebook_url?: string | null
           id?: string
           image_url?: string | null
+          image_urls?: string[] | null
           instagram_url?: string | null
           is_featured?: boolean
           is_recurring?: boolean | null
