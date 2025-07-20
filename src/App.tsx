@@ -8,7 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import SubmitEvent from "./pages/SubmitEvent";
 import MyEvents from "./pages/MyEvents";
-import ApproveEvents from "./pages/ApproveEvents";
+import ManageEvents from "./pages/ManageEvents";
 import Auth from "./pages/Auth";
 import Event from "./pages/Event";
 import Events from "./pages/Events";
@@ -43,7 +43,9 @@ const App = () => (
             <Route path="/account" element={<Account />} />
             <Route path="/submit-event" element={<SubmitEvent />} />
             <Route path="/my-events" element={<MyEvents />} />
-            <Route path="/approve-events" element={<ApproveEvents />} />
+            <Route path="/approve-events" element={<ManageEvents />} />
+            <Route path="/manage-events" element={<ManageEvents />} />
+            <Route path="/admin/events" element={<AdminProtectedRoute><ManageEvents /></AdminProtectedRoute>} />
             <Route path="/admin/users" element={<AdminProtectedRoute><AdminUsers /></AdminProtectedRoute>} />
             <Route path="/admin/venues" element={<AdminProtectedRoute><AdminVenues /></AdminProtectedRoute>} />
             <Route path="/admin/venues/:venueId" element={<AdminProtectedRoute><EditVenue /></AdminProtectedRoute>} />

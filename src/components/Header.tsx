@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Calendar, Plus, User, LogOut, CheckCircle, MapPin, Shield, Users, Building2 } from 'lucide-react';
+import { Calendar, Plus, User, LogOut, CheckCircle, MapPin, Shield, Users, Building2, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserRoles } from '@/hooks/useUserRoles';
@@ -118,9 +118,9 @@ export const Header = () => {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link to="/approve-events" className="flex items-center">
-                        <CheckCircle className="mr-2 h-4 w-4" />
-                        Approve Events
+                      <Link to="/manage-events" className="flex items-center">
+                        <Settings className="mr-2 h-4 w-4" />
+                        Manage Events
                       </Link>
                     </DropdownMenuItem>
                     {isAdmin && (
@@ -135,6 +135,12 @@ export const Header = () => {
                           <Link to="/admin/venues" className="flex items-center">
                             <Building2 className="mr-2 h-4 w-4" />
                             Manage Venues
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/admin/events" className="flex items-center">
+                            <Shield className="mr-2 h-4 w-4" />
+                            Admin Events
                           </Link>
                         </DropdownMenuItem>
                       </>

@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   MapPin, 
   Star, 
@@ -19,7 +20,9 @@ import {
   Building2,
   Eye,
   Edit,
-  Plus
+  Plus,
+  Search,
+  Filter
 } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { useNavigate } from 'react-router-dom';
@@ -53,7 +56,10 @@ interface Venue {
 const AdminVenues = () => {
   const { isAdmin, loading: rolesLoading } = useUserRoles();
   const [venues, setVenues] = useState<Venue[]>([]);
+  const [filteredVenues, setFilteredVenues] = useState<Venue[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -62,6 +68,10 @@ const AdminVenues = () => {
       fetchVenues();
     }
   }, [isAdmin]);
+
+  useEffect(() => {
+    filterVenues();
+  }, [venues, searchTerm, statusFilter]);
 
   const fetchVenues = async () => {
     try {
@@ -83,6 +93,24 @@ const AdminVenues = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const filterVenues = () => {
+    let filtered = venues;
+
+    if (searchTerm) {
+      filtered = filtered.filter(venue => 
+        venue.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        venue.address?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        venue.city?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter(venue => venue.status === statusFilter);
+    }
+
+    setFilteredVenues(filtered);
   };
 
   const handleEditVenue = (venue: Venue) => {
@@ -173,6 +201,42 @@ const AdminVenues = () => {
             </Button>
           </div>
 
+          {/* Filters */}
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Filter className="h-5 w-5" />
+                Filters
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex-1">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <Input
+                      placeholder="Search venues by name, address, or city..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                </div>
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Filter by status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Status</SelectItem>
+                    <SelectItem value="approved">Approved</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="rejected">Rejected</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+          </Card>
+
 
           {/* Venues List */}
           {loading ? (
@@ -180,17 +244,57 @@ const AdminVenues = () => {
               <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
             </div>
           ) : (
-            <div className="space-y-4">
-              {venues.length === 0 ? (
-                  <Card>
-                  <CardContent className="text-center py-12">
-                    <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-700 mb-2">No venues found</h3>
-                    <p className="text-gray-500">Create venues to get started.</p>
+            <div className="space-y-6">
+              {/* Stats Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="text-2xl font-bold text-emerald-700">{venues.length}</div>
+                    <div className="text-sm text-gray-600">Total Venues</div>
                   </CardContent>
                 </Card>
-              ) : (
-                venues.map((venue) => (
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="text-2xl font-bold text-green-700">
+                      {venues.filter(v => v.status === 'approved').length}
+                    </div>
+                    <div className="text-sm text-gray-600">Approved</div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="text-2xl font-bold text-orange-700">
+                      {venues.filter(v => v.status === 'pending').length}
+                    </div>
+                    <div className="text-sm text-gray-600">Pending</div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="text-2xl font-bold text-red-700">
+                      {venues.filter(v => v.status === 'rejected').length}
+                    </div>
+                    <div className="text-sm text-gray-600">Rejected</div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="space-y-4">
+                {filteredVenues.length === 0 ? (
+                  <Card>
+                    <CardContent className="text-center py-12">
+                      <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-gray-700 mb-2">No venues found</h3>
+                      <p className="text-gray-500">
+                        {searchTerm || statusFilter !== 'all' 
+                          ? 'Try adjusting your search or filter criteria.' 
+                          : 'Create venues to get started.'
+                        }
+                      </p>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  filteredVenues.map((venue) => (
                   <Card key={venue.id} className="hover:shadow-lg transition-shadow">
                     <CardContent className="p-6">
                       <div className="flex justify-between items-start">
@@ -292,8 +396,9 @@ const AdminVenues = () => {
                       </div>
                     </CardContent>
                   </Card>
-                ))
-              )}
+                  ))
+                )}
+              </div>
             </div>
           )}
         </div>
