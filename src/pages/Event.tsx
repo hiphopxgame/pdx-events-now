@@ -5,8 +5,10 @@ import { useEvents } from '@/hooks/useEvents';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, MapPin, Clock, ExternalLink, User, ArrowLeft } from 'lucide-react';
+import { Calendar, MapPin, Clock, ExternalLink, User, ArrowLeft, Globe, Facebook, Instagram, Twitter, Youtube } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 const Event = () => {
   const { eventId } = useParams<{ eventId: string }>();
@@ -16,6 +18,26 @@ const Event = () => {
 
   // Find the specific event
   const event = allEvents.find(e => e.id === eventId);
+
+  // Fetch venue details for social media links
+  const { data: venueData } = useQuery({
+    queryKey: ['venue', event?.venue_name],
+    queryFn: async () => {
+      if (!event?.venue_name) return null;
+      const { data, error } = await supabase
+        .from('poreve_venues')
+        .select('*')
+        .eq('name', event.venue_name)
+        .single();
+      
+      if (error) {
+        console.error('Error fetching venue:', error);
+        return null;
+      }
+      return data;
+    },
+    enabled: !!event?.venue_name,
+  });
 
   const formatDate = (dateString: string) => {
     try {
@@ -39,12 +61,22 @@ const Event = () => {
       return date.toLocaleTimeString('en-US', { 
         hour: 'numeric', 
         minute: '2-digit',
-        hour12: true,
-        timeZone: 'America/Los_Angeles'
+        hour12: true
       });
     } catch {
       return 'TBA';
     }
+  };
+
+  const formatTimeRange = () => {
+    if (!event) return 'TBA';
+    
+    const startTime = formatTime(event.start_date);
+    if (event.end_date) {
+      const endTime = formatTime(event.end_date);
+      return `${startTime} - ${endTime}`;
+    }
+    return startTime;
   };
 
   const getCategoryColor = (category: string) => {
@@ -149,7 +181,7 @@ const Event = () => {
                   <Calendar className="h-5 w-5 mr-3 text-emerald-600" />
                   <div>
                     <p className="font-medium">{formatDate(event.start_date)}</p>
-                    <p className="text-sm text-gray-500">{formatTime(event.start_date)}</p>
+                    <p className="text-sm text-gray-500">{formatTimeRange()}</p>
                   </div>
                 </div>
                 
@@ -185,13 +217,105 @@ const Event = () => {
                 )}
               </div>
 
-              {/* Map Placeholder */}
-              <div className="bg-gradient-to-br from-emerald-100 to-orange-100 rounded-lg h-64 flex items-center justify-center">
-                <div className="text-center">
-                  <MapPin className="h-12 w-12 text-emerald-600 mx-auto mb-2" />
-                  <p className="text-gray-600">Map integration coming soon</p>
-                  <p className="text-sm text-gray-500">Google Maps & Directions</p>
-                </div>
+              {/* Venue Information & Social Media */}
+              <div className="space-y-6">
+                {/* Venue Social Media */}
+                {venueData && (venueData.website || venueData.facebook_url || venueData.instagram_url || venueData.twitter_url || venueData.youtube_url) && (
+                  <div className="bg-gray-50 rounded-lg p-6">
+                    <h4 className="font-semibold text-gray-800 mb-4">Venue Info</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {venueData.website && (
+                        <Button variant="outline" size="sm" asChild>
+                          <a href={venueData.website} target="_blank" rel="noopener noreferrer">
+                            <Globe className="h-4 w-4 mr-1" />
+                            Website
+                          </a>
+                        </Button>
+                      )}
+                      {venueData.facebook_url && (
+                        <Button variant="outline" size="sm" asChild>
+                          <a href={venueData.facebook_url} target="_blank" rel="noopener noreferrer">
+                            <Facebook className="h-4 w-4 mr-1" />
+                            Facebook
+                          </a>
+                        </Button>
+                      )}
+                      {venueData.instagram_url && (
+                        <Button variant="outline" size="sm" asChild>
+                          <a href={venueData.instagram_url} target="_blank" rel="noopener noreferrer">
+                            <Instagram className="h-4 w-4 mr-1" />
+                            Instagram
+                          </a>
+                        </Button>
+                      )}
+                      {venueData.twitter_url && (
+                        <Button variant="outline" size="sm" asChild>
+                          <a href={venueData.twitter_url} target="_blank" rel="noopener noreferrer">
+                            <Twitter className="h-4 w-4 mr-1" />
+                            Twitter
+                          </a>
+                        </Button>
+                      )}
+                      {venueData.youtube_url && (
+                        <Button variant="outline" size="sm" asChild>
+                          <a href={venueData.youtube_url} target="_blank" rel="noopener noreferrer">
+                            <Youtube className="h-4 w-4 mr-1" />
+                            YouTube
+                          </a>
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Event Social Media */}
+                {(event.website_url || event.facebook_url || event.instagram_url || event.twitter_url || event.youtube_url) && (
+                  <div className="bg-emerald-50 rounded-lg p-6">
+                    <h4 className="font-semibold text-gray-800 mb-4">Event Links</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {event.website_url && (
+                        <Button variant="outline" size="sm" asChild>
+                          <a href={event.website_url} target="_blank" rel="noopener noreferrer">
+                            <Globe className="h-4 w-4 mr-1" />
+                            Website
+                          </a>
+                        </Button>
+                      )}
+                      {event.facebook_url && (
+                        <Button variant="outline" size="sm" asChild>
+                          <a href={event.facebook_url} target="_blank" rel="noopener noreferrer">
+                            <Facebook className="h-4 w-4 mr-1" />
+                            Facebook
+                          </a>
+                        </Button>
+                      )}
+                      {event.instagram_url && (
+                        <Button variant="outline" size="sm" asChild>
+                          <a href={event.instagram_url} target="_blank" rel="noopener noreferrer">
+                            <Instagram className="h-4 w-4 mr-1" />
+                            Instagram
+                          </a>
+                        </Button>
+                      )}
+                      {event.twitter_url && (
+                        <Button variant="outline" size="sm" asChild>
+                          <a href={event.twitter_url} target="_blank" rel="noopener noreferrer">
+                            <Twitter className="h-4 w-4 mr-1" />
+                            Twitter
+                          </a>
+                        </Button>
+                      )}
+                      {event.youtube_url && (
+                        <Button variant="outline" size="sm" asChild>
+                          <a href={event.youtube_url} target="_blank" rel="noopener noreferrer">
+                            <Youtube className="h-4 w-4 mr-1" />
+                            YouTube
+                          </a>
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
