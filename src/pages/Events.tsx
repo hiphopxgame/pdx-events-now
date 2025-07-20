@@ -36,15 +36,21 @@ const Events = () => {
     
     if (event.start_date) {
       try {
-        const eventDate = new Date(event.start_date);
-        if (!isNaN(eventDate.getTime())) {
-          formattedTime = eventDate.toLocaleTimeString('en-US', { 
-            hour: 'numeric', 
-            minute: '2-digit',
-            hour12: true,
-            timeZone: 'America/Los_Angeles'
-          });
-          dateString = eventDate.toISOString().split('T')[0];
+        // Parse the date and time correctly without timezone conversion
+        if (event.start_date.includes('T')) {
+          const eventDate = new Date(event.start_date);
+          if (!isNaN(eventDate.getTime())) {
+            formattedTime = eventDate.toLocaleTimeString('en-US', { 
+              hour: 'numeric', 
+              minute: '2-digit',
+              hour12: true,
+              timeZone: 'America/Los_Angeles'
+            });
+            dateString = event.start_date.split('T')[0];
+          }
+        } else {
+          // If no time component, just use the date
+          dateString = event.start_date;
         }
       } catch (error) {
         console.error('Date parsing error:', error, event.start_date);
