@@ -16,12 +16,39 @@ const ApproveEvents = () => {
 
   const handleApprove = async (eventId: string) => {
     try {
+      // Get the event details first
+      const { data: event, error: eventError } = await supabase
+        .from('user_events')
+        .select('venue_name, venue_address, venue_city, venue_state, venue_zip')
+        .eq('id', eventId)
+        .single();
+
+      if (eventError) throw eventError;
+
+      // Update event status to approved
       const { error } = await supabase
         .from('user_events')
         .update({ status: 'approved' })
         .eq('id', eventId);
 
       if (error) throw error;
+
+      // Auto-approve venue if it exists and matches event venue
+      if (event.venue_name) {
+        const { error: venueError } = await supabase
+          .from('venues')
+          .update({ 
+            status: 'approved',
+            approved_at: new Date().toISOString()
+          })
+          .eq('name', event.venue_name)
+          .eq('status', 'pending');
+
+        // Don't throw error if venue update fails - event approval is more important
+        if (venueError) {
+          console.warn('Could not auto-approve venue:', venueError);
+        }
+      }
 
       toast({
         title: "Event approved",
