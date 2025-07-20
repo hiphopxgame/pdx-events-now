@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,7 +11,7 @@ import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { User, Save, Globe, Facebook, Instagram, Twitter, Youtube, Loader2 } from 'lucide-react';
+import { User, Save, Globe, Facebook, Instagram, Twitter, Youtube, Loader2, Upload, X } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 interface UserProfile {
@@ -31,9 +32,12 @@ interface UserProfile {
 const Account = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -64,6 +68,47 @@ const Account = () => {
     }
   };
 
+  const handleAvatarUpload = async (file: File) => {
+    if (!user) return;
+
+    try {
+      setUploading(true);
+      
+      // Upload file to Supabase storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      // Update profile with new avatar URL
+      setProfile(prev => prev ? { ...prev, avatar_url: data.publicUrl } : null);
+      
+      toast({
+        title: 'Success',
+        description: 'Avatar uploaded successfully',
+      });
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to upload avatar',
+        variant: 'destructive'
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleSave = async () => {
     if (!profile || !user) return;
 
@@ -91,6 +136,9 @@ const Account = () => {
         title: 'Success',
         description: 'Profile updated successfully',
       });
+
+      // Navigate to user's unique page
+      navigate(`/user/${user.id}`);
     } catch (error) {
       console.error('Error updating profile:', error);
       toast({
@@ -185,13 +233,48 @@ const Account = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="avatar_url">Avatar URL</Label>
-                  <Input
-                    id="avatar_url"
-                    value={profile.avatar_url || ''}
-                    onChange={(e) => updateProfile('avatar_url', e.target.value)}
-                    placeholder="https://example.com/avatar.jpg"
-                  />
+                  <Label htmlFor="avatar">Profile Picture</Label>
+                  <div className="flex items-center gap-4">
+                    {profile.avatar_url && (
+                      <img 
+                        src={profile.avatar_url} 
+                        alt="Profile" 
+                        className="w-16 h-16 rounded-full object-cover border-2 border-emerald-200"
+                      />
+                    )}
+                    <div className="flex-1">
+                      <Input
+                        id="avatar"
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            setAvatarFile(file);
+                            handleAvatarUpload(file);
+                          }
+                        }}
+                        disabled={uploading}
+                      />
+                      {uploading && (
+                        <div className="flex items-center mt-2 text-sm text-gray-600">
+                          <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                          Uploading...
+                        </div>
+                      )}
+                    </div>
+                    {profile.avatar_url && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => updateProfile('avatar_url', '')}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>

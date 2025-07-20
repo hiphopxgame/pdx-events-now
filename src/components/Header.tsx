@@ -137,12 +137,6 @@ export const Header = () => {
                             Manage Venues
                           </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link to="/admin/events" className="flex items-center">
-                            <Shield className="mr-2 h-4 w-4" />
-                            Admin Events
-                          </Link>
-                        </DropdownMenuItem>
                       </>
                     )}
                     <DropdownMenuItem onClick={handleSignOut}>
