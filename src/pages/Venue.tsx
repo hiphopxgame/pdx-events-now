@@ -3,12 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { EventsGrid } from '@/components/EventsGrid';
 import { EventDetailsModal } from '@/components/EventDetailsModal';
-import { GoogleMap } from '@/components/GoogleMap';
+
 import { useEvents } from '@/hooks/useEvents';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { MapPin, Phone, Globe, Calendar, ArrowLeft, ExternalLink } from 'lucide-react';
+import { MapPin, Phone, Globe, Calendar, ArrowLeft, ExternalLink, Facebook, Instagram, Twitter, Youtube } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
 
 const Venue = () => {
@@ -144,58 +144,71 @@ const Venue = () => {
         <div className="bg-white rounded-xl shadow-lg border border-emerald-100 p-8 mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-4">{venueDetails.venue_name}</h1>
           
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Venue Info */}
-            <div className="space-y-4">
-              {fullAddress && (
-                <div className="flex items-start">
-                  <MapPin className="h-5 w-5 text-emerald-600 mr-3 mt-0.5" />
-                  <div>
-                    <p className="text-gray-700">{fullAddress}</p>
-                  </div>
+          <div className="space-y-6">
+            {/* Venue Address */}
+            {fullAddress && (
+              <div className="flex items-start">
+                <MapPin className="h-5 w-5 text-emerald-600 mr-3 mt-0.5" />
+                <div>
+                  <p className="text-gray-700">{fullAddress}</p>
                 </div>
-              )}
-              
-              <div className="flex items-center">
-                <Calendar className="h-5 w-5 text-emerald-600 mr-3" />
-                <p className="text-gray-700">
-                  {upcomingEvents.length} upcoming events • {pastEvents.length} past events
-                </p>
               </div>
+            )}
+            
+            {/* Event Count */}
+            <div className="flex items-center">
+              <Calendar className="h-5 w-5 text-emerald-600 mr-3" />
+              <p className="text-gray-700">
+                {upcomingEvents.length} upcoming events • {pastEvents.length} past events
+              </p>
+            </div>
 
-              {/* Venue Links */}
-              <div className="flex flex-wrap gap-2 pt-4">
+            {/* Website & Social Media */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">Website & Social Media</h3>
+              <div className="flex flex-wrap gap-3">
                 {venueDetails.website && (
-                  <Button variant="outline" size="sm" asChild>
+                  <Button variant="outline" size="sm" asChild className="border-emerald-300 text-emerald-700 hover:bg-emerald-50">
                     <a href={venueDetails.website} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="h-3 w-3 mr-1" />
+                      <Globe className="h-4 w-4 mr-2" />
                       Website
                     </a>
                   </Button>
                 )}
                 {venueDetails.facebook_url && (
-                  <Button variant="outline" size="sm" asChild>
+                  <Button variant="outline" size="sm" asChild className="border-blue-300 text-blue-700 hover:bg-blue-50">
                     <a href={venueDetails.facebook_url} target="_blank" rel="noopener noreferrer">
+                      <Facebook className="h-4 w-4 mr-2" />
                       Facebook
                     </a>
                   </Button>
                 )}
                 {venueDetails.instagram_url && (
-                  <Button variant="outline" size="sm" asChild>
+                  <Button variant="outline" size="sm" asChild className="border-pink-300 text-pink-700 hover:bg-pink-50">
                     <a href={venueDetails.instagram_url} target="_blank" rel="noopener noreferrer">
+                      <Instagram className="h-4 w-4 mr-2" />
                       Instagram
+                    </a>
+                  </Button>
+                )}
+                {venueDetails.twitter_url && (
+                  <Button variant="outline" size="sm" asChild className="border-sky-300 text-sky-700 hover:bg-sky-50">
+                    <a href={venueDetails.twitter_url} target="_blank" rel="noopener noreferrer">
+                      <Twitter className="h-4 w-4 mr-2" />
+                      Twitter
+                    </a>
+                  </Button>
+                )}
+                {venueDetails.youtube_url && (
+                  <Button variant="outline" size="sm" asChild className="border-red-300 text-red-700 hover:bg-red-50">
+                    <a href={venueDetails.youtube_url} target="_blank" rel="noopener noreferrer">
+                      <Youtube className="h-4 w-4 mr-2" />
+                      YouTube
                     </a>
                   </Button>
                 )}
               </div>
             </div>
-
-            {/* Google Map */}
-            <GoogleMap
-              address={fullAddress}
-              venueName={venueDetails.venue_name}
-              className="w-full h-64 rounded-lg"
-            />
           </div>
         </div>
 
