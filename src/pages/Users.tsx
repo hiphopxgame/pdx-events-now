@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { Users as UsersIcon, Search, User, Globe, Facebook, Instagram, Twitter, Youtube, Loader2 } from 'lucide-react';
+import { Users as UsersIcon, Search, User, Globe, Facebook, Instagram, Twitter, Youtube, Loader2, ExternalLink } from 'lucide-react';
 
 interface UserProfile {
   id: string;
@@ -131,7 +132,7 @@ const Users = () => {
                 <Card key={user.id} className="hover:shadow-lg transition-shadow">
                   <CardContent className="p-6">
                     <div className="flex items-center space-x-4 mb-4">
-                      <div className="h-12 w-12 bg-emerald-100 rounded-full flex items-center justify-center">
+                      <Link to={`/user/${user.id}`} className="h-12 w-12 bg-emerald-100 rounded-full flex items-center justify-center hover:bg-emerald-200 transition-colors">
                         {user.avatar_url ? (
                           <img 
                             src={user.avatar_url} 
@@ -141,11 +142,13 @@ const Users = () => {
                         ) : (
                           <User className="h-6 w-6 text-emerald-600" />
                         )}
-                      </div>
+                      </Link>
                       <div className="flex-1">
-                        <h3 className="font-semibold text-gray-800">
-                          {user.display_name || 'Anonymous User'}
-                        </h3>
+                        <Link to={`/user/${user.id}`} className="block">
+                          <h3 className="font-semibold text-gray-800 hover:text-emerald-600 transition-colors">
+                            {user.display_name || 'Anonymous User'}
+                          </h3>
+                        </Link>
                         {user.username && (
                           <p className="text-sm text-gray-600">@{user.username}</p>
                         )}
@@ -153,6 +156,12 @@ const Users = () => {
                           Member since {new Date(user.created_at).toLocaleDateString()}
                         </p>
                       </div>
+                      <Link to={`/user/${user.id}`}>
+                        <Button variant="outline" size="sm">
+                          <ExternalLink className="h-4 w-4 mr-1" />
+                          View Profile
+                        </Button>
+                      </Link>
                     </div>
 
                     {/* Social Links */}

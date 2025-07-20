@@ -71,6 +71,7 @@ const Events = () => {
       submittedBy: (event as any).created_by,
       recurrencePattern: (event as any).recurrence_pattern,
       createdBy: (event as any).created_by,
+      endTime: (event as any).end_time,
     };
   });
 

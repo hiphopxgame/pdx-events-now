@@ -3,19 +3,20 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { EventsGrid } from '@/components/EventsGrid';
 import { EventDetailsModal } from '@/components/EventDetailsModal';
-
 import { useEvents } from '@/hooks/useEvents';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MapPin, Phone, Globe, Calendar, ArrowLeft, ExternalLink, Facebook, Instagram, Twitter, Youtube } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 const Venue = () => {
   const { venueName } = useParams<{ venueName: string }>();
   const navigate = useNavigate();
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [venueData, setVenueData] = useState<any>(null);
 
   const { data: allEvents = [], isLoading } = useEvents();
 
@@ -26,6 +27,25 @@ const Venue = () => {
 
   // Get venue details from the first event
   const venueDetails = venueEvents[0] || null;
+
+  // Fetch venue data from database
+  useEffect(() => {
+    const fetchVenueData = async () => {
+      if (!venueName) return;
+      
+      const { data, error } = await supabase
+        .from('venues')
+        .select('*')
+        .ilike('name', decodeURIComponent(venueName))
+        .single();
+      
+      if (data) {
+        setVenueData(data);
+      }
+    };
+
+    fetchVenueData();
+  }, [venueName]);
 
   // Separate upcoming and past events
   const now = new Date();
@@ -81,6 +101,8 @@ const Venue = () => {
       venueState: event.venue_state,
       ticketUrl: event.ticket_url,
       organizerName: event.organizer_name,
+      endTime: event.end_time,
+      createdBy: event.created_by,
     };
   };
 
@@ -167,45 +189,48 @@ const Venue = () => {
             <div>
               <h3 className="text-lg font-semibold text-gray-800 mb-3">Website & Social Media</h3>
               <div className="flex flex-wrap gap-3">
-                {venueDetails.website && (
+                {venueData?.website && (
                   <Button variant="outline" size="sm" asChild className="border-emerald-300 text-emerald-700 hover:bg-emerald-50">
-                    <a href={venueDetails.website} target="_blank" rel="noopener noreferrer">
+                    <a href={venueData.website} target="_blank" rel="noopener noreferrer">
                       <Globe className="h-4 w-4 mr-2" />
                       Website
                     </a>
                   </Button>
                 )}
-                {venueDetails.facebook_url && (
+                {venueData?.facebook_url && (
                   <Button variant="outline" size="sm" asChild className="border-blue-300 text-blue-700 hover:bg-blue-50">
-                    <a href={venueDetails.facebook_url} target="_blank" rel="noopener noreferrer">
+                    <a href={venueData.facebook_url} target="_blank" rel="noopener noreferrer">
                       <Facebook className="h-4 w-4 mr-2" />
                       Facebook
                     </a>
                   </Button>
                 )}
-                {venueDetails.instagram_url && (
+                {venueData?.instagram_url && (
                   <Button variant="outline" size="sm" asChild className="border-pink-300 text-pink-700 hover:bg-pink-50">
-                    <a href={venueDetails.instagram_url} target="_blank" rel="noopener noreferrer">
+                    <a href={venueData.instagram_url} target="_blank" rel="noopener noreferrer">
                       <Instagram className="h-4 w-4 mr-2" />
                       Instagram
                     </a>
                   </Button>
                 )}
-                {venueDetails.twitter_url && (
+                {venueData?.twitter_url && (
                   <Button variant="outline" size="sm" asChild className="border-sky-300 text-sky-700 hover:bg-sky-50">
-                    <a href={venueDetails.twitter_url} target="_blank" rel="noopener noreferrer">
+                    <a href={venueData.twitter_url} target="_blank" rel="noopener noreferrer">
                       <Twitter className="h-4 w-4 mr-2" />
                       Twitter
                     </a>
                   </Button>
                 )}
-                {venueDetails.youtube_url && (
+                {venueData?.youtube_url && (
                   <Button variant="outline" size="sm" asChild className="border-red-300 text-red-700 hover:bg-red-50">
-                    <a href={venueDetails.youtube_url} target="_blank" rel="noopener noreferrer">
+                    <a href={venueData.youtube_url} target="_blank" rel="noopener noreferrer">
                       <Youtube className="h-4 w-4 mr-2" />
                       YouTube
                     </a>
                   </Button>
+                )}
+                {!venueData?.website && !venueData?.facebook_url && !venueData?.instagram_url && !venueData?.twitter_url && !venueData?.youtube_url && (
+                  <p className="text-gray-500 text-sm">No website or social media links available</p>
                 )}
               </div>
             </div>

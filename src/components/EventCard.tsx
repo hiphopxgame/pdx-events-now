@@ -26,6 +26,7 @@ interface Event {
   submittedBy?: string;
   recurrencePattern?: string;
   createdBy?: string;
+  endTime?: string;
 }
 
 interface EventCardProps {
@@ -75,6 +76,31 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
     }
   };
 
+  const formatEndTime = (endTimeString: string | undefined) => {
+    if (!endTimeString) return null;
+    try {
+      // If it's just a time string (HH:MM), format it
+      if (endTimeString.includes(':') && !endTimeString.includes('T')) {
+        const [hours, minutes] = endTimeString.split(':');
+        const hour = parseInt(hours);
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        const displayHour = hour % 12 || 12;
+        return `${displayHour}:${minutes} ${ampm}`;
+      }
+      // If it's a full date string, extract the time
+      const date = new Date(endTimeString);
+      if (isNaN(date.getTime())) return null;
+      return date.toLocaleTimeString('en-US', { 
+        hour: 'numeric', 
+        minute: '2-digit',
+        hour12: true,
+        timeZone: 'America/Los_Angeles'
+      });
+    } catch {
+      return null;
+    }
+  };
+
   const formatRecurrencePattern = (pattern: string | undefined) => {
     if (!pattern) return null;
     
@@ -107,7 +133,10 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
   return (
     <Card className="group hover:shadow-xl transition-all duration-300 border-emerald-100 hover:border-emerald-300 overflow-hidden">
       <CardHeader className="p-0">
-        <div className="aspect-video bg-gradient-to-br from-emerald-100 to-orange-100 relative overflow-hidden">
+        <div 
+          className="aspect-video bg-gradient-to-br from-emerald-100 to-orange-100 relative overflow-hidden cursor-pointer"
+          onClick={() => navigate(`/event/${event.id}`)}
+        >
           <img 
             src={event.imageUrl} 
             alt={event.title}
@@ -125,7 +154,10 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
       </CardHeader>
       
       <CardContent className="p-6">
-        <h3 className="text-xl font-bold text-gray-800 mb-3 group-hover:text-emerald-700 transition-colors">
+        <h3 
+          className="text-xl font-bold text-gray-800 mb-3 group-hover:text-emerald-700 transition-colors cursor-pointer"
+          onClick={() => navigate(`/event/${event.id}`)}
+        >
           {event.title}
         </h3>
         
@@ -134,7 +166,12 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
             <Calendar className="h-4 w-4 mr-2 text-emerald-600" />
             <span className="text-sm">{formatDate(event.date)}</span>
             <Clock className="h-4 w-4 ml-4 mr-2 text-emerald-600" />
-            <span className="text-sm">{event.time}</span>
+            <span className="text-sm">
+              {event.time}
+              {event.endTime && formatEndTime(event.endTime) && (
+                <> - {formatEndTime(event.endTime)}</>
+              )}
+            </span>
             {event.recurrencePattern && (
               <>
                 <Repeat className="h-4 w-4 ml-4 mr-1 text-orange-500" />
@@ -160,7 +197,18 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
             {submittedByUser && (
               <div className="flex items-center text-gray-500">
                 <User className="h-3 w-3 mr-2" />
-                <span className="text-xs">Submitted by {submittedByUser}</span>
+                <span className="text-xs">
+                  Submitted by{' '}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/user/${event.createdBy}`);
+                    }}
+                    className="text-emerald-600 hover:text-emerald-700 hover:underline"
+                  >
+                    {submittedByUser}
+                  </button>
+                </span>
               </div>
             )}
             {event.organizerName && (
