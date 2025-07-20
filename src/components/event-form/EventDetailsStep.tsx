@@ -34,7 +34,7 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
 }) => {
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
-  const [useExistingVenue, setUseExistingVenue] = useState(false);
+  const [useExistingVenue, setUseExistingVenue] = useState(true);
   const { toast } = useToast();
   const { data: venues = [], isLoading: venuesLoading } = useVenues();
 
@@ -205,38 +205,41 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
             </div>
 
             {/* Venue Selection */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-4">
-                <Label className="text-lg font-medium">Venue Information</Label>
+            <div className="space-y-4 p-4 border rounded-lg bg-muted/20">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label className="text-lg font-medium">Where is your event?</Label>
+                  <p className="text-sm text-muted-foreground">Choose an existing venue or add a new one</p>
+                </div>
                 <Button
                   type="button"
-                  variant={useExistingVenue ? "default" : "outline"}
+                  variant={useExistingVenue ? "outline" : "default"}
                   size="sm"
                   onClick={() => setUseExistingVenue(!useExistingVenue)}
                   className="flex items-center gap-2"
                 >
                   <MapPin className="h-4 w-4" />
-                  {useExistingVenue ? 'Use New Venue' : 'Select Existing Venue'}
+                  {useExistingVenue ? 'Add New Venue' : 'Select Existing Venue'}
                 </Button>
               </div>
 
               {useExistingVenue ? (
                 <div>
-                  <Label htmlFor="venue_select">Select Venue *</Label>
+                  <Label htmlFor="venue_select" className="text-base">Select Venue *</Label>
                   {venuesLoading ? (
-                    <div className="text-sm text-gray-500">Loading venues...</div>
+                    <div className="text-sm text-muted-foreground">Loading venues...</div>
                   ) : venues.length > 0 ? (
                     <Select onValueChange={handleVenueSelect}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Choose an existing venue" />
+                      <SelectTrigger className="h-12">
+                        <SelectValue placeholder="Choose from approved venues" />
                       </SelectTrigger>
                       <SelectContent>
                         {venues.map((venue) => (
                           <SelectItem key={venue.id} value={venue.id}>
-                            <div className="flex flex-col">
+                            <div className="flex flex-col text-left">
                               <span className="font-medium">{venue.name}</span>
                               {venue.address && (
-                                <span className="text-sm text-gray-500">
+                                <span className="text-sm text-muted-foreground">
                                   {venue.address}, {venue.city}
                                 </span>
                               )}
@@ -246,62 +249,68 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
                       </SelectContent>
                     </Select>
                   ) : (
-                    <div className="text-sm text-gray-500">No approved venues available</div>
+                    <div className="text-sm text-muted-foreground p-3 border rounded-md">
+                      No approved venues available. Click "Add New Venue" to create one.
+                    </div>
                   )}
                 </div>
-              ) : null}
-
-              <div>
-                <Label htmlFor="venue_name">Venue Name *</Label>
-                <Input 
-                  id="venue_name" 
-                  {...register('venue_name', { required: 'Venue name is required' })}
-                  placeholder="Enter venue name"
-                  disabled={useExistingVenue}
-                />
-                {errors.venue_name && <p className="text-red-500 text-sm">{errors.venue_name.message}</p>}
-              </div>
+              ) : (
+                <div>
+                  <Label htmlFor="venue_name" className="text-base">Venue Name *</Label>
+                  <Input 
+                    id="venue_name" 
+                    {...register('venue_name', { required: 'Venue name is required' })}
+                    placeholder="Enter the venue name"
+                    className="h-12"
+                  />
+                  {errors.venue_name && <p className="text-red-500 text-sm">{errors.venue_name.message}</p>}
+                </div>
+              )}
             </div>
 
-            <div>
-              <Label htmlFor="venue_address">Venue Address</Label>
-              <Input 
-                id="venue_address" 
-                {...register('venue_address')}
-                placeholder="Street address"
-                disabled={useExistingVenue}
-              />
-            </div>
+            {!useExistingVenue && (
+              <>
+                <div>
+                  <Label htmlFor="venue_address">Venue Address</Label>
+                  <Input 
+                    id="venue_address" 
+                    {...register('venue_address')}
+                    placeholder="Street address"
+                    className="h-12"
+                  />
+                </div>
 
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="venue_city">City</Label>
-                <Input 
-                  id="venue_city" 
-                  {...register('venue_city')}
-                  defaultValue="Portland"
-                  disabled={useExistingVenue}
-                />
-              </div>
-              <div>
-                <Label htmlFor="venue_state">State</Label>
-                <Input 
-                  id="venue_state" 
-                  {...register('venue_state')}
-                  defaultValue="Oregon"
-                  disabled={useExistingVenue}
-                />
-              </div>
-              <div>
-                <Label htmlFor="venue_zip">ZIP Code</Label>
-                <Input 
-                  id="venue_zip" 
-                  {...register('venue_zip')}
-                  placeholder="97201"
-                  disabled={useExistingVenue}
-                />
-              </div>
-            </div>
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="venue_city">City</Label>
+                    <Input 
+                      id="venue_city" 
+                      {...register('venue_city')}
+                      defaultValue="Portland"
+                      className="h-12"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="venue_state">State</Label>
+                    <Input 
+                      id="venue_state" 
+                      {...register('venue_state')}
+                      defaultValue="Oregon"
+                      className="h-12"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="venue_zip">ZIP Code</Label>
+                    <Input 
+                      id="venue_zip" 
+                      {...register('venue_zip')}
+                      placeholder="97201"
+                      className="h-12"
+                    />
+                  </div>
+                </div>
+              </>
+            )}
 
             <div>
               <Label htmlFor="price_display">Price Display</Label>
@@ -312,26 +321,6 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="price_min">Min Price ($)</Label>
-                <Input 
-                  id="price_min" 
-                  type="number" 
-                  step="0.01"
-                  {...register('price_min', { valueAsNumber: true })}
-                />
-              </div>
-              <div>
-                <Label htmlFor="price_max">Max Price ($)</Label>
-                <Input 
-                  id="price_max" 
-                  type="number" 
-                  step="0.01"
-                  {...register('price_max', { valueAsNumber: true })}
-                />
-              </div>
-            </div>
 
             <div>
               <Label htmlFor="organizer_name">Organizer Name</Label>

@@ -131,29 +131,38 @@ export const EventDateTimeStep: React.FC<EventDateTimeStepProps> = ({
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-4">
-          <div>
-            <Label>Event Start Date *</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="outline" className="w-full justify-start text-left font-normal">
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {startDate ? format(startDate, "PPP") : "Pick a date"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar mode="single" selected={startDate} onSelect={setStartDate} initialFocus />
-              </PopoverContent>
-            </Popover>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-4 p-4 border rounded-lg bg-muted/20">
+            <h3 className="text-lg font-medium">When is your event?</h3>
+            
             <div>
-              <Label htmlFor="start_time">Start Time</Label>
-              <Input id="start_time" type="time" {...register('start_time')} />
+              <Label className="text-base">Event Date *</Label>
+              <p className="text-sm text-muted-foreground mb-2">Select the date your event will take place</p>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="w-full justify-start text-left font-normal h-12">
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {startDate ? format(startDate, "EEEE, MMMM do, yyyy") : "Click to select date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar mode="single" selected={startDate} onSelect={setStartDate} initialFocus className="p-3 pointer-events-auto" />
+                </PopoverContent>
+              </Popover>
             </div>
+
             <div>
-              <Label htmlFor="end_time">End Time</Label>
-              <Input id="end_time" type="time" {...register('end_time')} />
+              <Label className="text-base">Event Time</Label>
+              <p className="text-sm text-muted-foreground mb-2">When does your event start and end?</p>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="start_time" className="text-sm">Start Time</Label>
+                  <Input id="start_time" type="time" {...register('start_time')} className="h-12" />
+                </div>
+                <div>
+                  <Label htmlFor="end_time" className="text-sm">End Time</Label>
+                  <Input id="end_time" type="time" {...register('end_time')} className="h-12" />
+                </div>
+              </div>
             </div>
           </div>
 
