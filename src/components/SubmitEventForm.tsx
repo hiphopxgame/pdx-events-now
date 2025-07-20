@@ -15,7 +15,7 @@ export const SubmitEventForm: React.FC = () => {
   const [endDate, setEndDate] = useState<Date>();
   const { toast } = useToast();
   
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm<EventFormData>();
+  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<EventFormData>();
 
   const handleImageUpload = async (file: File) => {
     try {
@@ -197,6 +197,7 @@ export const SubmitEventForm: React.FC = () => {
     <EventDetailsStep
       register={register}
       setValue={setValue}
+      watch={watch}
       errors={errors}
       onPrevious={prevStep}
       isRecurring={isRecurring}

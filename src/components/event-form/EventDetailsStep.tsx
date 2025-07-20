@@ -6,15 +6,17 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Upload, X } from 'lucide-react';
-import { UseFormRegister, UseFormSetValue, FieldErrors } from 'react-hook-form';
+import { ArrowLeft, Upload, X, MapPin } from 'lucide-react';
+import { UseFormRegister, UseFormSetValue, FieldErrors, UseFormWatch } from 'react-hook-form';
 import { EventFormData } from './types';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useVenues } from '@/hooks/useVenues';
 
 interface EventDetailsStepProps {
   register: UseFormRegister<EventFormData>;
   setValue: UseFormSetValue<EventFormData>;
+  watch: UseFormWatch<EventFormData>;
   errors: FieldErrors<EventFormData>;
   onPrevious: () => void;
   onSubmit: (imageFiles?: File[]) => void;
@@ -24,6 +26,7 @@ interface EventDetailsStepProps {
 export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
   register,
   setValue,
+  watch,
   errors,
   onPrevious,
   onSubmit,
@@ -31,7 +34,9 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
 }) => {
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [useExistingVenue, setUseExistingVenue] = useState(false);
   const { toast } = useToast();
+  const { data: venues = [], isLoading: venuesLoading } = useVenues();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -58,6 +63,17 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
       URL.revokeObjectURL(prev[index]);
       return prev.filter((_, i) => i !== index);
     });
+  };
+
+  const handleVenueSelect = (venueId: string) => {
+    const selectedVenue = venues.find(v => v.id === venueId);
+    if (selectedVenue) {
+      setValue('venue_name', selectedVenue.name);
+      setValue('venue_address', selectedVenue.address || '');
+      setValue('venue_city', selectedVenue.city || 'Portland');
+      setValue('venue_state', selectedVenue.state || 'Oregon');
+      setValue('venue_zip', selectedVenue.zip_code || '');
+    }
   };
 
   const handleSubmit = () => {
@@ -188,14 +204,63 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
               </Select>
             </div>
 
-            <div>
-              <Label htmlFor="venue_name">Venue Name *</Label>
-              <Input 
-                id="venue_name" 
-                {...register('venue_name', { required: 'Venue name is required' })}
-                placeholder="Enter venue name"
-              />
-              {errors.venue_name && <p className="text-red-500 text-sm">{errors.venue_name.message}</p>}
+            {/* Venue Selection */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <Label className="text-lg font-medium">Venue Information</Label>
+                <Button
+                  type="button"
+                  variant={useExistingVenue ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setUseExistingVenue(!useExistingVenue)}
+                  className="flex items-center gap-2"
+                >
+                  <MapPin className="h-4 w-4" />
+                  {useExistingVenue ? 'Use New Venue' : 'Select Existing Venue'}
+                </Button>
+              </div>
+
+              {useExistingVenue ? (
+                <div>
+                  <Label htmlFor="venue_select">Select Venue *</Label>
+                  {venuesLoading ? (
+                    <div className="text-sm text-gray-500">Loading venues...</div>
+                  ) : venues.length > 0 ? (
+                    <Select onValueChange={handleVenueSelect}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Choose an existing venue" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {venues.map((venue) => (
+                          <SelectItem key={venue.id} value={venue.id}>
+                            <div className="flex flex-col">
+                              <span className="font-medium">{venue.name}</span>
+                              {venue.address && (
+                                <span className="text-sm text-gray-500">
+                                  {venue.address}, {venue.city}
+                                </span>
+                              )}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <div className="text-sm text-gray-500">No approved venues available</div>
+                  )}
+                </div>
+              ) : null}
+
+              <div>
+                <Label htmlFor="venue_name">Venue Name *</Label>
+                <Input 
+                  id="venue_name" 
+                  {...register('venue_name', { required: 'Venue name is required' })}
+                  placeholder="Enter venue name"
+                  disabled={useExistingVenue}
+                />
+                {errors.venue_name && <p className="text-red-500 text-sm">{errors.venue_name.message}</p>}
+              </div>
             </div>
 
             <div>
@@ -204,6 +269,7 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
                 id="venue_address" 
                 {...register('venue_address')}
                 placeholder="Street address"
+                disabled={useExistingVenue}
               />
             </div>
 
@@ -214,6 +280,7 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
                   id="venue_city" 
                   {...register('venue_city')}
                   defaultValue="Portland"
+                  disabled={useExistingVenue}
                 />
               </div>
               <div>
@@ -222,6 +289,7 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
                   id="venue_state" 
                   {...register('venue_state')}
                   defaultValue="Oregon"
+                  disabled={useExistingVenue}
                 />
               </div>
               <div>
@@ -230,6 +298,7 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
                   id="venue_zip" 
                   {...register('venue_zip')}
                   placeholder="97201"
+                  disabled={useExistingVenue}
                 />
               </div>
             </div>
