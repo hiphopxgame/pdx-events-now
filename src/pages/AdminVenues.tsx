@@ -22,7 +22,7 @@ import {
   Plus
 } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import { EditVenueDialog } from '@/components/EditVenueDialog';
+import { useNavigate } from 'react-router-dom';
 
 interface Venue {
   id: string;
@@ -54,10 +54,8 @@ const AdminVenues = () => {
   const { isAdmin, loading: rolesLoading } = useUserRoles();
   const [venues, setVenues] = useState<Venue[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editingVenue, setEditingVenue] = useState<Venue | null>(null);
-  const [showEditDialog, setShowEditDialog] = useState(false);
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (isAdmin) {
@@ -88,71 +86,11 @@ const AdminVenues = () => {
   };
 
   const handleEditVenue = (venue: Venue) => {
-    setEditingVenue(venue);
-    setShowEditDialog(true);
+    navigate(`/admin/venues/${venue.id}`);
   };
 
   const handleCreateVenue = () => {
-    const newVenue: Venue = {
-      id: '',
-      name: '',
-      address: '',
-      city: 'Portland',
-      state: 'Oregon',
-      zip_code: '',
-      phone: '',
-      website: '',
-      facebook_url: '',
-      instagram_url: '',
-      twitter_url: '',
-      youtube_url: '',
-      status: 'pending',
-      created_at: '',
-      updated_at: ''
-    };
-    setEditingVenue(newVenue);
-    setShowCreateDialog(true);
-  };
-
-  const handleSaveNewVenue = async (venueData: any) => {
-    try {
-      const { error } = await supabase
-        .from('venues')
-        .insert({
-          name: venueData.name,
-          address: venueData.address || null,
-          city: venueData.city || 'Portland',
-          state: venueData.state || 'Oregon',
-          zip_code: venueData.zip_code || null,
-          phone: venueData.phone || null,
-          website: venueData.website || null,
-          facebook_url: venueData.facebook_url || null,
-          instagram_url: venueData.instagram_url || null,
-          twitter_url: venueData.twitter_url || null,
-          youtube_url: venueData.youtube_url || null,
-          status: 'pending'
-        });
-
-      if (error) throw error;
-
-      toast({
-        title: 'Success',
-        description: 'Venue created successfully',
-      });
-
-      fetchVenues();
-    } catch (error) {
-      console.error('Error creating venue:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to create venue',
-        variant: 'destructive'
-      });
-    }
-  };
-
-  const handleEditSuccess = () => {
-    fetchVenues();
+    navigate('/admin/venues/new');
   };
 
   const updateVenueStatus = async (venueId: string, status: 'approved' | 'rejected') => {
@@ -363,15 +301,6 @@ const AdminVenues = () => {
         <Footer />
       </div>
 
-      <EditVenueDialog
-        venue={editingVenue}
-        open={showEditDialog || showCreateDialog}
-        onOpenChange={(open) => {
-          setShowEditDialog(open);
-          setShowCreateDialog(open);
-        }}
-        onSuccess={handleEditSuccess}
-      />
     </ProtectedRoute>
   );
 };

@@ -2081,6 +2081,7 @@ export type Database = {
           google_rating: number | null
           google_review_count: number | null
           id: string
+          image_urls: string[] | null
           instagram_url: string | null
           latitude: number | null
           longitude: number | null
@@ -2106,6 +2107,7 @@ export type Database = {
           google_rating?: number | null
           google_review_count?: number | null
           id?: string
+          image_urls?: string[] | null
           instagram_url?: string | null
           latitude?: number | null
           longitude?: number | null
@@ -2131,6 +2133,7 @@ export type Database = {
           google_rating?: number | null
           google_review_count?: number | null
           id?: string
+          image_urls?: string[] | null
           instagram_url?: string | null
           latitude?: number | null
           longitude?: number | null
