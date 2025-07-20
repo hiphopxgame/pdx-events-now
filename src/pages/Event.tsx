@@ -174,6 +174,12 @@ const Event = () => {
                     <div>
                       <p className="font-medium">Organized by</p>
                       <p className="text-sm text-gray-500">{event.organizer_name}</p>
+                      {event.created_by && (
+                        <p className="text-xs text-emerald-600 hover:text-emerald-700 cursor-pointer"
+                           onClick={() => navigate(`/user/${event.created_by}`)}>
+                          View profile →
+                        </p>
+                      )}
                     </div>
                   </div>
                 )}
@@ -230,6 +236,20 @@ const Event = () => {
                   <Button variant="outline" asChild>
                     <a href={event.instagram_url} target="_blank" rel="noopener noreferrer">
                       Instagram
+                    </a>
+                  </Button>
+                )}
+                {event.twitter_url && (
+                  <Button variant="outline" asChild>
+                    <a href={event.twitter_url} target="_blank" rel="noopener noreferrer">
+                      Twitter
+                    </a>
+                  </Button>
+                )}
+                {event.youtube_url && (
+                  <Button variant="outline" asChild>
+                    <a href={event.youtube_url} target="_blank" rel="noopener noreferrer">
+                      YouTube
                     </a>
                   </Button>
                 )}

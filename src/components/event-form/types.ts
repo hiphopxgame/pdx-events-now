@@ -18,6 +18,8 @@ export interface EventFormData {
   website_url: string;
   facebook_url: string;
   instagram_url: string;
+  twitter_url: string;
+  youtube_url: string;
   start_date: Date;
   start_time: string;
   end_time: string;

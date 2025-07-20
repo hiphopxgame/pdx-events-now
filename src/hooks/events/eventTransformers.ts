@@ -156,6 +156,8 @@ export const transformUserEventsToEvents = (userEvents: UserEvent[]): Event[] =>
           website_url: event.website_url,
           facebook_url: event.facebook_url,
           instagram_url: event.instagram_url,
+          twitter_url: event.twitter_url,
+          youtube_url: event.youtube_url,
           organizer_name: event.organizer_name,
           organizer_url: null,
           tags: null,
@@ -165,6 +167,7 @@ export const transformUserEventsToEvents = (userEvents: UserEvent[]): Event[] =>
           is_featured: event.is_featured,
           created_at: event.created_at,
           updated_at: event.updated_at,
+          created_by: event.created_by,
           website: null,
         });
       });
@@ -190,6 +193,8 @@ export const transformUserEventsToEvents = (userEvents: UserEvent[]): Event[] =>
         website_url: event.website_url,
         facebook_url: event.facebook_url,
         instagram_url: event.instagram_url,
+        twitter_url: event.twitter_url,
+        youtube_url: event.youtube_url,
         organizer_name: event.organizer_name,
         organizer_url: null,
         tags: null,
@@ -199,6 +204,7 @@ export const transformUserEventsToEvents = (userEvents: UserEvent[]): Event[] =>
         is_featured: event.is_featured,
         created_at: event.created_at,
         updated_at: event.updated_at,
+        created_by: event.created_by,
         website: null,
       });
     }

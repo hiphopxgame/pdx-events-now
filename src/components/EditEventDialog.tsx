@@ -62,6 +62,11 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
       organizer_email: event.organizer_email || '',
       organizer_phone: event.organizer_phone || '',
       ticket_url: event.ticket_url || '',
+      website_url: event.website_url || '',
+      facebook_url: event.facebook_url || '',
+      instagram_url: event.instagram_url || '',
+      twitter_url: event.twitter_url || '',
+      youtube_url: event.youtube_url || '',
       start_date: event.start_date,
       start_time: event.start_time || '',
       end_time: event.end_time || '',
@@ -371,6 +376,33 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
               <div>
                 <Label htmlFor="ticket_url">Ticket URL</Label>
                 <Input {...register('ticket_url')} />
+              </div>
+            </div>
+          </div>
+
+          {/* Social Media & Links Section */}
+          <div className="space-y-4">
+            <h4 className="font-medium text-gray-700">Social Media & Links</h4>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="website_url">Website URL</Label>
+                <Input {...register('website_url')} placeholder="https://example.com" />
+              </div>
+              <div>
+                <Label htmlFor="facebook_url">Facebook URL</Label>
+                <Input {...register('facebook_url')} placeholder="https://facebook.com/page" />
+              </div>
+              <div>
+                <Label htmlFor="instagram_url">Instagram URL</Label>
+                <Input {...register('instagram_url')} placeholder="https://instagram.com/page" />
+              </div>
+              <div>
+                <Label htmlFor="twitter_url">Twitter URL</Label>
+                <Input {...register('twitter_url')} placeholder="https://twitter.com/page" />
+              </div>
+              <div>
+                <Label htmlFor="youtube_url">YouTube URL</Label>
+                <Input {...register('youtube_url')} placeholder="https://youtube.com/channel/..." />
               </div>
             </div>
           </div>

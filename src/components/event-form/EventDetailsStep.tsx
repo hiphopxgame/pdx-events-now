@@ -311,22 +311,41 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="facebook_url">Facebook URL</Label>
-                <Input 
-                  id="facebook_url" 
-                  {...register('facebook_url')}
-                  placeholder="https://facebook.com/yourpage"
-                />
-              </div>
-              <div>
-                <Label htmlFor="instagram_url">Instagram URL</Label>
-                <Input 
-                  id="instagram_url" 
-                  {...register('instagram_url')}
-                  placeholder="https://instagram.com/yourpage"
-                />
+            <div className="space-y-4">
+              <h4 className="font-medium text-gray-700">Social Media</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="facebook_url">Facebook URL</Label>
+                  <Input 
+                    id="facebook_url" 
+                    {...register('facebook_url')}
+                    placeholder="https://facebook.com/yourpage"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="instagram_url">Instagram URL</Label>
+                  <Input 
+                    id="instagram_url" 
+                    {...register('instagram_url')}
+                    placeholder="https://instagram.com/yourpage"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="twitter_url">Twitter URL</Label>
+                  <Input 
+                    id="twitter_url" 
+                    {...register('twitter_url')}
+                    placeholder="https://twitter.com/yourpage"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="youtube_url">YouTube URL</Label>
+                  <Input 
+                    id="youtube_url" 
+                    {...register('youtube_url')}
+                    placeholder="https://youtube.com/channel/..."
+                  />
+                </div>
               </div>
             </div>
           </div>

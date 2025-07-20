@@ -19,6 +19,8 @@ export interface Event {
   website_url: string | null;
   facebook_url: string | null;
   instagram_url: string | null;
+  twitter_url: string | null;
+  youtube_url: string | null;
   organizer_name: string | null;
   organizer_url: string | null;
   tags: string[] | null;
@@ -28,6 +30,7 @@ export interface Event {
   is_featured?: boolean;
   created_at: string;
   updated_at: string;
+  created_by: string | null;
   website?: string | null;
 }
 
@@ -51,6 +54,8 @@ export interface UserEvent {
   website_url: string | null;
   facebook_url: string | null;
   instagram_url: string | null;
+  twitter_url: string | null;
+  youtube_url: string | null;
   image_url: string | null;
   image_urls: string[] | null;
   start_date: string;
