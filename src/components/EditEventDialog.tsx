@@ -28,8 +28,14 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
   onSuccess,
 }) => {
   const [isUploading, setIsUploading] = useState(false);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string>(event.image_url || '');
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>(
+    event.image_urls && event.image_urls.length > 0 
+      ? event.image_urls 
+      : event.image_url 
+        ? [event.image_url] 
+        : []
+  );
   const [isRecurring, setIsRecurring] = useState(event.is_recurring || false);
   const [recurringType, setRecurringType] = useState(event.recurrence_pattern || '');
   const [endDate, setEndDate] = useState<Date | undefined>(
@@ -96,37 +102,53 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
+    const files = Array.from(e.target.files || []);
+    if (files.length > 0) {
+      // For recurring events, allow multiple images; for non-recurring, limit to one
+      const newFiles = isRecurring ? [...imageFiles, ...files] : files.slice(0, 1);
+      const newUrls = files.map(file => URL.createObjectURL(file));
+      
+      if (isRecurring) {
+        setImageFiles(newFiles);
+        setPreviewUrls([...previewUrls, ...newUrls]);
+      } else {
+        setImageFiles(newFiles);
+        setPreviewUrls(newUrls);
+      }
     }
   };
 
-  const removeImage = () => {
-    setImageFile(null);
-    setPreviewUrl('');
+  const removeImage = (index: number) => {
+    const newFiles = imageFiles.filter((_, i) => i !== index);
+    const newUrls = previewUrls.filter((_, i) => i !== index);
+    setImageFiles(newFiles);
+    setPreviewUrls(newUrls);
   };
 
   const onSubmit = async (data: any) => {
     try {
-      let imageUrl = event.image_url;
+      const imageUrls: string[] = [];
+      
+      // Keep existing images that weren't removed
+      const existingUrls = previewUrls.filter(url => !url.startsWith('blob:'));
+      imageUrls.push(...existingUrls);
 
-      // Upload new image if selected
-      if (imageFile) {
-        const uploadedUrl = await handleImageUpload(imageFile);
-        if (uploadedUrl) {
-          imageUrl = uploadedUrl;
+      // Upload new images if selected
+      if (imageFiles.length > 0) {
+        setIsUploading(true);
+        for (const file of imageFiles) {
+          const uploadedUrl = await handleImageUpload(file);
+          if (uploadedUrl) {
+            imageUrls.push(uploadedUrl);
+          }
         }
-      } else if (!previewUrl) {
-        // Image was removed
-        imageUrl = null;
+        setIsUploading(false);
       }
 
       const updateData = {
         ...data,
-        image_url: imageUrl,
+        image_url: imageUrls.length > 0 ? imageUrls[0] : null, // Keep backward compatibility
+        image_urls: imageUrls.length > 0 ? imageUrls : null,
         price_min: data.price_min ? parseFloat(data.price_min) : null,
         price_max: data.price_max ? parseFloat(data.price_max) : null,
         is_recurring: isRecurring,
@@ -169,56 +191,53 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Image Upload Section */}
           <div className="space-y-4">
-            <Label>Event Image</Label>
+            <Label>Event Image{isRecurring ? 's' : ''} {isRecurring && '(Multiple images for variety)'}</Label>
             
-            {previewUrl ? (
-              <div className="relative">
-                <img 
-                  src={previewUrl} 
-                  alt="Event preview"
-                  className="w-full h-48 object-cover rounded-lg"
-                />
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="sm"
-                  className="absolute top-2 right-2"
-                  onClick={removeImage}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            ) : (
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                <Upload className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                <p className="text-gray-600 mb-2">Upload an event image</p>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="hidden"
-                  id="image-upload"
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => document.getElementById('image-upload')?.click()}
-                  disabled={isUploading}
-                >
-                  {isUploading ? 'Uploading...' : 'Choose Image'}
-                </Button>
+            {previewUrls.length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {previewUrls.map((url, index) => (
+                  <div key={index} className="relative">
+                    <img 
+                      src={url} 
+                      alt={`Event preview ${index + 1}`}
+                      className="w-full h-32 object-cover rounded-lg"
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      className="absolute top-1 right-1 h-6 w-6 p-0"
+                      onClick={() => removeImage(index)}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ))}
               </div>
             )}
             
-            {!previewUrl && (
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+              <Upload className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+              <p className="text-gray-600 mb-2">
+                {isRecurring ? 'Upload multiple images for variety' : 'Upload an event image'}
+              </p>
               <input
                 type="file"
                 accept="image/*"
+                multiple={isRecurring}
                 onChange={handleFileChange}
                 className="hidden"
                 id="image-upload"
               />
-            )}
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => document.getElementById('image-upload')?.click()}
+                disabled={isUploading}
+              >
+                {isUploading ? 'Uploading...' : isRecurring ? 'Add Images' : 'Choose Image'}
+              </Button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
