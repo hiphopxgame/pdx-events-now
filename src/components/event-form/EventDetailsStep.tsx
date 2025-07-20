@@ -12,6 +12,7 @@ import { EventFormData } from './types';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useVenues } from '@/hooks/useVenues';
+import { useCategories } from '@/hooks/events/useCategories';
 
 interface EventDetailsStepProps {
   register: UseFormRegister<EventFormData>;
@@ -37,6 +38,7 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
   const [useExistingVenue, setUseExistingVenue] = useState(true);
   const { toast } = useToast();
   const { data: venues = [], isLoading: venuesLoading } = useVenues();
+  const { data: categories = [], isLoading: categoriesLoading } = useCategories();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -185,23 +187,22 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
 
             <div>
               <Label htmlFor="category">Category *</Label>
-              <Select onValueChange={(value) => setValue('category', value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select event category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Music">Music</SelectItem>
-                  <SelectItem value="Food & Drink">Food & Drink</SelectItem>
-                  <SelectItem value="Arts & Culture">Arts & Culture</SelectItem>
-                  <SelectItem value="Technology">Technology</SelectItem>
-                  <SelectItem value="Outdoor">Outdoor</SelectItem>
-                  <SelectItem value="Entertainment">Entertainment</SelectItem>
-                  <SelectItem value="Sports">Sports</SelectItem>
-                  <SelectItem value="Business">Business</SelectItem>
-                  <SelectItem value="Family">Family</SelectItem>
-                  <SelectItem value="Health & Wellness">Health & Wellness</SelectItem>
-                </SelectContent>
-              </Select>
+              {categoriesLoading ? (
+                <div className="text-sm text-muted-foreground">Loading categories...</div>
+              ) : (
+                <Select onValueChange={(value) => setValue('category', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select event category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((category) => (
+                      <SelectItem key={category.id} value={category.name}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
 
             {/* Venue Selection */}
