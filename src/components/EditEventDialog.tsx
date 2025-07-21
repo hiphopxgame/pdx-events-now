@@ -42,8 +42,37 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
     event.recurrence_end_date ? new Date(event.recurrence_end_date) : undefined
   );
   const [isFeatured, setIsFeatured] = useState(event.is_featured || false);
+  const [selectedDate, setSelectedDate] = useState(new Date(event.start_date));
   const { toast } = useToast();
   const { isAdmin } = useUserRoles();
+
+  const getAvailableRecurrenceOptions = (selectedDate: Date) => {
+    const dayOfWeek = selectedDate.getDay();
+    const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const dayName = dayNames[dayOfWeek];
+    
+    const options = [`every-${dayName}`];
+    
+    // Calculate which occurrence of the day this is in the month
+    const date = selectedDate.getDate();
+    const lastDayOfMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0);
+    
+    const actualOccurrence = Math.ceil(date / 7);
+    
+    // Add the occurrence-based option
+    const occurrenceNames = ['first', 'second', 'third', 'fourth'];
+    if (actualOccurrence <= 4) {
+      options.push(`${occurrenceNames[actualOccurrence - 1]}-${dayName}`);
+    }
+    
+    // Check if this is also the last occurrence of this day in the month
+    const isLast = date + 7 > lastDayOfMonth.getDate();
+    if (isLast) {
+      options.push(`last-${dayName}`);
+    }
+    
+    return options;
+  };
   
   const { register, handleSubmit, setValue, formState: { isSubmitting } } = useForm({
     defaultValues: {
@@ -280,7 +309,15 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
 
               <div>
                 <Label htmlFor="start_date">Start Date *</Label>
-                <Input type="date" {...register('start_date', { required: true })} />
+                <Input 
+                  type="date" 
+                  {...register('start_date', { required: true })} 
+                  onChange={(e) => {
+                    const date = new Date(e.target.value);
+                    setSelectedDate(date);
+                    setValue('start_date', e.target.value);
+                  }}
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -311,6 +348,7 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
                     setRecurringType={setRecurringType}
                     endDate={endDate}
                     setEndDate={setEndDate}
+                    availableOptions={getAvailableRecurrenceOptions(selectedDate)}
                   />
                 )}
               </div>

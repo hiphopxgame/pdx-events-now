@@ -38,6 +38,13 @@ export const EventDateTimeStep: React.FC<EventDateTimeStepProps> = ({
   setEndDate,
   onNext,
 }) => {
+  // Set default date to today if not set
+  useEffect(() => {
+    if (!startDate) {
+      setStartDate(new Date());
+    }
+  }, [startDate, setStartDate]);
+
   // Adjust start date to match the recurrence pattern
   useEffect(() => {
     if (isRecurring && recurringType && startDate) {
@@ -50,6 +57,44 @@ export const EventDateTimeStep: React.FC<EventDateTimeStepProps> = ({
       }
     }
   }, [isRecurring, recurringType]); // Remove startDate and setStartDate from dependencies
+
+  const getAvailableRecurrenceOptions = (selectedDate: Date) => {
+    const dayOfWeek = selectedDate.getDay();
+    const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const dayName = dayNames[dayOfWeek];
+    
+    const options = [`every-${dayName}`];
+    
+    // Calculate which occurrence of the day this is in the month
+    const date = selectedDate.getDate();
+    const firstDayOfMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+    const lastDayOfMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0);
+    
+    // Find which week this day falls in
+    let occurrence = 1;
+    for (let d = 1; d < date; d += 7) {
+      const testDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), d);
+      if (testDate.getDay() === dayOfWeek) {
+        occurrence = Math.ceil(d / 7);
+      }
+    }
+    
+    const actualOccurrence = Math.ceil(date / 7);
+    
+    // Add the occurrence-based option
+    const occurrenceNames = ['first', 'second', 'third', 'fourth'];
+    if (actualOccurrence <= 4) {
+      options.push(`${occurrenceNames[actualOccurrence - 1]}-${dayName}`);
+    }
+    
+    // Check if this is also the last occurrence of this day in the month
+    const isLast = date + 7 > lastDayOfMonth.getDate();
+    if (isLast) {
+      options.push(`last-${dayName}`);
+    }
+    
+    return options;
+  };
 
   const getNextDateForPattern = (fromDate: Date, pattern: string): Date | null => {
     if (pattern.startsWith('every-')) {
@@ -159,11 +204,11 @@ export const EventDateTimeStep: React.FC<EventDateTimeStepProps> = ({
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="start_time" className="text-sm">Start Time</Label>
-                  <Input id="start_time" type="time" {...register('start_time')} className="h-12" />
+                  <Input id="start_time" type="time" {...register('start_time')} defaultValue="12:00" className="h-12" />
                 </div>
                 <div>
                   <Label htmlFor="end_time" className="text-sm">End Time</Label>
-                  <Input id="end_time" type="time" {...register('end_time')} className="h-12" />
+                  <Input id="end_time" type="time" {...register('end_time')} defaultValue="12:00" className="h-12" />
                 </div>
               </div>
             </div>
@@ -178,12 +223,13 @@ export const EventDateTimeStep: React.FC<EventDateTimeStepProps> = ({
             <Label htmlFor="recurring">This is a recurring event</Label>
           </div>
 
-          {isRecurring && (
+          {isRecurring && startDate && (
             <RecurrenceSelector
               recurringType={recurringType}
               setRecurringType={setRecurringType}
               endDate={endDate}
               setEndDate={setEndDate}
+              availableOptions={getAvailableRecurrenceOptions(startDate)}
             />
           )}
         </div>

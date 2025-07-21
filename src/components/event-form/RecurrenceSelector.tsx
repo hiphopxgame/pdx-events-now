@@ -13,6 +13,7 @@ interface RecurrenceSelectorProps {
   setRecurringType: (value: string) => void;
   endDate: Date | undefined;
   setEndDate: (date: Date | undefined) => void;
+  availableOptions: string[];
 }
 
 export const RecurrenceSelector: React.FC<RecurrenceSelectorProps> = ({
@@ -20,7 +21,55 @@ export const RecurrenceSelector: React.FC<RecurrenceSelectorProps> = ({
   setRecurringType,
   endDate,
   setEndDate,
+  availableOptions,
 }) => {
+  const getOptionLabel = (value: string) => {
+    const labels: { [key: string]: string } = {
+      'every-sunday': 'Every Sunday',
+      'every-monday': 'Every Monday',
+      'every-tuesday': 'Every Tuesday',
+      'every-wednesday': 'Every Wednesday',
+      'every-thursday': 'Every Thursday',
+      'every-friday': 'Every Friday',
+      'every-saturday': 'Every Saturday',
+      'first-sunday': 'First Sunday of Month',
+      'first-monday': 'First Monday of Month',
+      'first-tuesday': 'First Tuesday of Month',
+      'first-wednesday': 'First Wednesday of Month',
+      'first-thursday': 'First Thursday of Month',
+      'first-friday': 'First Friday of Month',
+      'first-saturday': 'First Saturday of Month',
+      'second-sunday': 'Second Sunday of Month',
+      'second-monday': 'Second Monday of Month',
+      'second-tuesday': 'Second Tuesday of Month',
+      'second-wednesday': 'Second Wednesday of Month',
+      'second-thursday': 'Second Thursday of Month',
+      'second-friday': 'Second Friday of Month',
+      'second-saturday': 'Second Saturday of Month',
+      'third-sunday': 'Third Sunday of Month',
+      'third-monday': 'Third Monday of Month',
+      'third-tuesday': 'Third Tuesday of Month',
+      'third-wednesday': 'Third Wednesday of Month',
+      'third-thursday': 'Third Thursday of Month',
+      'third-friday': 'Third Friday of Month',
+      'third-saturday': 'Third Saturday of Month',
+      'fourth-sunday': 'Fourth Sunday of Month',
+      'fourth-monday': 'Fourth Monday of Month',
+      'fourth-tuesday': 'Fourth Tuesday of Month',
+      'fourth-wednesday': 'Fourth Wednesday of Month',
+      'fourth-thursday': 'Fourth Thursday of Month',
+      'fourth-friday': 'Fourth Friday of Month',
+      'fourth-saturday': 'Fourth Saturday of Month',
+      'last-sunday': 'Last Sunday of Month',
+      'last-monday': 'Last Monday of Month',
+      'last-tuesday': 'Last Tuesday of Month',
+      'last-wednesday': 'Last Wednesday of Month',
+      'last-thursday': 'Last Thursday of Month',
+      'last-friday': 'Last Friday of Month',
+      'last-saturday': 'Last Saturday of Month',
+    };
+    return labels[value] || value;
+  };
   return (
     <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
       <div>
@@ -30,59 +79,11 @@ export const RecurrenceSelector: React.FC<RecurrenceSelectorProps> = ({
             <SelectValue placeholder="Select recurrence pattern" />
           </SelectTrigger>
           <SelectContent>
-            {/* Weekly Options */}
-            <SelectItem value="every-sunday">Every Sunday</SelectItem>
-            <SelectItem value="every-monday">Every Monday</SelectItem>
-            <SelectItem value="every-tuesday">Every Tuesday</SelectItem>
-            <SelectItem value="every-wednesday">Every Wednesday</SelectItem>
-            <SelectItem value="every-thursday">Every Thursday</SelectItem>
-            <SelectItem value="every-friday">Every Friday</SelectItem>
-            <SelectItem value="every-saturday">Every Saturday</SelectItem>
-            
-            {/* Monthly - First Week */}
-            <SelectItem value="first-sunday">First Sunday of Month</SelectItem>
-            <SelectItem value="first-monday">First Monday of Month</SelectItem>
-            <SelectItem value="first-tuesday">First Tuesday of Month</SelectItem>
-            <SelectItem value="first-wednesday">First Wednesday of Month</SelectItem>
-            <SelectItem value="first-thursday">First Thursday of Month</SelectItem>
-            <SelectItem value="first-friday">First Friday of Month</SelectItem>
-            <SelectItem value="first-saturday">First Saturday of Month</SelectItem>
-            
-            {/* Monthly - Second Week */}
-            <SelectItem value="second-sunday">Second Sunday of Month</SelectItem>
-            <SelectItem value="second-monday">Second Monday of Month</SelectItem>
-            <SelectItem value="second-tuesday">Second Tuesday of Month</SelectItem>
-            <SelectItem value="second-wednesday">Second Wednesday of Month</SelectItem>
-            <SelectItem value="second-thursday">Second Thursday of Month</SelectItem>
-            <SelectItem value="second-friday">Second Friday of Month</SelectItem>
-            <SelectItem value="second-saturday">Second Saturday of Month</SelectItem>
-            
-            {/* Monthly - Third Week */}
-            <SelectItem value="third-sunday">Third Sunday of Month</SelectItem>
-            <SelectItem value="third-monday">Third Monday of Month</SelectItem>
-            <SelectItem value="third-tuesday">Third Tuesday of Month</SelectItem>
-            <SelectItem value="third-wednesday">Third Wednesday of Month</SelectItem>
-            <SelectItem value="third-thursday">Third Thursday of Month</SelectItem>
-            <SelectItem value="third-friday">Third Friday of Month</SelectItem>
-            <SelectItem value="third-saturday">Third Saturday of Month</SelectItem>
-            
-            {/* Monthly - Fourth Week */}
-            <SelectItem value="fourth-sunday">Fourth Sunday of Month</SelectItem>
-            <SelectItem value="fourth-monday">Fourth Monday of Month</SelectItem>
-            <SelectItem value="fourth-tuesday">Fourth Tuesday of Month</SelectItem>
-            <SelectItem value="fourth-wednesday">Fourth Wednesday of Month</SelectItem>
-            <SelectItem value="fourth-thursday">Fourth Thursday of Month</SelectItem>
-            <SelectItem value="fourth-friday">Fourth Friday of Month</SelectItem>
-            <SelectItem value="fourth-saturday">Fourth Saturday of Month</SelectItem>
-            
-            {/* Monthly - Last Week */}
-            <SelectItem value="last-sunday">Last Sunday of Month</SelectItem>
-            <SelectItem value="last-monday">Last Monday of Month</SelectItem>
-            <SelectItem value="last-tuesday">Last Tuesday of Month</SelectItem>
-            <SelectItem value="last-wednesday">Last Wednesday of Month</SelectItem>
-            <SelectItem value="last-thursday">Last Thursday of Month</SelectItem>
-            <SelectItem value="last-friday">Last Friday of Month</SelectItem>
-            <SelectItem value="last-saturday">Last Saturday of Month</SelectItem>
+            {availableOptions.map((option) => (
+              <SelectItem key={option} value={option}>
+                {getOptionLabel(option)}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
@@ -96,8 +97,8 @@ export const RecurrenceSelector: React.FC<RecurrenceSelectorProps> = ({
               {endDate ? format(endDate, "PPP") : "Pick end date (optional)"}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0">
-            <Calendar mode="single" selected={endDate} onSelect={setEndDate} initialFocus />
+          <PopoverContent className="w-auto p-0 z-50">
+            <Calendar mode="single" selected={endDate} onSelect={setEndDate} initialFocus className="p-3 pointer-events-auto bg-background" />
           </PopoverContent>
         </Popover>
       </div>
