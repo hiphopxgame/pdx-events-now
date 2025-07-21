@@ -39,6 +39,15 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
   const [submittedByUser, setSubmittedByUser] = useState<string>('');
   const [organizerUser, setOrganizerUser] = useState<string>('');
 
+  const handleEventClick = () => {
+    console.log('Event clicked:', event.id);
+    if (onEventClick) {
+      onEventClick(event);
+    } else {
+      navigate(`/event/${event.id}`);
+    }
+  };
+
   useEffect(() => {
     const fetchUserInfo = async () => {
       if (event.createdBy) {
@@ -58,6 +67,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
   }, [event.createdBy]);
 
   const handleVenueClick = (e: React.MouseEvent) => {
+    console.log('Venue clicked:', event.venue);
     e.stopPropagation();
     navigate(`/venue/${encodeURIComponent(event.venue)}`);
   };
@@ -135,7 +145,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
       <CardHeader className="p-0">
         <div 
           className="aspect-video bg-gradient-to-br from-emerald-100 to-orange-100 relative overflow-hidden cursor-pointer"
-          onClick={() => navigate(`/event/${event.id}`)}
+          onClick={handleEventClick}
         >
           <img 
             src={event.imageUrl} 
@@ -156,7 +166,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
       <CardContent className="p-6">
         <h3 
           className="text-xl font-bold text-gray-800 mb-3 group-hover:text-emerald-700 transition-colors cursor-pointer"
-          onClick={() => navigate(`/event/${event.id}`)}
+          onClick={handleEventClick}
         >
           {event.title}
         </h3>
@@ -227,7 +237,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
       
       <CardFooter className="p-6 pt-0">
         <button 
-          onClick={() => onEventClick?.(event)}
+          onClick={handleEventClick}
           className="w-full bg-gradient-primary text-white py-3 rounded-lg font-semibold hover:scale-105 transition-all duration-300 transform group-hover:scale-105"
         >
           Event Details

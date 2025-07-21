@@ -6,6 +6,7 @@ export const Hero = () => {
   const navigate = useNavigate();
 
   const handleBrowseEvents = () => {
+    console.log('Browse Events clicked');
     // Scroll to events section
     const eventsSection = document.querySelector('.grid');
     if (eventsSection) {
@@ -14,6 +15,7 @@ export const Hero = () => {
   };
 
   const handleSubmitEvent = () => {
+    console.log('Submit Event clicked');
     navigate('/submit-event');
   };
 

@@ -17,6 +17,11 @@ export const Header = () => {
   const { isAdmin } = useUserRoles();
   const navigate = useNavigate();
 
+  const handleNavClick = (path: string) => {
+    console.log('Navigation clicked:', path);
+    navigate(path);
+  };
+
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
@@ -35,28 +40,28 @@ export const Header = () => {
           </Link>
           
           <nav className="hidden md:flex space-x-1">
-            <Link 
-              to="/events" 
-              className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none"
+            <button 
+              onClick={() => handleNavClick('/events')}
+              className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none cursor-pointer"
             >
               <Calendar className="h-4 w-4 mr-2" />
               Events
-            </Link>
-            <Link 
-              to="/venues" 
-              className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none"
+            </button>
+            <button 
+              onClick={() => handleNavClick('/venues')}
+              className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none cursor-pointer"
             >
               <MapPin className="h-4 w-4 mr-2" />
               Venues
-            </Link>
+            </button>
             {user && (
-              <Link 
-                to="/users" 
-                className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none"
+              <button 
+                onClick={() => handleNavClick('/users')}
+                className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none cursor-pointer"
               >
                 <Users className="h-4 w-4 mr-2" />
                 Users
-              </Link>
+              </button>
             )}
           </nav>
           
@@ -64,14 +69,12 @@ export const Header = () => {
             {user ? (
               <>
                 <Button 
-                  asChild 
+                  onClick={() => handleNavClick('/submit-event')}
                   variant="outline" 
-                  className="border-primary/30 text-primary hover:bg-accent"
+                  className="border-primary/30 text-primary hover:bg-accent cursor-pointer"
                 >
-                  <Link to="/submit-event" className="flex items-center space-x-2">
-                    <Plus className="h-4 w-4" />
-                    <span>Submit Event</span>
-                  </Link>
+                  <Plus className="h-4 w-4 mr-2" />
+                  <span>Submit Event</span>
                 </Button>
                 
                 <DropdownMenu>
@@ -125,10 +128,10 @@ export const Header = () => {
               </>
             ) : (
               <Button 
-                asChild 
-                className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                onClick={() => handleNavClick('/auth')}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer"
               >
-                <Link to="/auth">Sign In</Link>
+                Sign In
               </Button>
             )}
           </div>
