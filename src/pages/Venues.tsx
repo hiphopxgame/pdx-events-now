@@ -5,7 +5,7 @@ import { useEvents } from '@/hooks/useEvents';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MapPin, Calendar, Loader2 } from 'lucide-react';
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { EnhancedPagination } from '@/components/EnhancedPagination';
 
 // Helper function to create URL-friendly strings
 const createUrlFriendlyString = (str: string) => {
@@ -21,14 +21,14 @@ const Venues = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 12;
+  const [itemsPerPage, setItemsPerPage] = useState(12);
 
   const { data: allEvents = [], isLoading } = useEvents();
   
   // Reset pagination when search changes
   React.useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm]);
+  }, [searchTerm, itemsPerPage]);
 
   // Get unique venues with event counts
   const venues = React.useMemo(() => {
@@ -171,51 +171,14 @@ const Venues = () => {
               })}
             </div>
             
-            {venues.length > itemsPerPage && (
-              <div className="mt-8 flex justify-center">
-                <Pagination>
-                  <PaginationContent>
-                    {currentPage > 1 && (
-                      <PaginationItem>
-                        <PaginationPrevious 
-                          href="#" 
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setCurrentPage(currentPage - 1);
-                          }}
-                        />
-                      </PaginationItem>
-                    )}
-                    
-                    {Array.from({ length: Math.ceil(venues.length / itemsPerPage) }, (_, i) => i + 1).map(page => (
-                      <PaginationItem key={page}>
-                        <PaginationLink
-                          href="#"
-                          isActive={currentPage === page}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setCurrentPage(page);
-                          }}
-                        >
-                          {page}
-                        </PaginationLink>
-                      </PaginationItem>
-                    ))}
-                    
-                    {currentPage < Math.ceil(venues.length / itemsPerPage) && (
-                      <PaginationItem>
-                        <PaginationNext 
-                          href="#" 
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setCurrentPage(currentPage + 1);
-                          }}
-                        />
-                      </PaginationItem>
-                    )}
-                  </PaginationContent>
-                </Pagination>
-              </div>
+            {venues.length > 0 && (
+              <EnhancedPagination
+                currentPage={currentPage}
+                totalItems={venues.length}
+                itemsPerPage={itemsPerPage}
+                onPageChange={setCurrentPage}
+                onItemsPerPageChange={setItemsPerPage}
+              />
             )}
           </div>
         )}

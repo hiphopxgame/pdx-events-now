@@ -9,14 +9,14 @@ import { FeaturedEvents } from '@/components/FeaturedEvents';
 import { useEvents, useCategories } from '@/hooks/useEvents';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { EnhancedPagination } from '@/components/EnhancedPagination';
 
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedDate, setSelectedDate] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 12;
+  const [itemsPerPage, setItemsPerPage] = useState(12);
   const navigate = useNavigate();
 
   const handleEventClick = (event: any) => {
@@ -34,7 +34,7 @@ const Index = () => {
   // Reset pagination when filters change
   React.useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, selectedCategory, selectedDate]);
+  }, [searchTerm, selectedCategory, selectedDate, itemsPerPage]);
 
   if (eventsError) {
     console.error('Events error:', eventsError);
@@ -141,51 +141,14 @@ const Index = () => {
               onEventClick={handleEventClick} 
             />
             
-            {transformedEvents.length > itemsPerPage && (
-              <div className="mt-8 flex justify-center">
-                <Pagination>
-                  <PaginationContent>
-                    {currentPage > 1 && (
-                      <PaginationItem>
-                        <PaginationPrevious 
-                          href="#" 
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setCurrentPage(currentPage - 1);
-                          }}
-                        />
-                      </PaginationItem>
-                    )}
-                    
-                    {Array.from({ length: Math.ceil(transformedEvents.length / itemsPerPage) }, (_, i) => i + 1).map(page => (
-                      <PaginationItem key={page}>
-                        <PaginationLink
-                          href="#"
-                          isActive={currentPage === page}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setCurrentPage(page);
-                          }}
-                        >
-                          {page}
-                        </PaginationLink>
-                      </PaginationItem>
-                    ))}
-                    
-                    {currentPage < Math.ceil(transformedEvents.length / itemsPerPage) && (
-                      <PaginationItem>
-                        <PaginationNext 
-                          href="#" 
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setCurrentPage(currentPage + 1);
-                          }}
-                        />
-                      </PaginationItem>
-                    )}
-                  </PaginationContent>
-                </Pagination>
-              </div>
+            {transformedEvents.length > 0 && (
+              <EnhancedPagination
+                currentPage={currentPage}
+                totalItems={transformedEvents.length}
+                itemsPerPage={itemsPerPage}
+                onPageChange={setCurrentPage}
+                onItemsPerPageChange={setItemsPerPage}
+              />
             )}
           </>
         )}
