@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { Users as UsersIcon, Search, User, Globe, Facebook, Instagram, Twitter, Youtube, Loader2, ExternalLink } from 'lucide-react';
+import { Users as UsersIcon, Search, User, Globe, Facebook, Instagram, Twitter, Youtube, Loader2, ExternalLink, Calendar, MapPin } from 'lucide-react';
 
 interface UserProfile {
   id: string;
@@ -20,6 +20,8 @@ interface UserProfile {
   twitter_url: string | null;
   youtube_url: string | null;
   created_at: string;
+  event_count?: number;
+  venue_count?: number;
 }
 
 const Users = () => {
@@ -56,7 +58,28 @@ const Users = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setUsers(data || []);
+
+      // Fetch event and venue counts for each user
+      const usersWithCounts: UserProfile[] = [];
+      
+      for (const user of data || []) {
+        // Get event count
+        const { count: eventCount } = await supabase
+          .from('user_events')
+          .select('id', { count: 'exact', head: true })
+          .eq('created_by', user.id);
+
+        // For now, set venue count to 0 as we don't have a created_by field in venues table
+        const venueCount = 0;
+
+        usersWithCounts.push({
+          ...user,
+          event_count: eventCount || 0,
+          venue_count: venueCount
+        });
+      }
+
+      setUsers(usersWithCounts);
     } catch (error) {
       console.error('Error fetching users:', error);
     } finally {
@@ -95,7 +118,7 @@ const Users = () => {
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-4 flex items-center">
             <UsersIcon className="h-8 w-8 mr-3 text-emerald-600" />
-            Community Members
+            Portland Community
           </h1>
           <p className="text-gray-600">Discover and connect with event organizers and community members</p>
         </div>
@@ -162,6 +185,18 @@ const Users = () => {
                           View Profile
                         </Button>
                       </Link>
+                    </div>
+
+                    {/* Event and Venue Counts */}
+                    <div className="flex gap-4 mb-3">
+                      <div className="flex items-center text-sm text-gray-600">
+                        <Calendar className="h-4 w-4 mr-1 text-emerald-600" />
+                        <span>{user.event_count || 0} Events</span>
+                      </div>
+                      <div className="flex items-center text-sm text-gray-600">
+                        <MapPin className="h-4 w-4 mr-1 text-orange-600" />
+                        <span>{user.venue_count || 0} Venues</span>
+                      </div>
                     </div>
 
                     {/* Social Links */}

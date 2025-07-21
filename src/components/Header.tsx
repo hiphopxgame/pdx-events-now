@@ -44,7 +44,7 @@ export const Header = () => {
             className="flex items-center space-x-2 text-2xl font-bold text-primary hover:text-primary/80 transition-colors"
           >
             <Calendar className="h-8 w-8" />
-            <span>Portland Events</span>
+            <span>Portland.Events</span>
           </Link>
           
           <nav className="hidden md:flex space-x-1">
@@ -89,7 +89,7 @@ export const Header = () => {
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm" className="flex items-center space-x-2">
                       <User className="h-4 w-4" />
-                      <span className="hidden sm:inline">{user?.email || 'Account'}</span>
+                      <span className="hidden sm:inline">{user?.user_metadata?.display_name || user?.email || 'Account'}</span>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="z-50 bg-background">

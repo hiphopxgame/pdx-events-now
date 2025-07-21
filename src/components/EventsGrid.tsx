@@ -164,12 +164,6 @@ export const EventsGrid: React.FC<EventsGridProps> = ({ events, onEventClick }) 
         </div>
       ))}
 
-      {/* Navigation hint */}
-      <div className="text-center py-8 border-t border-emerald-100">
-        <p className="text-gray-500 text-sm">
-          Events are organized by day for easy daily planning
-        </p>
-      </div>
     </div>
   );
 };
