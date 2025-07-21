@@ -14,7 +14,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { useUserRoles } from '@/hooks/useUserRoles';
 import { useNavigate } from 'react-router-dom';
-import { EditEventDialog } from '@/components/EditEventDialog';
 
 const ManageEvents = () => {
   const { data: userEvents = [], isLoading: userEventsLoading } = useUserEvents();
@@ -26,8 +25,6 @@ const ManageEvents = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
-  const [editingEvent, setEditingEvent] = useState<any>(null);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   // Real-time updates for event changes
   useEffect(() => {
@@ -184,17 +181,6 @@ const ManageEvents = () => {
     }
   };
 
-  const handleEditEvent = (event: any) => {
-    setEditingEvent(event);
-    setIsEditDialogOpen(true);
-  };
-
-  const handleEditSuccess = () => {
-    setIsEditDialogOpen(false);
-    setEditingEvent(null);
-    queryClient.invalidateQueries({ queryKey: ['user-events'] });
-  };
-
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       weekday: 'long',
@@ -211,51 +197,6 @@ const ManageEvents = () => {
       minute: '2-digit',
       hour12: true,
     });
-  };
-
-  const formatRecurrencePattern = (pattern: string | undefined) => {
-    if (!pattern) return null;
-    
-    // Handle day-specific patterns
-    if (pattern.startsWith('every-')) {
-      const day = pattern.replace('every-', '');
-      const dayNames: { [key: string]: string } = {
-        'sunday': 'Every Sunday',
-        'monday': 'Every Monday', 
-        'tuesday': 'Every Tuesday',
-        'wednesday': 'Every Wednesday',
-        'thursday': 'Every Thursday',
-        'friday': 'Every Friday',
-        'saturday': 'Every Saturday'
-      };
-      return dayNames[day] || pattern;
-    }
-    
-    // Handle monthly patterns
-    if (pattern.includes('-')) {
-      const [occurrence, day] = pattern.split('-');
-      const occurrenceNames: { [key: string]: string } = {
-        'first': 'First',
-        'second': 'Second', 
-        'third': 'Third',
-        'fourth': 'Fourth',
-        'last': 'Last'
-      };
-      const dayNames: { [key: string]: string } = {
-        'sunday': 'Sunday',
-        'monday': 'Monday',
-        'tuesday': 'Tuesday', 
-        'wednesday': 'Wednesday',
-        'thursday': 'Thursday',
-        'friday': 'Friday',
-        'saturday': 'Saturday'
-      };
-      const occurrenceName = occurrenceNames[occurrence] || occurrence;
-      const dayName = dayNames[day] || day;
-      return `${occurrenceName} ${dayName} of each month`;
-    }
-    
-    return pattern;
   };
 
   const getStatusBadgeVariant = (status: string) => {
@@ -417,16 +358,6 @@ const ManageEvents = () => {
                           View
                         </Button>
                         
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleEditEvent(event)}
-                          className="text-emerald-600 border-emerald-200 hover:bg-emerald-50"
-                        >
-                          <Edit className="h-4 w-4 mr-1" />
-                          Edit
-                        </Button>
-                        
                         {event.status === 'approved' && (
                           <Button
                             size="sm"
@@ -495,15 +426,6 @@ const ManageEvents = () => {
         
         <Footer />
       </div>
-
-      {editingEvent && (
-        <EditEventDialog
-          event={editingEvent}
-          isOpen={isEditDialogOpen}
-          onClose={() => setIsEditDialogOpen(false)}
-          onSuccess={handleEditSuccess}
-        />
-      )}
     </ProtectedRoute>
   );
 };

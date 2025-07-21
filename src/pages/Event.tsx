@@ -16,81 +16,18 @@ const Event = () => {
 
   const { data: allEvents = [], isLoading } = useEvents();
 
-  // Also try to fetch from user_events table (for ManageEvents view)
-  const { data: userEvent } = useQuery({
-    queryKey: ['user-event', eventId],
-    queryFn: async () => {
-      if (!eventId) return null;
-      
-      // Handle recurring event IDs that have "-0", "-1", etc. suffix
-      let baseEventId = eventId;
-      if (eventId.includes('-') && eventId.split('-').length > 5) {
-        baseEventId = eventId.split('-').slice(0, 5).join('-');
-      }
-      
-      const { data, error } = await supabase
-        .from('user_events')
-        .select('*')
-        .eq('id', baseEventId)
-        .single();
-      
-      if (error) {
-        console.error('User event not found:', error);
-        return null;
-      }
-      return data;
-    },
-    enabled: !!eventId,
-  });
-
-  // Find the specific event from combined events or user event
-  const event = allEvents.find(e => e.id === eventId) || (userEvent ? {
-    id: userEvent.id,
-    title: userEvent.title,
-    description: userEvent.description,
-    date: userEvent.start_date,
-    time: userEvent.start_time,
-    endTime: userEvent.end_time,
-    venue: userEvent.venue_name,
-    venueAddress: userEvent.venue_address,
-    city: userEvent.venue_city,
-    state: userEvent.venue_state,
-    category: userEvent.category,
-    price: userEvent.price_display,
-    imageUrl: userEvent.image_url,
-    organizer: userEvent.organizer_name,
-    ticketUrl: userEvent.ticket_url,
-    facebookUrl: userEvent.facebook_url,
-    instagramUrl: userEvent.instagram_url,
-    twitterUrl: userEvent.twitter_url,
-    youtubeUrl: userEvent.youtube_url,
-    websiteUrl: userEvent.website_url,
-    created_by: userEvent.created_by
-  } : null);
-
-  // Determine if this is a user event or regular event
-  const isUserEvent = !!userEvent && !allEvents.find(e => e.id === eventId);
-
-  // Helper functions to get properties from either event type
-  const getEventProperty = (userProp: keyof typeof userEvent, regularProp: string) => {
-    if (isUserEvent && userEvent) {
-      return userEvent[userProp];
-    }
-    return (event as any)?.[regularProp];
-  };
-
-  // Get venue name based on event type  
-  const venueName = getEventProperty('venue_name', 'venue');
+  // Find the specific event
+  const event = allEvents.find(e => e.id === eventId);
 
   // Fetch venue details for social media links
   const { data: venueData } = useQuery({
-    queryKey: ['venue', venueName],
+    queryKey: ['venue', event?.venue_name],
     queryFn: async () => {
-      if (!venueName) return null;
+      if (!event?.venue_name) return null;
       const { data, error } = await supabase
         .from('poreve_venues')
         .select('*')
-        .eq('name', venueName)
+        .eq('name', event.venue_name)
         .single();
       
       if (error) {
@@ -99,7 +36,7 @@ const Event = () => {
       }
       return data;
     },
-    enabled: !!venueName,
+    enabled: !!event?.venue_name,
   });
 
   const formatDate = (dateString: string) => {
@@ -134,11 +71,9 @@ const Event = () => {
   const formatTimeRange = () => {
     if (!event) return 'TBA';
     
-    const startDate = getEventProperty('start_date', 'date');
-    const startTime = formatTime(startDate);
-    const endDate = getEventProperty('recurrence_end_date', 'endDate');
-    if (endDate) {
-      const endTime = formatTime(endDate);
+    const startTime = formatTime(event.start_date);
+    if (event.end_date) {
+      const endTime = formatTime(event.end_date);
       return `${startTime} - ${endTime}`;
     }
     return startTime;
@@ -159,9 +94,8 @@ const Event = () => {
   };
 
   const handleVenueClick = () => {
-    const venueNameProp = getEventProperty('venue_name', 'venue');
-    if (venueNameProp) {
-      navigate(`/venue/${encodeURIComponent(venueNameProp)}`);
+    if (event?.venue_name) {
+      navigate(`/venue/${encodeURIComponent(event.venue_name)}`);
     }
   };
 
@@ -199,11 +133,9 @@ const Event = () => {
     );
   }
 
-  const fullAddress = [
-    getEventProperty('venue_address', 'venueAddress'), 
-    getEventProperty('venue_city', 'city'), 
-    getEventProperty('venue_state', 'state')
-  ].filter(Boolean).join(', ');
+  const fullAddress = [event.venue_address, event.venue_city, event.venue_state]
+    .filter(Boolean)
+    .join(', ');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-orange-50">
@@ -225,7 +157,7 @@ const Event = () => {
           {/* Event Image */}
           <div className="aspect-video bg-gradient-to-br from-emerald-100 to-orange-100 relative">
             <img 
-              src={getEventProperty('image_url', 'imageUrl') || '/placeholder.svg'} 
+              src={event.image_url || '/placeholder.svg'} 
               alt={event.title}
               className="w-full h-full object-cover"
             />
@@ -235,7 +167,7 @@ const Event = () => {
               </Badge>
             </div>
             <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-lg">
-              <span className="font-bold text-emerald-700">{getEventProperty('price_display', 'price') || 'TBA'}</span>
+              <span className="font-bold text-emerald-700">{event.price_display || 'TBA'}</span>
             </div>
           </div>
 
@@ -248,7 +180,7 @@ const Event = () => {
                 <div className="flex items-center text-gray-600">
                   <Calendar className="h-5 w-5 mr-3 text-emerald-600" />
                   <div>
-                    <p className="font-medium">{formatDate(getEventProperty('start_date', 'date'))}</p>
+                    <p className="font-medium">{formatDate(event.start_date)}</p>
                     <p className="text-sm text-gray-500">{formatTimeRange()}</p>
                   </div>
                 </div>
@@ -260,7 +192,7 @@ const Event = () => {
                       className="font-medium cursor-pointer hover:text-emerald-600 hover:underline"
                       onClick={handleVenueClick}
                     >
-                      {getEventProperty('venue_name', 'venue')}
+                      {event.venue_name}
                     </p>
                     {fullAddress && (
                       <p className="text-sm text-gray-500">{fullAddress}</p>
@@ -268,12 +200,12 @@ const Event = () => {
                   </div>
                 </div>
 
-                {getEventProperty('organizer_name', 'organizer') && (
+                {event.organizer_name && (
                   <div className="flex items-center text-gray-600">
                     <User className="h-5 w-5 mr-3 text-emerald-600" />
                     <div>
                       <p className="font-medium">Organized by</p>
-                      <p className="text-sm text-gray-500">{getEventProperty('organizer_name', 'organizer')}</p>
+                      <p className="text-sm text-gray-500">{event.organizer_name}</p>
                       {event.created_by && (
                         <p className="text-xs text-emerald-600 hover:text-emerald-700 cursor-pointer"
                            onClick={() => navigate(`/user/${event.created_by}`)}>
@@ -337,45 +269,45 @@ const Event = () => {
                 )}
 
                 {/* Event Social Media */}
-                {(getEventProperty('website_url', 'websiteUrl') || getEventProperty('facebook_url', 'facebookUrl') || getEventProperty('instagram_url', 'instagramUrl') || getEventProperty('twitter_url', 'twitterUrl') || getEventProperty('youtube_url', 'youtubeUrl')) && (
+                {(event.website_url || event.facebook_url || event.instagram_url || event.twitter_url || event.youtube_url) && (
                   <div className="bg-emerald-50 rounded-lg p-6">
                     <h4 className="font-semibold text-gray-800 mb-4">Event Links</h4>
                     <div className="flex flex-wrap gap-2">
-                      {getEventProperty('website_url', 'websiteUrl') && (
+                      {event.website_url && (
                         <Button variant="outline" size="sm" asChild>
-                          <a href={getEventProperty('website_url', 'websiteUrl')} target="_blank" rel="noopener noreferrer">
+                          <a href={event.website_url} target="_blank" rel="noopener noreferrer">
                             <Globe className="h-4 w-4 mr-1" />
                             Website
                           </a>
                         </Button>
                       )}
-                      {getEventProperty('facebook_url', 'facebookUrl') && (
+                      {event.facebook_url && (
                         <Button variant="outline" size="sm" asChild>
-                          <a href={getEventProperty('facebook_url', 'facebookUrl')} target="_blank" rel="noopener noreferrer">
+                          <a href={event.facebook_url} target="_blank" rel="noopener noreferrer">
                             <Facebook className="h-4 w-4 mr-1" />
                             Facebook
                           </a>
                         </Button>
                       )}
-                      {getEventProperty('instagram_url', 'instagramUrl') && (
+                      {event.instagram_url && (
                         <Button variant="outline" size="sm" asChild>
-                          <a href={getEventProperty('instagram_url', 'instagramUrl')} target="_blank" rel="noopener noreferrer">
+                          <a href={event.instagram_url} target="_blank" rel="noopener noreferrer">
                             <Instagram className="h-4 w-4 mr-1" />
                             Instagram
                           </a>
                         </Button>
                       )}
-                      {getEventProperty('twitter_url', 'twitterUrl') && (
+                      {event.twitter_url && (
                         <Button variant="outline" size="sm" asChild>
-                          <a href={getEventProperty('twitter_url', 'twitterUrl')} target="_blank" rel="noopener noreferrer">
+                          <a href={event.twitter_url} target="_blank" rel="noopener noreferrer">
                             <Twitter className="h-4 w-4 mr-1" />
                             Twitter
                           </a>
                         </Button>
                       )}
-                      {getEventProperty('youtube_url', 'youtubeUrl') && (
+                      {event.youtube_url && (
                         <Button variant="outline" size="sm" asChild>
-                          <a href={getEventProperty('youtube_url', 'youtubeUrl')} target="_blank" rel="noopener noreferrer">
+                          <a href={event.youtube_url} target="_blank" rel="noopener noreferrer">
                             <Youtube className="h-4 w-4 mr-1" />
                             YouTube
                           </a>
@@ -398,49 +330,49 @@ const Event = () => {
             {/* Links */}
             <div className="mb-8">
               <div className="flex flex-wrap gap-3">
-                {getEventProperty('ticket_url', 'ticketUrl') && (
+                {event.ticket_url && (
                   <Button 
                     asChild
                     className="bg-gradient-to-r from-emerald-600 to-orange-500 hover:from-emerald-700 hover:to-orange-600"
                   >
-                    <a href={getEventProperty('ticket_url', 'ticketUrl')} target="_blank" rel="noopener noreferrer">
+                    <a href={event.ticket_url} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="h-4 w-4 mr-2" />
                       Get Tickets
                     </a>
                   </Button>
                 )}
-                {getEventProperty('website_url', 'websiteUrl') && (
+                {event.website_url && (
                   <Button variant="outline" asChild>
-                    <a href={getEventProperty('website_url', 'websiteUrl')} target="_blank" rel="noopener noreferrer">
+                    <a href={event.website_url} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="h-4 w-4 mr-2" />
                       Website
                     </a>
                   </Button>
                 )}
-                {getEventProperty('facebook_url', 'facebookUrl') && (
+                {event.facebook_url && (
                   <Button variant="outline" asChild>
-                    <a href={getEventProperty('facebook_url', 'facebookUrl')} target="_blank" rel="noopener noreferrer">
+                    <a href={event.facebook_url} target="_blank" rel="noopener noreferrer">
                       Facebook
                     </a>
                   </Button>
                 )}
-                {getEventProperty('instagram_url', 'instagramUrl') && (
+                {event.instagram_url && (
                   <Button variant="outline" asChild>
-                    <a href={getEventProperty('instagram_url', 'instagramUrl')} target="_blank" rel="noopener noreferrer">
+                    <a href={event.instagram_url} target="_blank" rel="noopener noreferrer">
                       Instagram
                     </a>
                   </Button>
                 )}
-                {getEventProperty('twitter_url', 'twitterUrl') && (
+                {event.twitter_url && (
                   <Button variant="outline" asChild>
-                    <a href={getEventProperty('twitter_url', 'twitterUrl')} target="_blank" rel="noopener noreferrer">
+                    <a href={event.twitter_url} target="_blank" rel="noopener noreferrer">
                       Twitter
                     </a>
                   </Button>
                 )}
-                {getEventProperty('youtube_url', 'youtubeUrl') && (
+                {event.youtube_url && (
                   <Button variant="outline" asChild>
-                    <a href={getEventProperty('youtube_url', 'youtubeUrl')} target="_blank" rel="noopener noreferrer">
+                    <a href={event.youtube_url} target="_blank" rel="noopener noreferrer">
                       YouTube
                     </a>
                   </Button>
