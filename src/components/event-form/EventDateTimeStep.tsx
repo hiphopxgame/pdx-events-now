@@ -233,18 +233,19 @@ export const EventDateTimeStep: React.FC<EventDateTimeStepProps> = ({
           </div>
 
           <div className="flex items-center space-x-2">
-            <Checkbox 
-              id="recurring" 
+            <input
+              type="checkbox"
+              id="recurring"
               checked={isRecurring}
-              onCheckedChange={(checked) => {
-                console.log('Checkbox changed:', checked);
-                setIsRecurring(checked === true);
+              onChange={(e) => {
+                console.log('Checkbox changed:', e.target.checked);
+                setIsRecurring(e.target.checked);
               }}
+              className="h-4 w-4 rounded border border-input bg-background cursor-pointer"
             />
             <Label 
               htmlFor="recurring" 
               className="cursor-pointer select-none"
-              onClick={() => setIsRecurring(!isRecurring)}
             >
               This is a recurring event
             </Label>
