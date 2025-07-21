@@ -25,6 +25,7 @@ export const RecurrenceSelector: React.FC<RecurrenceSelectorProps> = ({
 }) => {
   const getOptionLabel = (value: string) => {
     const labels: { [key: string]: string } = {
+      'single': 'Single day',
       'every-sunday': 'Every Sunday',
       'every-monday': 'Every Monday',
       'every-tuesday': 'Every Tuesday',

@@ -63,12 +63,15 @@ export const EventDateTimeStep: React.FC<EventDateTimeStepProps> = ({
     const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
     const dayName = dayNames[dayOfWeek];
     
-    const options = [`every-${dayName}`];
+    // Start with single day as default option
+    const options = ['single'];
+    
+    // Add weekly recurrence option
+    options.push(`every-${dayName}`);
     
     // Calculate which occurrence of this day it is in the month
     const year = selectedDate.getFullYear();
     const month = selectedDate.getMonth();
-    const lastDayOfMonth = new Date(year, month + 1, 0);
     
     // Count how many of this day of week have occurred up to and including the selected date
     let occurrenceCount = 0;
@@ -85,21 +88,7 @@ export const EventDateTimeStep: React.FC<EventDateTimeStepProps> = ({
       options.push(`${occurrenceNames[occurrenceCount - 1]}-${dayName}`);
     }
     
-    // Check if this is the last occurrence of this day in the month
-    let isLastOccurrence = true;
-    for (let day = selectedDate.getDate() + 1; day <= lastDayOfMonth.getDate(); day++) {
-      const testDate = new Date(year, month, day);
-      if (testDate.getDay() === dayOfWeek) {
-        isLastOccurrence = false;
-        break;
-      }
-    }
-    
-    if (isLastOccurrence) {
-      options.push(`last-${dayName}`);
-    }
-    
-    return [...new Set(options)]; // Remove duplicates in case last === fourth
+    return options;
   };
 
   const getNextDateForPattern = (fromDate: Date, pattern: string): Date | null => {
