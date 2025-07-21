@@ -15,6 +15,7 @@ interface Event {
   description: string;
   startDate?: string;
   endDate?: string;
+  endTime?: string;
   venueAddress?: string;
   venueCity?: string;
   venueState?: string;
@@ -45,6 +46,7 @@ export const FeaturedEvents: React.FC<FeaturedEventsProps> = ({ onEventClick }) 
   const transformedEvents = featuredEvents.map(event => {
     // Handle date parsing safely
     let formattedTime = 'TBA';
+    let formattedEndTime = '';
     let dateString = event.start_date;
     
     if (event.start_date) {
@@ -69,6 +71,23 @@ export const FeaturedEvents: React.FC<FeaturedEventsProps> = ({ onEventClick }) 
       }
     }
     
+    // Handle end time formatting
+    if (event.end_date) {
+      try {
+        const endDate = new Date(event.end_date);
+        if (!isNaN(endDate.getTime())) {
+          formattedEndTime = endDate.toLocaleTimeString('en-US', { 
+            hour: 'numeric', 
+            minute: '2-digit',
+            hour12: true,
+            timeZone: 'America/Los_Angeles'
+          });
+        }
+      } catch (error) {
+        console.error('End date parsing error:', error, event.end_date);
+      }
+    }
+    
     return {
       id: event.id,
       title: event.title,
@@ -81,6 +100,7 @@ export const FeaturedEvents: React.FC<FeaturedEventsProps> = ({ onEventClick }) 
       description: event.description || '',
       startDate: event.start_date,
       endDate: event.end_date,
+      endTime: formattedEndTime,
       venueAddress: event.venue_address,
       venueCity: event.venue_city,
       venueState: event.venue_state,

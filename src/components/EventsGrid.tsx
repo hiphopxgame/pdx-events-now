@@ -15,6 +15,7 @@ interface Event {
   description: string;
   startDate?: string;
   endDate?: string;
+  endTime?: string;
   venueAddress?: string;
   venueCity?: string;
   venueState?: string;

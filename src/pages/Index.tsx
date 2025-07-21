@@ -32,10 +32,10 @@ const Index = () => {
     console.error('Events error:', eventsError);
   }
 
-  // Transform events to match the EventCard interface
   const transformedEvents = events.map(event => {
     // Handle date parsing safely
     let formattedTime = 'TBA';
+    let formattedEndTime = '';
     let dateString = event.start_date;
     
     if (event.start_date) {
@@ -61,6 +61,23 @@ const Index = () => {
       }
     }
     
+    // Handle end time formatting
+    if (event.end_date) {
+      try {
+        const endDate = new Date(event.end_date);
+        if (!isNaN(endDate.getTime())) {
+          formattedEndTime = endDate.toLocaleTimeString('en-US', { 
+            hour: 'numeric', 
+            minute: '2-digit',
+            hour12: true,
+            timeZone: 'America/Los_Angeles'
+          });
+        }
+      } catch (error) {
+        console.error('End date parsing error:', error, event.end_date);
+      }
+    }
+    
     return {
       id: event.id,
       title: event.title,
@@ -73,6 +90,7 @@ const Index = () => {
       description: event.description || '',
       startDate: event.start_date,
       endDate: event.end_date,
+      endTime: formattedEndTime,
       venueAddress: event.venue_address,
       venueCity: event.venue_city,
       venueState: event.venue_state,
