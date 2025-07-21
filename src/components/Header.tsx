@@ -17,9 +17,17 @@ export const Header = () => {
   const { isAdmin } = useUserRoles();
   const navigate = useNavigate();
 
-  const handleNavClick = (path: string) => {
+  const handleNavClick = (path: string, event?: React.MouseEvent) => {
     console.log('Navigation clicked:', path);
-    navigate(path);
+    event?.preventDefault();
+    event?.stopPropagation();
+    
+    try {
+      console.log('Navigating to:', path);
+      navigate(path);
+    } catch (error) {
+      console.error('Navigation error:', error);
+    }
   };
 
   const handleSignOut = async () => {
@@ -41,14 +49,14 @@ export const Header = () => {
           
           <nav className="hidden md:flex space-x-1">
             <button 
-              onClick={() => handleNavClick('/events')}
+              onClick={(e) => handleNavClick('/events', e)}
               className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none cursor-pointer"
             >
               <Calendar className="h-4 w-4 mr-2" />
               Events
             </button>
             <button 
-              onClick={() => handleNavClick('/venues')}
+              onClick={(e) => handleNavClick('/venues', e)}
               className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none cursor-pointer"
             >
               <MapPin className="h-4 w-4 mr-2" />
@@ -56,7 +64,7 @@ export const Header = () => {
             </button>
             {user && (
               <button 
-                onClick={() => handleNavClick('/users')}
+                onClick={(e) => handleNavClick('/users', e)}
                 className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none cursor-pointer"
               >
                 <Users className="h-4 w-4 mr-2" />
@@ -69,7 +77,7 @@ export const Header = () => {
             {user ? (
               <>
                 <Button 
-                  onClick={() => handleNavClick('/submit-event')}
+                  onClick={(e) => handleNavClick('/submit-event', e)}
                   variant="outline" 
                   className="border-primary/30 text-primary hover:bg-accent cursor-pointer"
                 >
@@ -128,7 +136,7 @@ export const Header = () => {
               </>
             ) : (
               <Button 
-                onClick={() => handleNavClick('/auth')}
+                onClick={(e) => handleNavClick('/auth', e)}
                 className="bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer"
               >
                 Sign In

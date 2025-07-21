@@ -39,12 +39,20 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
   const [submittedByUser, setSubmittedByUser] = useState<string>('');
   const [organizerUser, setOrganizerUser] = useState<string>('');
 
-  const handleEventClick = () => {
-    console.log('Event clicked:', event.id);
-    if (onEventClick) {
-      onEventClick(event);
-    } else {
-      navigate(`/event/${event.id}`);
+  const handleEventClick = (e?: React.MouseEvent) => {
+    console.log('Event card clicked:', event.id, event.title);
+    e?.preventDefault();
+    e?.stopPropagation();
+    
+    try {
+      if (onEventClick) {
+        onEventClick(event);
+      } else {
+        console.log('Navigating to:', `/event/${event.id}`);
+        navigate(`/event/${event.id}`);
+      }
+    } catch (error) {
+      console.error('Navigation error:', error);
     }
   };
 
@@ -67,9 +75,16 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
   }, [event.createdBy]);
 
   const handleVenueClick = (e: React.MouseEvent) => {
-    console.log('Venue clicked:', event.venue);
+    console.log('Venue link clicked:', event.venue);
+    e.preventDefault();
     e.stopPropagation();
-    navigate(`/venue/${encodeURIComponent(event.venue)}`);
+    
+    try {
+      console.log('Navigating to venue:', `/venue/${encodeURIComponent(event.venue)}`);
+      navigate(`/venue/${encodeURIComponent(event.venue)}`);
+    } catch (error) {
+      console.error('Venue navigation error:', error);
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -141,11 +156,10 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
   };
 
   return (
-    <Card className="group hover:shadow-xl transition-all duration-300 border-emerald-100 hover:border-emerald-300 overflow-hidden">
+    <Card className="group hover:shadow-xl transition-all duration-300 border-emerald-100 hover:border-emerald-300 overflow-hidden cursor-pointer" onClick={handleEventClick}>
       <CardHeader className="p-0">
         <div 
-          className="aspect-video bg-gradient-to-br from-emerald-100 to-orange-100 relative overflow-hidden cursor-pointer"
-          onClick={handleEventClick}
+          className="aspect-video bg-gradient-to-br from-emerald-100 to-orange-100 relative overflow-hidden"
         >
           <img 
             src={event.imageUrl} 
@@ -164,10 +178,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
       </CardHeader>
       
       <CardContent className="p-6">
-        <h3 
-          className="text-xl font-bold text-gray-800 mb-3 group-hover:text-emerald-700 transition-colors cursor-pointer"
-          onClick={handleEventClick}
-        >
+        <h3 className="text-xl font-bold text-gray-800 mb-3 group-hover:text-emerald-700 transition-colors">
           {event.title}
         </h3>
         
@@ -194,12 +205,12 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
           
           <div className="flex items-center text-gray-600">
             <MapPin className="h-4 w-4 mr-2 text-emerald-600" />
-            <span 
-              className="text-sm cursor-pointer hover:text-emerald-600 hover:underline"
+            <button 
+              className="text-sm text-left hover:text-emerald-600 hover:underline focus:outline-none focus:text-emerald-600"
               onClick={handleVenueClick}
             >
               {event.venue}
-            </span>
+            </button>
           </div>
 
           {/* User Information */}
@@ -237,8 +248,11 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
       
       <CardFooter className="p-6 pt-0">
         <button 
-          onClick={handleEventClick}
-          className="w-full bg-gradient-primary text-white py-3 rounded-lg font-semibold hover:scale-105 transition-all duration-300 transform group-hover:scale-105"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleEventClick(e);
+          }}
+          className="w-full bg-gradient-primary text-white py-3 rounded-lg font-semibold hover:scale-105 transition-all duration-300 transform group-hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary"
         >
           Event Details
         </button>
