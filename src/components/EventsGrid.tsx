@@ -31,7 +31,7 @@ interface EventsGridProps {
   onEventClick?: (event: Event) => void;
 }
 
-interface MonthlyEvents {
+interface DailyEvents {
   [key: string]: Event[];
 }
 
@@ -47,48 +47,79 @@ export const EventsGrid: React.FC<EventsGridProps> = ({ events, onEventClick }) 
     );
   }
 
-  // Group events by month
-  const groupEventsByMonth = (events: Event[]): MonthlyEvents => {
+  // Group events by day
+  const groupEventsByDay = (events: Event[]): DailyEvents => {
     return events.reduce((acc, event) => {
       try {
         const date = new Date(event.startDate || event.date);
         if (isNaN(date.getTime())) return acc;
         
-        const monthKey = date.toLocaleDateString('en-US', { 
+        const dayKey = date.toLocaleDateString('en-US', { 
           year: 'numeric', 
-          month: 'long' 
+          month: 'long',
+          day: 'numeric',
+          weekday: 'long'
         });
         
-        if (!acc[monthKey]) {
-          acc[monthKey] = [];
+        if (!acc[dayKey]) {
+          acc[dayKey] = [];
         }
-        acc[monthKey].push(event);
+        acc[dayKey].push(event);
         return acc;
       } catch {
         return acc;
       }
-    }, {} as MonthlyEvents);
+    }, {} as DailyEvents);
   };
 
-  const monthlyEvents = groupEventsByMonth(events);
-  const sortedMonths = Object.keys(monthlyEvents).sort((a, b) => {
-    return new Date(a).getTime() - new Date(b).getTime();
+  const dailyEvents = groupEventsByDay(events);
+  const sortedDays = Object.keys(dailyEvents).sort((a, b) => {
+    const dateA = new Date(dailyEvents[a][0]?.startDate || dailyEvents[a][0]?.date);
+    const dateB = new Date(dailyEvents[b][0]?.startDate || dailyEvents[b][0]?.date);
+    return dateA.getTime() - dateB.getTime();
   });
 
-  const formatMonthHeader = (monthKey: string) => {
+  const formatDayHeader = (dayKey: string) => {
     try {
-      const date = new Date(monthKey);
-      return date.toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'long' 
-      });
+      // Extract the date from the first event of this day
+      const firstEvent = dailyEvents[dayKey][0];
+      const date = new Date(firstEvent.startDate || firstEvent.date);
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+      
+      // Reset time for comparison
+      const eventDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      const tomorrowDate = new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate());
+      
+      if (eventDate.getTime() === todayDate.getTime()) {
+        return `Today - ${date.toLocaleDateString('en-US', { 
+          weekday: 'long', 
+          month: 'long', 
+          day: 'numeric' 
+        })}`;
+      } else if (eventDate.getTime() === tomorrowDate.getTime()) {
+        return `Tomorrow - ${date.toLocaleDateString('en-US', { 
+          weekday: 'long', 
+          month: 'long', 
+          day: 'numeric' 
+        })}`;
+      } else {
+        return date.toLocaleDateString('en-US', { 
+          weekday: 'long', 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
+      }
     } catch {
-      return monthKey;
+      return dayKey;
     }
   };
 
-  const getEventCountForMonth = (monthKey: string) => {
-    return monthlyEvents[monthKey]?.length || 0;
+  const getEventCountForDay = (dayKey: string) => {
+    return dailyEvents[dayKey]?.length || 0;
   };
 
   return (
@@ -104,29 +135,29 @@ export const EventsGrid: React.FC<EventsGridProps> = ({ events, onEventClick }) 
         </div>
       </div>
 
-      {/* Monthly Grouped Events */}
-      {sortedMonths.map((monthKey) => (
-        <div key={monthKey} className="mb-12">
-          {/* Month Header */}
-          <div className="flex items-center justify-between mb-6 pb-4 border-b-2 border-emerald-100">
+      {/* Daily Grouped Events */}
+      {sortedDays.map((dayKey) => (
+        <div key={dayKey} className="mb-8">
+          {/* Day Header */}
+          <div className="flex items-center justify-between mb-4 pb-3 border-b-2 border-emerald-100">
             <div className="flex items-center space-x-3">
-              <div className="bg-emerald-100 p-3 rounded-lg">
-                <Calendar className="h-6 w-6 text-emerald-600" />
+              <div className="bg-emerald-100 p-2 rounded-lg">
+                <Calendar className="h-5 w-5 text-emerald-600" />
               </div>
               <div>
-                <h3 className="text-2xl font-bold text-gray-800">
-                  {formatMonthHeader(monthKey)}
+                <h3 className="text-xl font-bold text-gray-800">
+                  {formatDayHeader(dayKey)}
                 </h3>
-                <p className="text-gray-600">
-                  {getEventCountForMonth(monthKey)} event{getEventCountForMonth(monthKey) !== 1 ? 's' : ''}
+                <p className="text-gray-600 text-sm">
+                  {getEventCountForDay(dayKey)} event{getEventCountForDay(dayKey) !== 1 ? 's' : ''}
                 </p>
               </div>
             </div>
           </div>
           
-          {/* Events Grid for this month */}
+          {/* Events Grid for this day */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {monthlyEvents[monthKey].map((event) => (
+            {dailyEvents[dayKey].map((event) => (
               <EventCard key={event.id} event={event} onEventClick={onEventClick} />
             ))}
           </div>
@@ -136,7 +167,7 @@ export const EventsGrid: React.FC<EventsGridProps> = ({ events, onEventClick }) 
       {/* Navigation hint */}
       <div className="text-center py-8 border-t border-emerald-100">
         <p className="text-gray-500 text-sm">
-          Events are organized by month for easy browsing
+          Events are organized by day for easy daily planning
         </p>
       </div>
     </div>
