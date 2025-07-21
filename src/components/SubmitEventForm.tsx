@@ -126,8 +126,47 @@ export const SubmitEventForm: React.FC = () => {
         console.log('Profile created successfully');
       }
 
+      // Handle venue creation if it's a new venue with social media
+      if (data.venue_website_url || data.venue_facebook_url || data.venue_instagram_url || 
+          data.venue_twitter_url || data.venue_youtube_url) {
+        
+        // Create or update venue with social media
+        const venueData = {
+          name: data.venue_name,
+          address: data.venue_address,
+          city: data.venue_city,
+          state: data.venue_state,
+          zip_code: data.venue_zip,
+          website: data.venue_website_url,
+          facebook_url: data.venue_facebook_url,
+          instagram_url: data.venue_instagram_url,
+          twitter_url: data.venue_twitter_url,
+          youtube_url: data.venue_youtube_url,
+        };
+
+        console.log('Creating/updating venue with social media:', venueData);
+
+        const { error: venueError } = await supabase
+          .from('venues')
+          .upsert([venueData], { onConflict: 'name' });
+
+        if (venueError) {
+          console.error('Error creating/updating venue:', venueError);
+          toast({
+            title: "Venue Error",
+            description: "Failed to save venue information. Please try again.",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+
+      // Remove venue social media fields from event data
+      const { venue_website_url, venue_facebook_url, venue_instagram_url, 
+              venue_twitter_url, venue_youtube_url, ...eventDataWithoutVenueSocial } = data;
+
       const eventData = {
-        ...data,
+        ...eventDataWithoutVenueSocial,
         image_url: imageUrl,
         image_urls: imageUrls.length > 0 ? imageUrls : null,
         start_date: startDate?.toISOString().split('T')[0],
