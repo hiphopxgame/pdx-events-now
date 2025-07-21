@@ -70,21 +70,27 @@ const Auth = () => {
     setIsLoading(true);
 
     try {
+      console.log('Starting signup process...');
       const { error } = await signUp(signupForm.email, signupForm.password, signupForm.fullName);
       
       if (error) {
+        console.error('Signup error details:', error);
         toast({
-          title: "Signup Failed",
+          title: "Signup Failed", 
           description: error.message,
           variant: "destructive",
         });
       } else {
+        console.log('Signup completed successfully');
         toast({
           title: "Account Created!",
-          description: "Please check your email to verify your account.",
+          description: "Your account has been created successfully. You can now sign in.",
         });
+        // Clear the form
+        setSignupForm({ email: '', password: '', fullName: '', confirmPassword: '' });
       }
     } catch (error) {
+      console.error('Unexpected signup error:', error);
       toast({
         title: "Signup Failed",
         description: "An unexpected error occurred. Please try again.",
