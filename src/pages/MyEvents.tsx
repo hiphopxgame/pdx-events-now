@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Header } from '@/components/Header';
 import { useUserEvents } from '@/hooks/useEvents';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,11 +9,26 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { EditEventDialog } from '@/components/EditEventDialog';
+import { SubmittedEventSummary } from '@/components/SubmittedEventSummary';
 
 const MyEvents = () => {
   const { data: events = [], isLoading, refetch } = useUserEvents();
   const [editingEvent, setEditingEvent] = useState<any>(null);
+  const [showSummary, setShowSummary] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Check if there's a recently submitted event to show summary for
+    const recentlySubmitted = sessionStorage.getItem('recentlySubmittedEvent');
+    if (recentlySubmitted) {
+      setShowSummary(true);
+    }
+  }, []);
+
+  const handleDismissSummary = () => {
+    setShowSummary(false);
+    sessionStorage.removeItem('recentlySubmittedEvent');
+  };
 
   const handleDeleteEvent = async (eventId: string) => {
     if (!confirm('Are you sure you want to delete this event?')) return;
@@ -73,6 +88,11 @@ const MyEvents = () => {
               Manage your submitted events
             </p>
           </div>
+
+          {/* Show submitted event summary if available */}
+          {showSummary && (
+            <SubmittedEventSummary onDismiss={handleDismissSummary} />
+          )}
 
           {events.length === 0 ? (
             <div className="text-center py-16">

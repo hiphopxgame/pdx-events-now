@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { EventDateTimeStep } from './event-form/EventDateTimeStep';
@@ -14,6 +15,7 @@ export const SubmitEventForm: React.FC = () => {
   const [startDate, setStartDate] = useState<Date>();
   const [endDate, setEndDate] = useState<Date>();
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<EventFormData>();
 
@@ -215,12 +217,15 @@ export const SubmitEventForm: React.FC = () => {
           title: "Success!",
           description: "Your event has been submitted for review.",
         });
-        // Reset form
-        setStep(1);
-        setIsRecurring(false);
-        setRecurringType('');
-        setStartDate(undefined);
-        setEndDate(undefined);
+        
+        // Store event data in sessionStorage for the summary display
+        sessionStorage.setItem('recentlySubmittedEvent', JSON.stringify({
+          ...eventData,
+          submittedAt: new Date().toISOString()
+        }));
+        
+        // Navigate to My Events page
+        navigate('/my-events');
       }
     } catch (error) {
       console.error('Error:', error);
