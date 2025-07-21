@@ -88,8 +88,11 @@ export const EventDateTimeStep: React.FC<EventDateTimeStepProps> = ({
       options.push(`${occurrenceNames[occurrenceCount - 1]}-${dayName}`);
     }
     
-    // Add "last" option (which could be 4th or 5th depending on the month)
-    options.push(`last-${dayName}`);
+    // Check if this is actually the last occurrence of this day in the month
+    const isLastOccurrence = findNthDayOfMonth(year, month, 'last', dayOfWeek)?.getDate() === selectedDate.getDate();
+    if (isLastOccurrence) {
+      options.push(`last-${dayName}`);
+    }
     
     return options;
   };
