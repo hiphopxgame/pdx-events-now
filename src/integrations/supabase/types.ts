@@ -1954,8 +1954,13 @@ export type Database = {
           updated_at: string
           venue_address: string | null
           venue_city: string | null
+          venue_facebook_url: string | null
+          venue_instagram_url: string | null
           venue_name: string
           venue_state: string | null
+          venue_twitter_url: string | null
+          venue_website_url: string | null
+          venue_youtube_url: string | null
           venue_zip: string | null
           website_url: string | null
           youtube_url: string | null
@@ -1991,8 +1996,13 @@ export type Database = {
           updated_at?: string
           venue_address?: string | null
           venue_city?: string | null
+          venue_facebook_url?: string | null
+          venue_instagram_url?: string | null
           venue_name: string
           venue_state?: string | null
+          venue_twitter_url?: string | null
+          venue_website_url?: string | null
+          venue_youtube_url?: string | null
           venue_zip?: string | null
           website_url?: string | null
           youtube_url?: string | null
@@ -2028,8 +2038,13 @@ export type Database = {
           updated_at?: string
           venue_address?: string | null
           venue_city?: string | null
+          venue_facebook_url?: string | null
+          venue_instagram_url?: string | null
           venue_name?: string
           venue_state?: string | null
+          venue_twitter_url?: string | null
+          venue_website_url?: string | null
+          venue_youtube_url?: string | null
           venue_zip?: string | null
           website_url?: string | null
           youtube_url?: string | null
