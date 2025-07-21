@@ -100,7 +100,7 @@ const Index = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-orange-50">
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 to-secondary/10">
       <Header />
       <Hero />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -119,9 +119,9 @@ const Index = () => {
         
         {eventsLoading ? (
           <div className="flex justify-center items-center py-16">
-            <div className="bg-white rounded-xl shadow-lg border border-emerald-100 p-12">
+            <div className="bg-white rounded-xl shadow-lg border border-primary/20 p-12">
               <div className="flex items-center justify-center space-x-3">
-                <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
                 <p className="text-lg text-gray-600">Loading Portland events...</p>
               </div>
             </div>

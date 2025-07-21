@@ -31,12 +31,12 @@ export const Header = () => {
   };
 
   return (
-    <header className="bg-white/95 backdrop-blur-sm shadow-sm border-b border-emerald-100 sticky top-0 z-50">
+    <header className="bg-brand-white/95 backdrop-blur-sm shadow-sm border-b border-primary/20 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex items-center justify-between">
           <Link 
             to="/" 
-            className="flex items-center space-x-2 text-2xl font-bold text-emerald-600 hover:text-emerald-700 transition-colors"
+            className="flex items-center space-x-2 text-2xl font-bold text-primary hover:text-primary/80 transition-colors"
           >
             <Calendar className="h-8 w-8" />
             <span>Portland Events</span>
@@ -89,7 +89,7 @@ export const Header = () => {
                 <Button 
                   asChild 
                   variant="outline" 
-                  className="border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+                  className="border-primary/30 text-primary hover:bg-accent"
                 >
                   <Link to="/submit-event" className="flex items-center space-x-2">
                     <Plus className="h-4 w-4" />
@@ -149,7 +149,7 @@ export const Header = () => {
             ) : (
               <Button 
                 asChild 
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground"
               >
                 <Link to="/auth">Sign In</Link>
               </Button>

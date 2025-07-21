@@ -6,89 +6,109 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* New Color Palette: #046A38 #FFFFFF #FFB81C #418FDE */
+    --background: 0 0% 100%; /* White */
+    --foreground: 158 93% 22%; /* Dark Green */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%; /* White */
+    --card-foreground: 158 93% 22%; /* Dark Green */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%; /* White */
+    --popover-foreground: 158 93% 22%; /* Dark Green */
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 158 93% 22%; /* Dark Green #046A38 */
+    --primary-foreground: 0 0% 100%; /* White */
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 43 100% 55%; /* Yellow/Orange #FFB81C */
+    --secondary-foreground: 158 93% 22%; /* Dark Green */
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 158 20% 95%; /* Very light green tint */
+    --muted-foreground: 158 30% 40%; /* Medium green */
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 212 65% 56%; /* Blue #418FDE */
+    --accent-foreground: 0 0% 100%; /* White */
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 158 30% 85%; /* Light green border */
+    --input: 158 30% 90%; /* Very light green input */
+    --ring: 158 93% 22%; /* Dark Green ring */
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
+    /* Custom Brand Colors */
+    --brand-green: 158 93% 22%; /* #046A38 */
+    --brand-white: 0 0% 100%; /* #FFFFFF */
+    --brand-yellow: 43 100% 55%; /* #FFB81C */
+    --brand-blue: 212 65% 56%; /* #418FDE */
+
+    /* Gradients using brand colors */
+    --gradient-primary: linear-gradient(135deg, hsl(158 93% 22%), hsl(212 65% 56%));
+    --gradient-secondary: linear-gradient(135deg, hsl(43 100% 55%), hsl(212 65% 56%));
+    --gradient-accent: linear-gradient(135deg, hsl(158 93% 22%), hsl(43 100% 55%));
+
+    /* Sidebar */
     --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-foreground: 158 93% 22%;
+    --sidebar-primary: 158 93% 22%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 158 15% 95%;
+    --sidebar-accent-foreground: 158 93% 22%;
+    --sidebar-border: 158 30% 85%;
+    --sidebar-ring: 212 65% 56%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Dark theme using the same brand colors */
+    --background: 158 50% 8%; /* Dark green background */
+    --foreground: 0 0% 95%; /* Light text */
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 158 40% 12%; /* Dark green card */
+    --card-foreground: 0 0% 95%; /* Light text */
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 158 40% 12%; /* Dark green popover */
+    --popover-foreground: 0 0% 95%; /* Light text */
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 43 100% 55%; /* Yellow/Orange primary in dark mode */
+    --primary-foreground: 158 93% 22%; /* Dark green text */
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 158 30% 20%; /* Dark green secondary */
+    --secondary-foreground: 43 100% 70%; /* Lighter yellow */
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 158 20% 15%; /* Very dark green */
+    --muted-foreground: 158 20% 60%; /* Medium green */
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 212 65% 56%; /* Blue accent */
+    --accent-foreground: 0 0% 100%; /* White text */
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 158 30% 25%; /* Dark green border */
+    --input: 158 30% 20%; /* Dark green input */
+    --ring: 43 100% 55%; /* Yellow ring */
+
+    /* Custom Brand Colors remain the same */
+    --brand-green: 158 93% 22%; /* #046A38 */
+    --brand-white: 0 0% 100%; /* #FFFFFF */
+    --brand-yellow: 43 100% 55%; /* #FFB81C */
+    --brand-blue: 212 65% 56%; /* #418FDE */
+
+    /* Gradients for dark mode */
+    --gradient-primary: linear-gradient(135deg, hsl(158 50% 8%), hsl(212 65% 56%));
+    --gradient-secondary: linear-gradient(135deg, hsl(43 100% 55%), hsl(158 50% 8%));
+    --gradient-accent: linear-gradient(135deg, hsl(158 93% 22%), hsl(43 100% 55%));
+
+    /* Sidebar dark theme */
+    --sidebar-background: 158 50% 8%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 43 100% 55%;
+    --sidebar-primary-foreground: 158 93% 22%;
+    --sidebar-accent: 158 30% 15%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 158 30% 25%;
+    --sidebar-ring: 212 65% 56%;
   }
 }
 
