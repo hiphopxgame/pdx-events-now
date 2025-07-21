@@ -193,18 +193,18 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
           </div>
 
           {/* User Information */}
-          <div className="space-y-1 pt-2 border-t border-gray-100">
+          <div className="space-y-2 pt-3 border-t border-gray-200">
             {submittedByUser && (
-              <div className="flex items-center text-gray-500">
-                <User className="h-3 w-3 mr-2" />
-                <span className="text-xs">
+              <div className="flex items-center text-gray-700">
+                <User className="h-4 w-4 mr-2 text-primary" />
+                <span className="text-sm">
                   Submitted by{' '}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       navigate(`/user/${event.createdBy}`);
                     }}
-                    className="text-emerald-600 hover:text-emerald-700 hover:underline"
+                    className="text-primary hover:text-primary/80 hover:underline font-medium"
                   >
                     {submittedByUser}
                   </button>
@@ -212,9 +212,9 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
               </div>
             )}
             {event.organizerName && (
-              <div className="flex items-center text-gray-600">
-                <Tag className="h-3 w-3 mr-2" />
-                <span className="text-xs font-medium">Organizer: {event.organizerName}</span>
+              <div className="flex items-center text-gray-700">
+                <Tag className="h-4 w-4 mr-2 text-secondary" />
+                <span className="text-sm font-medium">Organizer: {event.organizerName}</span>
               </div>
             )}
           </div>
