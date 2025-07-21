@@ -5,12 +5,30 @@ import { useEvents } from '@/hooks/useEvents';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MapPin, Calendar, Loader2 } from 'lucide-react';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+
+// Helper function to create URL-friendly strings
+const createUrlFriendlyString = (str: string) => {
+  return str.replace(/\s+/g, '_').replace(/&/g, '_').replace(/[^\w_-]/g, '');
+};
+
+// Helper function to decode URL-friendly strings
+const decodeUrlFriendlyString = (str: string) => {
+  return str.replace(/_/g, ' ');
+};
 
 const Venues = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
 
   const { data: allEvents = [], isLoading } = useEvents();
+  
+  // Reset pagination when search changes
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
 
   // Get unique venues with event counts
   const venues = React.useMemo(() => {
@@ -52,7 +70,7 @@ const Venues = () => {
   }, [allEvents, searchTerm]);
 
   const handleVenueClick = (venueName: string) => {
-    navigate(`/venue/${encodeURIComponent(venueName)}`);
+    navigate(`/venue/${createUrlFriendlyString(venueName)}`);
   };
 
   if (isLoading) {
@@ -110,7 +128,7 @@ const Venues = () => {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {venues.map((venue) => {
+              {venues.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((venue) => {
                 const fullAddress = [venue.address, venue.city, venue.state]
                   .filter(Boolean)
                   .join(', ');
@@ -152,6 +170,53 @@ const Venues = () => {
                 );
               })}
             </div>
+            
+            {venues.length > itemsPerPage && (
+              <div className="mt-8 flex justify-center">
+                <Pagination>
+                  <PaginationContent>
+                    {currentPage > 1 && (
+                      <PaginationItem>
+                        <PaginationPrevious 
+                          href="#" 
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setCurrentPage(currentPage - 1);
+                          }}
+                        />
+                      </PaginationItem>
+                    )}
+                    
+                    {Array.from({ length: Math.ceil(venues.length / itemsPerPage) }, (_, i) => i + 1).map(page => (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          href="#"
+                          isActive={currentPage === page}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setCurrentPage(page);
+                          }}
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+                    
+                    {currentPage < Math.ceil(venues.length / itemsPerPage) && (
+                      <PaginationItem>
+                        <PaginationNext 
+                          href="#" 
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setCurrentPage(currentPage + 1);
+                          }}
+                        />
+                      </PaginationItem>
+                    )}
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -11,6 +11,11 @@ import { MapPin, Phone, Globe, Calendar, ArrowLeft, ExternalLink, Facebook, Inst
 import { Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
+// Helper function to decode URL-friendly strings
+const decodeUrlFriendlyString = (str: string) => {
+  return str.replace(/_/g, ' ');
+};
+
 const Venue = () => {
   const { venueName } = useParams<{ venueName: string }>();
   const navigate = useNavigate();
@@ -20,8 +25,10 @@ const Venue = () => {
 
   const { data: allEvents = [], isLoading } = useEvents();
 
-  // Filter events for this venue
+  // Filter events for this venue - handle both old and new URL formats
+  const decodedVenueName = venueName ? decodeUrlFriendlyString(venueName) : '';
   const venueEvents = allEvents.filter(event => 
+    event.venue_name?.toLowerCase() === decodedVenueName.toLowerCase() ||
     event.venue_name?.toLowerCase() === decodeURIComponent(venueName || '').toLowerCase()
   );
 
@@ -33,10 +40,12 @@ const Venue = () => {
     const fetchVenueData = async () => {
       if (!venueName) return;
       
+      const decodedName = decodeUrlFriendlyString(venueName);
       const { data, error } = await supabase
         .from('venues')
         .select('*')
-        .ilike('name', decodeURIComponent(venueName))
+        .or(`name.ilike.${decodedName},name.ilike.${decodeURIComponent(venueName)}`)
+        .limit(1)
         .single();
       
       if (data) {
