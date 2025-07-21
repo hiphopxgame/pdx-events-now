@@ -228,7 +228,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
       <CardFooter className="p-6 pt-0">
         <button 
           onClick={() => onEventClick?.(event)}
-          className="w-full bg-gradient-to-r from-emerald-600 to-orange-500 text-white py-3 rounded-lg font-semibold hover:from-emerald-700 hover:to-orange-600 transition-all duration-300 transform group-hover:scale-105"
+          className="w-full bg-gradient-primary text-white py-3 rounded-lg font-semibold hover:scale-105 transition-all duration-300 transform group-hover:scale-105"
         >
           Event Details
         </button>
