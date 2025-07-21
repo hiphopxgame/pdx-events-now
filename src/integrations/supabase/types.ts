@@ -1304,6 +1304,7 @@ export type Database = {
           is_active: boolean
           name: string
           phone: string | null
+          role: string | null
           updated_at: string
         }
         Insert: {
@@ -1313,6 +1314,7 @@ export type Database = {
           is_active?: boolean
           name: string
           phone?: string | null
+          role?: string | null
           updated_at?: string
         }
         Update: {
@@ -1322,6 +1324,7 @@ export type Database = {
           is_active?: boolean
           name?: string
           phone?: string | null
+          role?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -2160,6 +2163,10 @@ export type Database = {
       create_admin_user: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      format_service_name: {
+        Args: { service_slug: string }
+        Returns: string
       }
       handle_community_purchase: {
         Args: { p_user_id: string; p_cash_amount: number }
