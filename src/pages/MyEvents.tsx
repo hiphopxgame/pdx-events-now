@@ -23,6 +23,11 @@ const MyEvents = () => {
     if (recentlySubmitted) {
       setShowSummary(true);
     }
+
+    // Clear the submitted event summary when component unmounts (user leaves page)
+    return () => {
+      sessionStorage.removeItem('recentlySubmittedEvent');
+    };
   }, []);
 
   const handleDismissSummary = () => {
@@ -106,7 +111,12 @@ const MyEvents = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {events.map((event) => (
+              {events.sort((a, b) => {
+                // Sort pending events first
+                if (a.status === 'pending' && b.status !== 'pending') return -1;
+                if (b.status === 'pending' && a.status !== 'pending') return 1;
+                return 0;
+              }).map((event) => (
                 <Card key={event.id} className="hover:shadow-lg transition-shadow">
                   <CardHeader>
                     <div className="flex justify-between items-start">
