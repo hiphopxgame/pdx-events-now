@@ -48,7 +48,7 @@ const Venues = () => {
         venue.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         venue.city?.toLowerCase().includes(searchTerm.toLowerCase())
       )
-      .sort((a, b) => b.upcomingEvents - a.upcomingEvents || b.eventCount - a.eventCount);
+      .sort((a, b) => a.name.localeCompare(b.name));
   }, [allEvents, searchTerm]);
 
   const handleVenueClick = (venueName: string) => {
