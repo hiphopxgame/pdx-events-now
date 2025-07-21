@@ -232,7 +232,7 @@ export const EventDateTimeStep: React.FC<EventDateTimeStepProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center space-x-2 cursor-pointer" onClick={() => setIsRecurring(!isRecurring)}>
+          <div className="flex items-center space-x-2">
             <Checkbox 
               id="recurring" 
               checked={isRecurring}
@@ -240,9 +240,14 @@ export const EventDateTimeStep: React.FC<EventDateTimeStepProps> = ({
                 console.log('Checkbox changed:', checked);
                 setIsRecurring(checked === true);
               }}
-              className="cursor-pointer"
             />
-            <Label htmlFor="recurring" className="cursor-pointer">This is a recurring event</Label>
+            <Label 
+              htmlFor="recurring" 
+              className="cursor-pointer select-none"
+              onClick={() => setIsRecurring(!isRecurring)}
+            >
+              This is a recurring event
+            </Label>
           </div>
 
           {isRecurring && startDate && (
