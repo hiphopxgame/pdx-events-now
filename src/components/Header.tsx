@@ -105,12 +105,14 @@ export const Header = () => {
                         My Events
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/manage-events" className="flex items-center">
-                        <Settings className="mr-2 h-4 w-4" />
-                        Manage Events
-                      </Link>
-                    </DropdownMenuItem>
+                    {isAdmin && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/manage-events" className="flex items-center">
+                          <Settings className="mr-2 h-4 w-4" />
+                          Manage Events
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
                     {isAdmin && (
                       <>
                         <DropdownMenuItem asChild>
