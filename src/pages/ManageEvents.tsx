@@ -213,6 +213,51 @@ const ManageEvents = () => {
     });
   };
 
+  const formatRecurrencePattern = (pattern: string | undefined) => {
+    if (!pattern) return null;
+    
+    // Handle day-specific patterns
+    if (pattern.startsWith('every-')) {
+      const day = pattern.replace('every-', '');
+      const dayNames: { [key: string]: string } = {
+        'sunday': 'Every Sunday',
+        'monday': 'Every Monday', 
+        'tuesday': 'Every Tuesday',
+        'wednesday': 'Every Wednesday',
+        'thursday': 'Every Thursday',
+        'friday': 'Every Friday',
+        'saturday': 'Saturday'
+      };
+      return dayNames[day] || pattern;
+    }
+    
+    // Handle monthly patterns
+    if (pattern.includes('-')) {
+      const [occurrence, day] = pattern.split('-');
+      const occurrenceNames: { [key: string]: string } = {
+        'first': 'First',
+        'second': 'Second', 
+        'third': 'Third',
+        'fourth': 'Fourth',
+        'last': 'Last'
+      };
+      const dayNames: { [key: string]: string } = {
+        'sunday': 'Sunday',
+        'monday': 'Monday',
+        'tuesday': 'Tuesday', 
+        'wednesday': 'Wednesday',
+        'thursday': 'Thursday',
+        'friday': 'Friday',
+        'saturday': 'Saturday'
+      };
+      const occurrenceName = occurrenceNames[occurrence] || occurrence;
+      const dayName = dayNames[day] || day;
+      return `${occurrenceName} ${dayName} of each month`;
+    }
+    
+    return pattern;
+  };
+
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
       case 'approved': return 'default';
