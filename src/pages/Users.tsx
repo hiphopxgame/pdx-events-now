@@ -69,13 +69,16 @@ const Users = () => {
           .select('id', { count: 'exact', head: true })
           .eq('created_by', user.id);
 
-        // For now, set venue count to 0 as we don't have a created_by field in venues table
-        const venueCount = 0;
+        // Get venue count from poreve_venues
+        const { count: venueCount } = await supabase
+          .from('poreve_venues')
+          .select('id', { count: 'exact', head: true })
+          .eq('created_by', user.id);
 
         usersWithCounts.push({
           ...user,
           event_count: eventCount || 0,
-          venue_count: venueCount
+          venue_count: venueCount || 0
         });
       }
 

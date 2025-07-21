@@ -1805,6 +1805,7 @@ export type Database = {
           capacity: number | null
           city: string | null
           created_at: string
+          created_by: string | null
           facebook_url: string | null
           id: string
           instagram_url: string | null
@@ -1825,6 +1826,7 @@ export type Database = {
           capacity?: number | null
           city?: string | null
           created_at?: string
+          created_by?: string | null
           facebook_url?: string | null
           id?: string
           instagram_url?: string | null
@@ -1845,6 +1847,7 @@ export type Database = {
           capacity?: number | null
           city?: string | null
           created_at?: string
+          created_by?: string | null
           facebook_url?: string | null
           id?: string
           instagram_url?: string | null
