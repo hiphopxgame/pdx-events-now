@@ -12,7 +12,37 @@ export const applyEventFilters = (events: Event[], options: UseEventsOptions): E
   }
 
   if (options.category && options.category !== 'all') {
-    filteredEvents = filteredEvents.filter(event => event.category === options.category);
+    filteredEvents = filteredEvents.filter(event => {
+      // Handle both slug and name matching for better compatibility
+      const categoryLower = event.category.toLowerCase();
+      const optionLower = options.category!.toLowerCase();
+      
+      // Direct match
+      if (categoryLower === optionLower) return true;
+      
+      // Slug to name mapping
+      const categoryMap: Record<string, string[]> = {
+        'music': ['music', 'open mic'],
+        'arts-culture': ['arts & culture', 'arts', 'culture'],
+        'food-drink': ['food & drink', 'food', 'drink'],
+        'technology': ['technology', 'tech'],
+        'outdoor': ['outdoor', 'outdoors'],
+        'entertainment': ['entertainment'],
+        'sports': ['sports'],
+        'business': ['business'],
+        'family': ['family'],
+        'health-wellness': ['health & wellness', 'health', 'wellness']
+      };
+      
+      // Check if selected category matches any mapped values
+      for (const [slug, names] of Object.entries(categoryMap)) {
+        if (slug === optionLower && names.some(name => categoryLower.includes(name))) {
+          return true;
+        }
+      }
+      
+      return false;
+    });
   }
 
   if (options.dateFilter && options.dateFilter !== 'all') {

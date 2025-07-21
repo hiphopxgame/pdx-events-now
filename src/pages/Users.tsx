@@ -126,7 +126,7 @@ const Users = () => {
         {/* Search */}
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle>Search Members</CardTitle>
+            <CardTitle>Search Community</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="relative">
