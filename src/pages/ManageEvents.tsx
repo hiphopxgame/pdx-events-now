@@ -14,6 +14,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { useUserRoles } from '@/hooks/useUserRoles';
 import { useNavigate } from 'react-router-dom';
+import { EditEventDialog } from '@/components/EditEventDialog';
 
 const ManageEvents = () => {
   const { data: userEvents = [], isLoading: userEventsLoading } = useUserEvents();
@@ -25,6 +26,8 @@ const ManageEvents = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [editingEvent, setEditingEvent] = useState<any>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   // Real-time updates for event changes
   useEffect(() => {
@@ -179,6 +182,17 @@ const ManageEvents = () => {
         variant: "destructive",
       });
     }
+  };
+
+  const handleEditEvent = (event: any) => {
+    setEditingEvent(event);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleEditSuccess = () => {
+    setIsEditDialogOpen(false);
+    setEditingEvent(null);
+    queryClient.invalidateQueries({ queryKey: ['user-events'] });
   };
 
   const formatDate = (dateString: string) => {
@@ -358,6 +372,16 @@ const ManageEvents = () => {
                           View
                         </Button>
                         
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleEditEvent(event)}
+                          className="text-emerald-600 border-emerald-200 hover:bg-emerald-50"
+                        >
+                          <Edit className="h-4 w-4 mr-1" />
+                          Edit
+                        </Button>
+                        
                         {event.status === 'approved' && (
                           <Button
                             size="sm"
@@ -426,6 +450,15 @@ const ManageEvents = () => {
         
         <Footer />
       </div>
+
+      {editingEvent && (
+        <EditEventDialog
+          event={editingEvent}
+          isOpen={isEditDialogOpen}
+          onClose={() => setIsEditDialogOpen(false)}
+          onSuccess={handleEditSuccess}
+        />
+      )}
     </ProtectedRoute>
   );
 };
