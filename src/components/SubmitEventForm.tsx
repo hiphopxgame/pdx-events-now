@@ -146,9 +146,29 @@ export const SubmitEventForm: React.FC = () => {
 
         console.log('Creating/updating venue with social media:', venueData);
 
-        const { error: venueError } = await supabase
+        // Check if venue already exists
+        const { data: existingVenue } = await supabase
           .from('venues')
-          .upsert([venueData], { onConflict: 'name' });
+          .select('id')
+          .eq('name', data.venue_name)
+          .eq('address', data.venue_address)
+          .single();
+
+        let venueResult;
+        if (existingVenue) {
+          // Update existing venue
+          venueResult = await supabase
+            .from('venues')
+            .update(venueData)
+            .eq('id', existingVenue.id);
+        } else {
+          // Insert new venue
+          venueResult = await supabase
+            .from('venues')
+            .insert([venueData]);
+        }
+
+        const { error: venueError } = venueResult;
 
         if (venueError) {
           console.error('Error creating/updating venue:', venueError);
