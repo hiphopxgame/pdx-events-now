@@ -82,11 +82,14 @@ export const EventDateTimeStep: React.FC<EventDateTimeStepProps> = ({
       }
     }
     
-    // Add the occurrence-based option if it's within the first 4
-    const occurrenceNames = ['first', 'second', 'third', 'fourth'];
-    if (occurrenceCount <= 4) {
+    // Add the occurrence-based option if it's within the first 5
+    const occurrenceNames = ['first', 'second', 'third', 'fourth', 'fifth'];
+    if (occurrenceCount <= 5) {
       options.push(`${occurrenceNames[occurrenceCount - 1]}-${dayName}`);
     }
+    
+    // Add "last" option (which could be 4th or 5th depending on the month)
+    options.push(`last-${dayName}`);
     
     return options;
   };
@@ -148,7 +151,7 @@ export const EventDateTimeStep: React.FC<EventDateTimeStepProps> = ({
       }
     } else {
       const occurrenceMap: { [key: string]: number } = {
-        'first': 1, 'second': 2, 'third': 3, 'fourth': 4
+        'first': 1, 'second': 2, 'third': 3, 'fourth': 4, 'fifth': 5
       };
       
       const nthOccurrence = occurrenceMap[occurrence];

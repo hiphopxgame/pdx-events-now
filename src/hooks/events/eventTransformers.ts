@@ -99,7 +99,7 @@ const findNthDayOfMonth = (year: number, month: number, occurrence: string, dayO
   } else {
     // Find the nth occurrence
     const occurrenceMap: { [key: string]: number } = {
-      'first': 1, 'second': 2, 'third': 3, 'fourth': 4
+      'first': 1, 'second': 2, 'third': 3, 'fourth': 4, 'fifth': 5
     };
     
     const nthOccurrence = occurrenceMap[occurrence];
