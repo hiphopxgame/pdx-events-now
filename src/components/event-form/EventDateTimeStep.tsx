@@ -65,35 +65,41 @@ export const EventDateTimeStep: React.FC<EventDateTimeStepProps> = ({
     
     const options = [`every-${dayName}`];
     
-    // Calculate which occurrence of the day this is in the month
-    const date = selectedDate.getDate();
-    const firstDayOfMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
-    const lastDayOfMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0);
+    // Calculate which occurrence of this day it is in the month
+    const year = selectedDate.getFullYear();
+    const month = selectedDate.getMonth();
+    const lastDayOfMonth = new Date(year, month + 1, 0);
     
-    // Find which week this day falls in
-    let occurrence = 1;
-    for (let d = 1; d < date; d += 7) {
-      const testDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), d);
+    // Count how many of this day of week have occurred up to and including the selected date
+    let occurrenceCount = 0;
+    for (let day = 1; day <= selectedDate.getDate(); day++) {
+      const testDate = new Date(year, month, day);
       if (testDate.getDay() === dayOfWeek) {
-        occurrence = Math.ceil(d / 7);
+        occurrenceCount++;
       }
     }
     
-    const actualOccurrence = Math.ceil(date / 7);
-    
-    // Add the occurrence-based option
+    // Add the occurrence-based option if it's within the first 4
     const occurrenceNames = ['first', 'second', 'third', 'fourth'];
-    if (actualOccurrence <= 4) {
-      options.push(`${occurrenceNames[actualOccurrence - 1]}-${dayName}`);
+    if (occurrenceCount <= 4) {
+      options.push(`${occurrenceNames[occurrenceCount - 1]}-${dayName}`);
     }
     
-    // Check if this is also the last occurrence of this day in the month
-    const isLast = date + 7 > lastDayOfMonth.getDate();
-    if (isLast) {
+    // Check if this is the last occurrence of this day in the month
+    let isLastOccurrence = true;
+    for (let day = selectedDate.getDate() + 1; day <= lastDayOfMonth.getDate(); day++) {
+      const testDate = new Date(year, month, day);
+      if (testDate.getDay() === dayOfWeek) {
+        isLastOccurrence = false;
+        break;
+      }
+    }
+    
+    if (isLastOccurrence) {
       options.push(`last-${dayName}`);
     }
     
-    return options;
+    return [...new Set(options)]; // Remove duplicates in case last === fourth
   };
 
   const getNextDateForPattern = (fromDate: Date, pattern: string): Date | null => {
@@ -192,8 +198,20 @@ export const EventDateTimeStep: React.FC<EventDateTimeStepProps> = ({
                     {startDate ? format(startDate, "EEEE, MMMM do, yyyy") : "Click to select date"}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 z-50" align="start">
-                  <Calendar mode="single" selected={startDate} onSelect={setStartDate} initialFocus className="p-3 pointer-events-auto bg-background" />
+                <PopoverContent className="w-auto p-0 z-50 bg-background border" align="start">
+                  <Calendar 
+                    mode="single" 
+                    selected={startDate} 
+                    onSelect={(date) => {
+                      setStartDate(date);
+                      // Close the popover by removing focus
+                      if (date) {
+                        document.body.click();
+                      }
+                    }} 
+                    initialFocus 
+                    className="p-3 pointer-events-auto bg-background" 
+                  />
                 </PopoverContent>
               </Popover>
             </div>
@@ -208,7 +226,7 @@ export const EventDateTimeStep: React.FC<EventDateTimeStepProps> = ({
                 </div>
                 <div>
                   <Label htmlFor="end_time" className="text-sm">End Time</Label>
-                  <Input id="end_time" type="time" {...register('end_time')} defaultValue="12:00" className="h-12" />
+                  <Input id="end_time" type="time" {...register('end_time')} defaultValue="13:00" className="h-12" />
                 </div>
               </div>
             </div>

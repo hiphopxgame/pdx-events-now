@@ -71,7 +71,7 @@ export const RecurrenceSelector: React.FC<RecurrenceSelectorProps> = ({
     return labels[value] || value;
   };
   return (
-    <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
+    <div className="space-y-4 p-4 border rounded-lg bg-muted/20">
       <div>
         <Label>Recurrence Pattern</Label>
         <Select value={recurringType} onValueChange={setRecurringType}>
@@ -97,8 +97,20 @@ export const RecurrenceSelector: React.FC<RecurrenceSelectorProps> = ({
               {endDate ? format(endDate, "PPP") : "Pick end date (optional)"}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0 z-50">
-            <Calendar mode="single" selected={endDate} onSelect={setEndDate} initialFocus className="p-3 pointer-events-auto bg-background" />
+          <PopoverContent className="w-auto p-0 z-50 bg-background border">
+            <Calendar 
+              mode="single" 
+              selected={endDate} 
+              onSelect={(date) => {
+                setEndDate(date);
+                // Close the popover by removing focus
+                if (date) {
+                  document.body.click();
+                }
+              }} 
+              initialFocus 
+              className="p-3 pointer-events-auto bg-background" 
+            />
           </PopoverContent>
         </Popover>
       </div>
