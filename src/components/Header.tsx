@@ -89,7 +89,7 @@ export const Header = () => {
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm" className="flex items-center space-x-2">
                       <User className="h-4 w-4" />
-                      <span className="hidden sm:inline">{user?.user_metadata?.display_name || user?.email || 'Account'}</span>
+                      <span className="hidden sm:inline">{user?.user_metadata?.display_name || 'Account'}</span>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="z-50 bg-background">
