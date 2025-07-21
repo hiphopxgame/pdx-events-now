@@ -16,18 +16,74 @@ const Event = () => {
 
   const { data: allEvents = [], isLoading } = useEvents();
 
-  // Find the specific event
-  const event = allEvents.find(e => e.id === eventId);
+  // Also try to fetch from user_events table (for ManageEvents view)
+  const { data: userEvent } = useQuery({
+    queryKey: ['user-event', eventId],
+    queryFn: async () => {
+      if (!eventId) return null;
+      const { data, error } = await supabase
+        .from('user_events')
+        .select('*')
+        .eq('id', eventId)
+        .single();
+      
+      if (error) {
+        console.error('User event not found:', error);
+        return null;
+      }
+      return data;
+    },
+    enabled: !!eventId,
+  });
+
+  // Find the specific event from combined events or user event
+  const event = allEvents.find(e => e.id === eventId) || (userEvent ? {
+    id: userEvent.id,
+    title: userEvent.title,
+    description: userEvent.description,
+    date: userEvent.start_date,
+    time: userEvent.start_time,
+    endTime: userEvent.end_time,
+    venue: userEvent.venue_name,
+    venueAddress: userEvent.venue_address,
+    city: userEvent.venue_city,
+    state: userEvent.venue_state,
+    category: userEvent.category,
+    price: userEvent.price_display,
+    imageUrl: userEvent.image_url,
+    organizer: userEvent.organizer_name,
+    ticketUrl: userEvent.ticket_url,
+    facebookUrl: userEvent.facebook_url,
+    instagramUrl: userEvent.instagram_url,
+    twitterUrl: userEvent.twitter_url,
+    youtubeUrl: userEvent.youtube_url,
+    websiteUrl: userEvent.website_url,
+    created_by: userEvent.created_by
+  } : null);
+
+  // Determine if this is a user event or regular event
+  const isUserEvent = !!userEvent && !allEvents.find(e => e.id === eventId);
+
+  // Helper functions to get properties from either event type
+  const getEventProperty = (userProp: keyof typeof userEvent, regularProp: string) => {
+    if (isUserEvent && userEvent) {
+      return userEvent[userProp];
+    }
+    return (event as any)?.[regularProp];
+  };
+
+  // Get venue name based on event type  
+  const venueName = getEventProperty('venue_name', 'venue');
 
   // Fetch venue details for social media links
   const { data: venueData } = useQuery({
-    queryKey: ['venue', event?.venue_name],
+    queryKey: ['venue', venueName],
     queryFn: async () => {
-      if (!event?.venue_name) return null;
+      if (!venueName) return null;
       const { data, error } = await supabase
         .from('poreve_venues')
         .select('*')
-        .eq('name', event.venue_name)
+        .eq('name', venueName)
         .single();
       
       if (error) {
@@ -36,7 +92,7 @@ const Event = () => {
       }
       return data;
     },
-    enabled: !!event?.venue_name,
+    enabled: !!venueName,
   });
 
   const formatDate = (dateString: string) => {
@@ -71,9 +127,11 @@ const Event = () => {
   const formatTimeRange = () => {
     if (!event) return 'TBA';
     
-    const startTime = formatTime(event.start_date);
-    if (event.end_date) {
-      const endTime = formatTime(event.end_date);
+    const startDate = getEventProperty('start_date', 'date');
+    const startTime = formatTime(startDate);
+    const endDate = getEventProperty('recurrence_end_date', 'endDate');
+    if (endDate) {
+      const endTime = formatTime(endDate);
       return `${startTime} - ${endTime}`;
     }
     return startTime;
@@ -94,8 +152,9 @@ const Event = () => {
   };
 
   const handleVenueClick = () => {
-    if (event?.venue_name) {
-      navigate(`/venue/${encodeURIComponent(event.venue_name)}`);
+    const venueNameProp = getEventProperty('venue_name', 'venue');
+    if (venueNameProp) {
+      navigate(`/venue/${encodeURIComponent(venueNameProp)}`);
     }
   };
 
@@ -133,9 +192,11 @@ const Event = () => {
     );
   }
 
-  const fullAddress = [event.venue_address, event.venue_city, event.venue_state]
-    .filter(Boolean)
-    .join(', ');
+  const fullAddress = [
+    getEventProperty('venue_address', 'venueAddress'), 
+    getEventProperty('venue_city', 'city'), 
+    getEventProperty('venue_state', 'state')
+  ].filter(Boolean).join(', ');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-orange-50">
@@ -157,7 +218,7 @@ const Event = () => {
           {/* Event Image */}
           <div className="aspect-video bg-gradient-to-br from-emerald-100 to-orange-100 relative">
             <img 
-              src={event.image_url || '/placeholder.svg'} 
+              src={getEventProperty('image_url', 'imageUrl') || '/placeholder.svg'} 
               alt={event.title}
               className="w-full h-full object-cover"
             />
@@ -167,7 +228,7 @@ const Event = () => {
               </Badge>
             </div>
             <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-lg">
-              <span className="font-bold text-emerald-700">{event.price_display || 'TBA'}</span>
+              <span className="font-bold text-emerald-700">{getEventProperty('price_display', 'price') || 'TBA'}</span>
             </div>
           </div>
 
@@ -180,7 +241,7 @@ const Event = () => {
                 <div className="flex items-center text-gray-600">
                   <Calendar className="h-5 w-5 mr-3 text-emerald-600" />
                   <div>
-                    <p className="font-medium">{formatDate(event.start_date)}</p>
+                    <p className="font-medium">{formatDate(getEventProperty('start_date', 'date'))}</p>
                     <p className="text-sm text-gray-500">{formatTimeRange()}</p>
                   </div>
                 </div>
@@ -192,7 +253,7 @@ const Event = () => {
                       className="font-medium cursor-pointer hover:text-emerald-600 hover:underline"
                       onClick={handleVenueClick}
                     >
-                      {event.venue_name}
+                      {getEventProperty('venue_name', 'venue')}
                     </p>
                     {fullAddress && (
                       <p className="text-sm text-gray-500">{fullAddress}</p>
@@ -200,12 +261,12 @@ const Event = () => {
                   </div>
                 </div>
 
-                {event.organizer_name && (
+                {getEventProperty('organizer_name', 'organizer') && (
                   <div className="flex items-center text-gray-600">
                     <User className="h-5 w-5 mr-3 text-emerald-600" />
                     <div>
                       <p className="font-medium">Organized by</p>
-                      <p className="text-sm text-gray-500">{event.organizer_name}</p>
+                      <p className="text-sm text-gray-500">{getEventProperty('organizer_name', 'organizer')}</p>
                       {event.created_by && (
                         <p className="text-xs text-emerald-600 hover:text-emerald-700 cursor-pointer"
                            onClick={() => navigate(`/user/${event.created_by}`)}>
@@ -269,45 +330,45 @@ const Event = () => {
                 )}
 
                 {/* Event Social Media */}
-                {(event.website_url || event.facebook_url || event.instagram_url || event.twitter_url || event.youtube_url) && (
+                {(getEventProperty('website_url', 'websiteUrl') || getEventProperty('facebook_url', 'facebookUrl') || getEventProperty('instagram_url', 'instagramUrl') || getEventProperty('twitter_url', 'twitterUrl') || getEventProperty('youtube_url', 'youtubeUrl')) && (
                   <div className="bg-emerald-50 rounded-lg p-6">
                     <h4 className="font-semibold text-gray-800 mb-4">Event Links</h4>
                     <div className="flex flex-wrap gap-2">
-                      {event.website_url && (
+                      {getEventProperty('website_url', 'websiteUrl') && (
                         <Button variant="outline" size="sm" asChild>
-                          <a href={event.website_url} target="_blank" rel="noopener noreferrer">
+                          <a href={getEventProperty('website_url', 'websiteUrl')} target="_blank" rel="noopener noreferrer">
                             <Globe className="h-4 w-4 mr-1" />
                             Website
                           </a>
                         </Button>
                       )}
-                      {event.facebook_url && (
+                      {getEventProperty('facebook_url', 'facebookUrl') && (
                         <Button variant="outline" size="sm" asChild>
-                          <a href={event.facebook_url} target="_blank" rel="noopener noreferrer">
+                          <a href={getEventProperty('facebook_url', 'facebookUrl')} target="_blank" rel="noopener noreferrer">
                             <Facebook className="h-4 w-4 mr-1" />
                             Facebook
                           </a>
                         </Button>
                       )}
-                      {event.instagram_url && (
+                      {getEventProperty('instagram_url', 'instagramUrl') && (
                         <Button variant="outline" size="sm" asChild>
-                          <a href={event.instagram_url} target="_blank" rel="noopener noreferrer">
+                          <a href={getEventProperty('instagram_url', 'instagramUrl')} target="_blank" rel="noopener noreferrer">
                             <Instagram className="h-4 w-4 mr-1" />
                             Instagram
                           </a>
                         </Button>
                       )}
-                      {event.twitter_url && (
+                      {getEventProperty('twitter_url', 'twitterUrl') && (
                         <Button variant="outline" size="sm" asChild>
-                          <a href={event.twitter_url} target="_blank" rel="noopener noreferrer">
+                          <a href={getEventProperty('twitter_url', 'twitterUrl')} target="_blank" rel="noopener noreferrer">
                             <Twitter className="h-4 w-4 mr-1" />
                             Twitter
                           </a>
                         </Button>
                       )}
-                      {event.youtube_url && (
+                      {getEventProperty('youtube_url', 'youtubeUrl') && (
                         <Button variant="outline" size="sm" asChild>
-                          <a href={event.youtube_url} target="_blank" rel="noopener noreferrer">
+                          <a href={getEventProperty('youtube_url', 'youtubeUrl')} target="_blank" rel="noopener noreferrer">
                             <Youtube className="h-4 w-4 mr-1" />
                             YouTube
                           </a>
@@ -330,49 +391,49 @@ const Event = () => {
             {/* Links */}
             <div className="mb-8">
               <div className="flex flex-wrap gap-3">
-                {event.ticket_url && (
+                {getEventProperty('ticket_url', 'ticketUrl') && (
                   <Button 
                     asChild
                     className="bg-gradient-to-r from-emerald-600 to-orange-500 hover:from-emerald-700 hover:to-orange-600"
                   >
-                    <a href={event.ticket_url} target="_blank" rel="noopener noreferrer">
+                    <a href={getEventProperty('ticket_url', 'ticketUrl')} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="h-4 w-4 mr-2" />
                       Get Tickets
                     </a>
                   </Button>
                 )}
-                {event.website_url && (
+                {getEventProperty('website_url', 'websiteUrl') && (
                   <Button variant="outline" asChild>
-                    <a href={event.website_url} target="_blank" rel="noopener noreferrer">
+                    <a href={getEventProperty('website_url', 'websiteUrl')} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="h-4 w-4 mr-2" />
                       Website
                     </a>
                   </Button>
                 )}
-                {event.facebook_url && (
+                {getEventProperty('facebook_url', 'facebookUrl') && (
                   <Button variant="outline" asChild>
-                    <a href={event.facebook_url} target="_blank" rel="noopener noreferrer">
+                    <a href={getEventProperty('facebook_url', 'facebookUrl')} target="_blank" rel="noopener noreferrer">
                       Facebook
                     </a>
                   </Button>
                 )}
-                {event.instagram_url && (
+                {getEventProperty('instagram_url', 'instagramUrl') && (
                   <Button variant="outline" asChild>
-                    <a href={event.instagram_url} target="_blank" rel="noopener noreferrer">
+                    <a href={getEventProperty('instagram_url', 'instagramUrl')} target="_blank" rel="noopener noreferrer">
                       Instagram
                     </a>
                   </Button>
                 )}
-                {event.twitter_url && (
+                {getEventProperty('twitter_url', 'twitterUrl') && (
                   <Button variant="outline" asChild>
-                    <a href={event.twitter_url} target="_blank" rel="noopener noreferrer">
+                    <a href={getEventProperty('twitter_url', 'twitterUrl')} target="_blank" rel="noopener noreferrer">
                       Twitter
                     </a>
                   </Button>
                 )}
-                {event.youtube_url && (
+                {getEventProperty('youtube_url', 'youtubeUrl') && (
                   <Button variant="outline" asChild>
-                    <a href={event.youtube_url} target="_blank" rel="noopener noreferrer">
+                    <a href={getEventProperty('youtube_url', 'youtubeUrl')} target="_blank" rel="noopener noreferrer">
                       YouTube
                     </a>
                   </Button>
