@@ -168,8 +168,8 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
             <Clock className="h-4 w-4 ml-4 mr-2 text-emerald-600" />
             <span className="text-sm">
               {event.time}
-              {event.endTime && formatEndTime(event.endTime) && (
-                <> - {formatEndTime(event.endTime)}</>
+              {event.endTime && (
+                <> - {event.endTime}</>
               )}
             </span>
             {event.recurrencePattern && (
