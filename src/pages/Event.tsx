@@ -21,10 +21,17 @@ const Event = () => {
     queryKey: ['user-event', eventId],
     queryFn: async () => {
       if (!eventId) return null;
+      
+      // Handle recurring event IDs that have "-0", "-1", etc. suffix
+      let baseEventId = eventId;
+      if (eventId.includes('-') && eventId.split('-').length > 5) {
+        baseEventId = eventId.split('-').slice(0, 5).join('-');
+      }
+      
       const { data, error } = await supabase
         .from('user_events')
         .select('*')
-        .eq('id', eventId)
+        .eq('id', baseEventId)
         .single();
       
       if (error) {

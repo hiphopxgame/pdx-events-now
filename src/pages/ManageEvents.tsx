@@ -226,7 +226,7 @@ const ManageEvents = () => {
         'wednesday': 'Every Wednesday',
         'thursday': 'Every Thursday',
         'friday': 'Every Friday',
-        'saturday': 'Saturday'
+        'saturday': 'Every Saturday'
       };
       return dayNames[day] || pattern;
     }
