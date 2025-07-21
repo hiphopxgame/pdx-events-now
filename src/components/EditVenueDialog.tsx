@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -23,6 +24,7 @@ interface Venue {
   youtube_url?: string;
   latitude?: number;
   longitude?: number;
+  ages?: string;
 }
 
 interface EditVenueDialogProps {
@@ -51,6 +53,7 @@ export const EditVenueDialog: React.FC<EditVenueDialogProps> = ({
     instagram_url: '',
     twitter_url: '',
     youtube_url: '',
+    ages: '21+',
   });
   const { toast } = useToast();
 
@@ -68,6 +71,7 @@ export const EditVenueDialog: React.FC<EditVenueDialogProps> = ({
         instagram_url: venue.instagram_url || '',
         twitter_url: venue.twitter_url || '',
         youtube_url: venue.youtube_url || '',
+        ages: venue.ages || '21+',
       });
     }
   }, [venue, open]);
@@ -91,6 +95,7 @@ export const EditVenueDialog: React.FC<EditVenueDialogProps> = ({
         instagram_url: formData.instagram_url.trim() || null,
         twitter_url: formData.twitter_url.trim() || null,
         youtube_url: formData.youtube_url.trim() || null,
+        ages: formData.ages,
       };
 
       let error;
@@ -161,7 +166,7 @@ export const EditVenueDialog: React.FC<EditVenueDialogProps> = ({
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number</Label>
                 <Input
@@ -182,6 +187,20 @@ export const EditVenueDialog: React.FC<EditVenueDialogProps> = ({
                   onChange={(e) => handleInputChange('website', e.target.value)}
                   placeholder="https://example.com"
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="ages">Age Requirement</Label>
+                <Select value={formData.ages} onValueChange={(value) => handleInputChange('ages', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select age requirement" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="All Ages">All Ages</SelectItem>
+                    <SelectItem value="18+">18+</SelectItem>
+                    <SelectItem value="21+">21+</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>

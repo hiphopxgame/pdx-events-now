@@ -2071,6 +2071,7 @@ export type Database = {
       venues: {
         Row: {
           address: string | null
+          ages: string | null
           approved_at: string | null
           approved_by: string | null
           city: string | null
@@ -2097,6 +2098,7 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          ages?: string | null
           approved_at?: string | null
           approved_by?: string | null
           city?: string | null
@@ -2123,6 +2125,7 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          ages?: string | null
           approved_at?: string | null
           approved_by?: string | null
           city?: string | null
