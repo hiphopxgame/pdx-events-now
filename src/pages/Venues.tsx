@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { useEvents } from '@/hooks/useEvents';
@@ -22,6 +22,7 @@ const Venues = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const scrollTargetRef = useRef<HTMLElement>(null);
 
   const { data: allEvents = [], isLoading } = useEvents();
   
@@ -127,6 +128,8 @@ const Venues = () => {
               </h2>
             </div>
             
+            {/* Add ref for scroll target */}
+            <div ref={(el) => { if (el) scrollTargetRef.current = el; }} />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {venues.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((venue) => {
                 const fullAddress = [venue.address, venue.city, venue.state]
@@ -178,6 +181,7 @@ const Venues = () => {
                 itemsPerPage={itemsPerPage}
                 onPageChange={setCurrentPage}
                 onItemsPerPageChange={setItemsPerPage}
+                scrollTargetRef={scrollTargetRef}
               />
             )}
           </div>

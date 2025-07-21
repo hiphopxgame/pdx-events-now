@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Header } from '@/components/Header';
 import { EventsGrid } from '@/components/EventsGrid';
 import { SearchFilters } from '@/components/SearchFilters';
@@ -17,6 +17,7 @@ const Index = () => {
   const [selectedDate, setSelectedDate] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const scrollTargetRef = useRef<HTMLElement>(null);
   const navigate = useNavigate();
 
   const handleEventClick = (event: any) => {
@@ -136,6 +137,8 @@ const Index = () => {
           </div>
         ) : (
           <>
+            {/* Add ref for scroll target */}
+            <div ref={(el) => { if (el) scrollTargetRef.current = el; }} />
             <EventsGrid 
               events={transformedEvents.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)} 
               onEventClick={handleEventClick} 
@@ -148,6 +151,7 @@ const Index = () => {
                 itemsPerPage={itemsPerPage}
                 onPageChange={setCurrentPage}
                 onItemsPerPageChange={setItemsPerPage}
+                scrollTargetRef={scrollTargetRef}
               />
             )}
           </>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -32,6 +32,7 @@ const Users = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const scrollTargetRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     fetchUsers();
@@ -159,6 +160,8 @@ const Users = () => {
           </div>
         ) : (
           <>
+            {/* Add ref for scroll target */}
+            <div ref={(el) => { if (el) scrollTargetRef.current = el; }} />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredUsers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((user) => {
               const socialLinks = getSocialLinks(user);
@@ -244,6 +247,7 @@ const Users = () => {
                 itemsPerPage={itemsPerPage}
                 onPageChange={setCurrentPage}
                 onItemsPerPageChange={setItemsPerPage}
+                scrollTargetRef={scrollTargetRef}
               />
             )}
             

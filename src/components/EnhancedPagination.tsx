@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -10,6 +10,7 @@ interface EnhancedPaginationProps {
   onPageChange: (page: number) => void;
   onItemsPerPageChange: (itemsPerPage: number) => void;
   itemsPerPageOptions?: number[];
+  scrollTargetRef?: React.RefObject<HTMLElement>;
 }
 
 export const EnhancedPagination: React.FC<EnhancedPaginationProps> = ({
@@ -18,11 +19,32 @@ export const EnhancedPagination: React.FC<EnhancedPaginationProps> = ({
   itemsPerPage,
   onPageChange,
   onItemsPerPageChange,
-  itemsPerPageOptions = [10, 20, 50, 100]
+  itemsPerPageOptions = [10, 20, 50, 100],
+  scrollTargetRef
 }) => {
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startItem = (currentPage - 1) * itemsPerPage + 1;
   const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+  
+  // Handle page change with scroll behavior
+  const handlePageChange = (page: number) => {
+    onPageChange(page);
+    
+    // Scroll to target element or top of page
+    setTimeout(() => {
+      if (scrollTargetRef?.current) {
+        scrollTargetRef.current.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        });
+      } else {
+        window.scrollTo({ 
+          top: 0, 
+          behavior: 'smooth' 
+        });
+      }
+    }, 100);
+  };
   
   // Generate visible page numbers
   const getVisiblePages = () => {
@@ -108,7 +130,7 @@ export const EnhancedPagination: React.FC<EnhancedPaginationProps> = ({
           <span>Go to page:</span>
           <Select
             value={currentPage.toString()}
-            onValueChange={(value) => onPageChange(Number(value))}
+            onValueChange={(value) => handlePageChange(Number(value))}
           >
             <SelectTrigger className="w-20">
               <SelectValue />
@@ -133,7 +155,7 @@ export const EnhancedPagination: React.FC<EnhancedPaginationProps> = ({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => onPageChange(1)}
+            onClick={() => handlePageChange(1)}
             disabled={currentPage === 1}
             className="flex items-center gap-1"
           >
@@ -145,7 +167,7 @@ export const EnhancedPagination: React.FC<EnhancedPaginationProps> = ({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => onPageChange(currentPage - 1)}
+            onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
             className="flex items-center gap-1"
           >
@@ -157,7 +179,7 @@ export const EnhancedPagination: React.FC<EnhancedPaginationProps> = ({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => onPageChange(currentPage + 1)}
+            onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
             className="flex items-center gap-1"
           >
@@ -169,7 +191,7 @@ export const EnhancedPagination: React.FC<EnhancedPaginationProps> = ({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => onPageChange(totalPages)}
+            onClick={() => handlePageChange(totalPages)}
             disabled={currentPage === totalPages}
             className="flex items-center gap-1"
           >
@@ -194,7 +216,7 @@ export const EnhancedPagination: React.FC<EnhancedPaginationProps> = ({
                 key={page}
                 variant={currentPage === page ? "default" : "outline"}
                 size="sm"
-                onClick={() => onPageChange(page as number)}
+                onClick={() => handlePageChange(page as number)}
                 className="min-w-[2.5rem]"
               >
                 {page}
