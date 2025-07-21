@@ -43,10 +43,13 @@ export const EventDateTimeStep: React.FC<EventDateTimeStepProps> = ({
     if (isRecurring && recurringType && startDate) {
       const adjustedDate = getNextDateForPattern(startDate, recurringType);
       if (adjustedDate && adjustedDate.getTime() !== startDate.getTime()) {
-        setStartDate(adjustedDate);
+        // Use setTimeout to prevent infinite re-renders
+        setTimeout(() => {
+          setStartDate(adjustedDate);
+        }, 0);
       }
     }
-  }, [isRecurring, recurringType, startDate, setStartDate]);
+  }, [isRecurring, recurringType]); // Remove startDate and setStartDate from dependencies
 
   const getNextDateForPattern = (fromDate: Date, pattern: string): Date | null => {
     if (pattern.startsWith('every-')) {
@@ -144,8 +147,8 @@ export const EventDateTimeStep: React.FC<EventDateTimeStepProps> = ({
                     {startDate ? format(startDate, "EEEE, MMMM do, yyyy") : "Click to select date"}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar mode="single" selected={startDate} onSelect={setStartDate} initialFocus className="p-3 pointer-events-auto" />
+                <PopoverContent className="w-auto p-0 z-50" align="start">
+                  <Calendar mode="single" selected={startDate} onSelect={setStartDate} initialFocus className="p-3 pointer-events-auto bg-background" />
                 </PopoverContent>
               </Popover>
             </div>
