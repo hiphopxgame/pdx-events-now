@@ -21,7 +21,7 @@ const Venues = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(12);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const { data: allEvents = [], isLoading } = useEvents();
   

@@ -18,7 +18,7 @@ export const EnhancedPagination: React.FC<EnhancedPaginationProps> = ({
   itemsPerPage,
   onPageChange,
   onItemsPerPageChange,
-  itemsPerPageOptions = [6, 12, 24, 48]
+  itemsPerPageOptions = [10, 20, 50, 100]
 }) => {
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startItem = (currentPage - 1) * itemsPerPage + 1;
@@ -72,39 +72,40 @@ export const EnhancedPagination: React.FC<EnhancedPaginationProps> = ({
   }
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-4">
-      {/* Items per page and info */}
-      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-        <div className="flex items-center gap-2">
-          <span>Show</span>
-          <Select
-            value={itemsPerPage.toString()}
-            onValueChange={(value) => onItemsPerPageChange(Number(value))}
-          >
-            <SelectTrigger className="w-20">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {itemsPerPageOptions.map((option) => (
-                <SelectItem key={option} value={option.toString()}>
-                  {option}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <span>per page</span>
+    <div className="flex flex-col gap-4 py-6">
+      {/* Top row: Items per page and results info */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <span>Show</span>
+            <Select
+              value={itemsPerPage.toString()}
+              onValueChange={(value) => onItemsPerPageChange(Number(value))}
+            >
+              <SelectTrigger className="w-20">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {itemsPerPageOptions.map((option) => (
+                  <SelectItem key={option} value={option.toString()}>
+                    {option}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <span>per page</span>
+          </div>
         </div>
         
-        <div className="hidden sm:block">
+        <div className="text-sm text-muted-foreground">
           Showing {startItem}-{endItem} of {totalItems} results
         </div>
       </div>
 
-      {/* Page navigation */}
-      <div className="flex items-center gap-2">
-        {/* Go to page selector */}
-        <div className="flex items-center gap-2 text-sm text-muted-foreground mr-4">
-          <span>Page</span>
+      {/* Middle row: Page selector */}
+      <div className="flex items-center justify-center gap-4">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <span>Go to page:</span>
           <Select
             value={currentPage.toString()}
             onValueChange={(value) => onPageChange(Number(value))}
@@ -122,32 +123,63 @@ export const EnhancedPagination: React.FC<EnhancedPaginationProps> = ({
           </Select>
           <span>of {totalPages}</span>
         </div>
+      </div>
 
-        {/* First page */}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => onPageChange(1)}
-          disabled={currentPage === 1}
-          className="hidden sm:flex"
-        >
-          <ChevronsLeft className="h-4 w-4" />
-          <span className="sr-only">First page</span>
-        </Button>
+      {/* Bottom row: Navigation buttons and page numbers */}
+      <div className="flex flex-col gap-4">
+        {/* Navigation buttons */}
+        <div className="flex items-center justify-center gap-2">
+          {/* First page */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange(1)}
+            disabled={currentPage === 1}
+            className="flex items-center gap-1"
+          >
+            <ChevronsLeft className="h-4 w-4" />
+            <span>First</span>
+          </Button>
 
-        {/* Previous page */}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => onPageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-        >
-          <ChevronLeft className="h-4 w-4" />
-          <span className="hidden sm:inline">Previous</span>
-        </Button>
+          {/* Previous page */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="flex items-center gap-1"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            <span>Previous</span>
+          </Button>
 
-        {/* Page numbers */}
-        <div className="hidden md:flex items-center gap-1">
+          {/* Next page */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="flex items-center gap-1"
+          >
+            <span>Next</span>
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+
+          {/* Last page */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange(totalPages)}
+            disabled={currentPage === totalPages}
+            className="flex items-center gap-1"
+          >
+            <span>Last</span>
+            <ChevronsRight className="h-4 w-4" />
+          </Button>
+        </div>
+
+        {/* Page numbers (for larger screens) */}
+        <div className="hidden md:flex items-center justify-center gap-1 flex-wrap">
           {visiblePages.map((page, index) => {
             if (page === '...') {
               return (
@@ -170,29 +202,6 @@ export const EnhancedPagination: React.FC<EnhancedPaginationProps> = ({
             );
           })}
         </div>
-
-        {/* Next page */}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => onPageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-        >
-          <span className="hidden sm:inline">Next</span>
-          <ChevronRight className="h-4 w-4" />
-        </Button>
-
-        {/* Last page */}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => onPageChange(totalPages)}
-          disabled={currentPage === totalPages}
-          className="hidden sm:flex"
-        >
-          <span className="sr-only">Last page</span>
-          <ChevronsRight className="h-4 w-4" />
-        </Button>
       </div>
     </div>
   );
