@@ -223,43 +223,43 @@ const Event = () => {
                 {venueData && (venueData.website || venueData.facebook_url || venueData.instagram_url || venueData.twitter_url || venueData.youtube_url) && (
                   <div className="bg-gray-50 rounded-lg p-6">
                     <h4 className="font-semibold text-gray-800 mb-4">Venue Info</h4>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-3">
                       {venueData.website && (
-                        <Button variant="outline" size="sm" asChild>
+                        <Button variant="outline" size="sm" asChild className="border-emerald-300 text-emerald-700 hover:bg-emerald-50">
                           <a href={venueData.website} target="_blank" rel="noopener noreferrer">
-                            <Globe className="h-4 w-4 mr-1" />
+                            <Globe className="h-4 w-4 mr-2" />
                             Website
                           </a>
                         </Button>
                       )}
                       {venueData.facebook_url && (
-                        <Button variant="outline" size="sm" asChild>
+                        <Button variant="outline" size="sm" asChild className="border-blue-300 text-blue-700 hover:bg-blue-50">
                           <a href={venueData.facebook_url} target="_blank" rel="noopener noreferrer">
-                            <Facebook className="h-4 w-4 mr-1" />
+                            <Facebook className="h-4 w-4 mr-2" />
                             Facebook
                           </a>
                         </Button>
                       )}
                       {venueData.instagram_url && (
-                        <Button variant="outline" size="sm" asChild>
+                        <Button variant="outline" size="sm" asChild className="border-pink-300 text-pink-700 hover:bg-pink-50">
                           <a href={venueData.instagram_url} target="_blank" rel="noopener noreferrer">
-                            <Instagram className="h-4 w-4 mr-1" />
+                            <Instagram className="h-4 w-4 mr-2" />
                             Instagram
                           </a>
                         </Button>
                       )}
                       {venueData.twitter_url && (
-                        <Button variant="outline" size="sm" asChild>
+                        <Button variant="outline" size="sm" asChild className="border-sky-300 text-sky-700 hover:bg-sky-50">
                           <a href={venueData.twitter_url} target="_blank" rel="noopener noreferrer">
-                            <Twitter className="h-4 w-4 mr-1" />
+                            <Twitter className="h-4 w-4 mr-2" />
                             Twitter
                           </a>
                         </Button>
                       )}
                       {venueData.youtube_url && (
-                        <Button variant="outline" size="sm" asChild>
+                        <Button variant="outline" size="sm" asChild className="border-red-300 text-red-700 hover:bg-red-50">
                           <a href={venueData.youtube_url} target="_blank" rel="noopener noreferrer">
-                            <Youtube className="h-4 w-4 mr-1" />
+                            <Youtube className="h-4 w-4 mr-2" />
                             YouTube
                           </a>
                         </Button>
@@ -272,43 +272,43 @@ const Event = () => {
                 {(event.website_url || event.facebook_url || event.instagram_url || event.twitter_url || event.youtube_url) && (
                   <div className="bg-emerald-50 rounded-lg p-6">
                     <h4 className="font-semibold text-gray-800 mb-4">Event Links</h4>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-3">
                       {event.website_url && (
-                        <Button variant="outline" size="sm" asChild>
+                        <Button variant="outline" size="sm" asChild className="border-emerald-300 text-emerald-700 hover:bg-emerald-50">
                           <a href={event.website_url} target="_blank" rel="noopener noreferrer">
-                            <Globe className="h-4 w-4 mr-1" />
+                            <Globe className="h-4 w-4 mr-2" />
                             Website
                           </a>
                         </Button>
                       )}
                       {event.facebook_url && (
-                        <Button variant="outline" size="sm" asChild>
+                        <Button variant="outline" size="sm" asChild className="border-blue-300 text-blue-700 hover:bg-blue-50">
                           <a href={event.facebook_url} target="_blank" rel="noopener noreferrer">
-                            <Facebook className="h-4 w-4 mr-1" />
+                            <Facebook className="h-4 w-4 mr-2" />
                             Facebook
                           </a>
                         </Button>
                       )}
                       {event.instagram_url && (
-                        <Button variant="outline" size="sm" asChild>
+                        <Button variant="outline" size="sm" asChild className="border-pink-300 text-pink-700 hover:bg-pink-50">
                           <a href={event.instagram_url} target="_blank" rel="noopener noreferrer">
-                            <Instagram className="h-4 w-4 mr-1" />
+                            <Instagram className="h-4 w-4 mr-2" />
                             Instagram
                           </a>
                         </Button>
                       )}
                       {event.twitter_url && (
-                        <Button variant="outline" size="sm" asChild>
+                        <Button variant="outline" size="sm" asChild className="border-sky-300 text-sky-700 hover:bg-sky-50">
                           <a href={event.twitter_url} target="_blank" rel="noopener noreferrer">
-                            <Twitter className="h-4 w-4 mr-1" />
+                            <Twitter className="h-4 w-4 mr-2" />
                             Twitter
                           </a>
                         </Button>
                       )}
                       {event.youtube_url && (
-                        <Button variant="outline" size="sm" asChild>
+                        <Button variant="outline" size="sm" asChild className="border-red-300 text-red-700 hover:bg-red-50">
                           <a href={event.youtube_url} target="_blank" rel="noopener noreferrer">
-                            <Youtube className="h-4 w-4 mr-1" />
+                            <Youtube className="h-4 w-4 mr-2" />
                             YouTube
                           </a>
                         </Button>
@@ -327,58 +327,20 @@ const Event = () => {
               </div>
             )}
 
-            {/* Links */}
-            <div className="mb-8">
-              <div className="flex flex-wrap gap-3">
-                {event.ticket_url && (
-                  <Button 
-                    asChild
-                    className="bg-gradient-to-r from-emerald-600 to-orange-500 hover:from-emerald-700 hover:to-orange-600"
-                  >
-                    <a href={event.ticket_url} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      Get Tickets
-                    </a>
-                  </Button>
-                )}
-                {event.website_url && (
-                  <Button variant="outline" asChild>
-                    <a href={event.website_url} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      Website
-                    </a>
-                  </Button>
-                )}
-                {event.facebook_url && (
-                  <Button variant="outline" asChild>
-                    <a href={event.facebook_url} target="_blank" rel="noopener noreferrer">
-                      Facebook
-                    </a>
-                  </Button>
-                )}
-                {event.instagram_url && (
-                  <Button variant="outline" asChild>
-                    <a href={event.instagram_url} target="_blank" rel="noopener noreferrer">
-                      Instagram
-                    </a>
-                  </Button>
-                )}
-                {event.twitter_url && (
-                  <Button variant="outline" asChild>
-                    <a href={event.twitter_url} target="_blank" rel="noopener noreferrer">
-                      Twitter
-                    </a>
-                  </Button>
-                )}
-                {event.youtube_url && (
-                  <Button variant="outline" asChild>
-                    <a href={event.youtube_url} target="_blank" rel="noopener noreferrer">
-                      YouTube
-                    </a>
-                  </Button>
-                )}
+            {/* Ticket Link */}
+            {event.ticket_url && (
+              <div className="mb-8">
+                <Button 
+                  asChild
+                  className="bg-gradient-to-r from-emerald-600 to-orange-500 hover:from-emerald-700 hover:to-orange-600"
+                >
+                  <a href={event.ticket_url} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    Get Tickets
+                  </a>
+                </Button>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
