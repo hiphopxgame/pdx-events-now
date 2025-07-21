@@ -3,7 +3,7 @@ import { UserEvent, Event } from './types';
 
 const generateRecurringEventDates = (startDate: string, recurrencePattern: string, endDate?: string): string[] => {
   const dates: string[] = [];
-  const start = new Date(startDate);
+  const start = new Date(startDate + 'T00:00:00'); // Ensure we're working in local timezone
   const today = new Date();
   today.setHours(0, 0, 0, 0); // Reset time to start of day
   
@@ -11,7 +11,7 @@ const generateRecurringEventDates = (startDate: string, recurrencePattern: strin
   const sixMonthsFromToday = new Date(today);
   sixMonthsFromToday.setMonth(sixMonthsFromToday.getMonth() + 6);
   
-  const endLimit = endDate ? new Date(endDate) : sixMonthsFromToday;
+  const endLimit = endDate ? new Date(endDate + 'T00:00:00') : sixMonthsFromToday;
   const finalEndDate = endLimit;
   
   // Start generating from today if the original start date is in the past
@@ -46,7 +46,11 @@ const generateRecurringEventDates = (startDate: string, recurrencePattern: strin
       
       // Generate weekly occurrences
       while (currentDate <= finalEndDate) {
-        dates.push(currentDate.toISOString().split('T')[0]);
+        // Format as YYYY-MM-DD in local timezone
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getDate()).padStart(2, '0');
+        dates.push(`${year}-${month}-${day}`);
         currentDate.setDate(currentDate.getDate() + 7);
       }
     }
@@ -66,7 +70,11 @@ const generateRecurringEventDates = (startDate: string, recurrencePattern: strin
       while (currentDate <= finalEndDate) {
         const monthDate = findNthDayOfMonth(currentDate.getFullYear(), currentDate.getMonth(), occurrence, targetDay);
         if (monthDate && monthDate >= generateFrom && monthDate <= finalEndDate) {
-          dates.push(monthDate.toISOString().split('T')[0]);
+          // Format as YYYY-MM-DD in local timezone
+          const year = monthDate.getFullYear();
+          const month = String(monthDate.getMonth() + 1).padStart(2, '0');
+          const day = String(monthDate.getDate()).padStart(2, '0');
+          dates.push(`${year}-${month}-${day}`);
         }
         currentDate.setMonth(currentDate.getMonth() + 1);
       }

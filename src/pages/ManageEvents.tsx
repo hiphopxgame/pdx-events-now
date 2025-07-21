@@ -335,7 +335,12 @@ const ManageEvents = () => {
                           </div>
                           <div className="flex items-center gap-2">
                             <Clock className="h-4 w-4" />
-                            {formatTime(event.start_time)}
+                            <span>
+                              {formatTime(event.start_time)}
+                              {event.end_time && (
+                                <> - {formatTime(event.end_time)}</>
+                              )}
+                            </span>
                           </div>
                           <div className="flex items-center gap-2">
                             <MapPin className="h-4 w-4" />
