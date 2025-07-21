@@ -14,6 +14,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { useUserRoles } from '@/hooks/useUserRoles';
 import { useNavigate } from 'react-router-dom';
+import { EditEventDialog } from '@/components/EditEventDialog';
+import { EventDetailsModal } from '@/components/EventDetailsModal';
 
 const ManageEvents = () => {
   const { data: userEvents = [], isLoading: userEventsLoading } = useUserEvents();
@@ -25,6 +27,8 @@ const ManageEvents = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [editingEvent, setEditingEvent] = useState<any>(null);
+  const [viewingEvent, setViewingEvent] = useState<any>(null);
 
   // Real-time updates for event changes
   useEffect(() => {
@@ -347,15 +351,40 @@ const ManageEvents = () => {
                         </div>
                       </div>
                       
-                      <div className="flex gap-2 ml-4">
+                       <div className="flex gap-2 ml-4">
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => navigate(`/event/${event.id}`)}
+                          onClick={() => setViewingEvent({
+                            id: event.id,
+                            title: event.title,
+                            date: event.start_date,
+                            time: formatTime(event.start_time),
+                            venue: event.venue_name,
+                            category: event.category,
+                            price: event.price_display || 'Free',
+                            imageUrl: event.image_url || '/placeholder.svg',
+                            description: event.description || '',
+                            venueAddress: event.venue_address,
+                            venueCity: event.venue_city,
+                            venueState: event.venue_state,
+                            ticketUrl: event.ticket_url,
+                            organizerName: event.organizer_name,
+                          })}
                           className="text-blue-600 border-blue-200 hover:bg-blue-50"
                         >
                           <Eye className="h-4 w-4 mr-1" />
                           View
+                        </Button>
+                        
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setEditingEvent(event)}
+                          className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                        >
+                          <Edit className="h-4 w-4 mr-1" />
+                          Edit
                         </Button>
                         
                         {event.status === 'approved' && (
@@ -426,6 +455,26 @@ const ManageEvents = () => {
         
         <Footer />
       </div>
+      
+      {/* Edit Event Dialog */}
+      {editingEvent && (
+        <EditEventDialog
+          event={editingEvent}
+          isOpen={!!editingEvent}
+          onClose={() => setEditingEvent(null)}
+          onSuccess={() => {
+            setEditingEvent(null);
+            queryClient.invalidateQueries({ queryKey: ['user-events'] });
+          }}
+        />
+      )}
+      
+      {/* View Event Modal */}
+      <EventDetailsModal
+        event={viewingEvent}
+        isOpen={!!viewingEvent}
+        onClose={() => setViewingEvent(null)}
+      />
     </ProtectedRoute>
   );
 };
