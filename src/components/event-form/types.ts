@@ -8,6 +8,11 @@ export interface EventFormData {
   venue_city: string;
   venue_state: string;
   venue_zip: string;
+  venue_website_url: string;
+  venue_facebook_url: string;
+  venue_instagram_url: string;
+  venue_twitter_url: string;
+  venue_youtube_url: string;
   price_display: string;
   price_min: number;
   price_max: number;

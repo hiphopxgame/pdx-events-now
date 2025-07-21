@@ -313,6 +313,55 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
               </>
             )}
 
+            {/* Venue Social Media Section */}
+            {!useExistingVenue && (
+              <div className="space-y-4 p-4 border rounded-lg bg-muted/10">
+                <h4 className="font-medium text-gray-700">Venue Social Media</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="venue_website_url">Venue Website</Label>
+                    <Input 
+                      id="venue_website_url" 
+                      {...register('venue_website_url')}
+                      placeholder="https://venue-website.com"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="venue_facebook_url">Venue Facebook</Label>
+                    <Input 
+                      id="venue_facebook_url" 
+                      {...register('venue_facebook_url')}
+                      placeholder="https://facebook.com/venue"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="venue_instagram_url">Venue Instagram</Label>
+                    <Input 
+                      id="venue_instagram_url" 
+                      {...register('venue_instagram_url')}
+                      placeholder="https://instagram.com/venue"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="venue_twitter_url">Venue Twitter</Label>
+                    <Input 
+                      id="venue_twitter_url" 
+                      {...register('venue_twitter_url')}
+                      placeholder="https://twitter.com/venue"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="venue_youtube_url">Venue YouTube</Label>
+                    <Input 
+                      id="venue_youtube_url" 
+                      {...register('venue_youtube_url')}
+                      placeholder="https://youtube.com/venue"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div>
               <Label htmlFor="price_display">Price Display</Label>
               <Input 
@@ -371,7 +420,7 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
             </div>
 
             <div className="space-y-4">
-              <h4 className="font-medium text-gray-700">Social Media</h4>
+              <h4 className="font-medium text-gray-700">Event Social Media</h4>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="facebook_url">Facebook URL</Label>
