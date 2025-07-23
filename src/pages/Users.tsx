@@ -199,96 +199,111 @@ const Users = () => {
               const socialLinks = getSocialLinks(user);
               
               return (
-                <Card key={user.id} className="hover:shadow-lg transition-shadow">
-                  <CardContent className="p-6">
-                    <div className="flex items-center space-x-4 mb-4">
-                      <Link to={`/user/${user.id}`} className="h-12 w-12 bg-emerald-100 rounded-full flex items-center justify-center hover:bg-emerald-200 transition-colors">
-                        {user.avatar_url ? (
-                          <img 
-                            src={user.avatar_url} 
-                            alt={user.display_name || 'User'}
-                            className="h-12 w-12 rounded-full object-cover"
-                          />
-                        ) : (
-                          <User className="h-6 w-6 text-emerald-600" />
-                        )}
-                      </Link>
-                      <div className="flex-1">
-                        <Link to={`/user/${user.id}`} className="block">
-                          <h3 className="font-semibold text-gray-800 hover:text-emerald-600 transition-colors">
-                            {(user.roles.some(role => role.role === 'admin' || role.role === 'member') && user.full_name) 
-                              ? user.full_name 
-                              : user.display_name || user.username || 'Community Member'}
-                          </h3>
+                <Card key={user.id} className="hover:shadow-lg transition-shadow overflow-hidden">
+                  <CardContent className="p-0">
+                    {/* Header Section with Avatar and Basic Info */}
+                    <div className="p-6 pb-4">
+                      <div className="flex items-start space-x-4">
+                        <Link to={`/user/${user.id}`} className="shrink-0">
+                          <div className="h-16 w-16 bg-emerald-100 rounded-full flex items-center justify-center hover:bg-emerald-200 transition-colors">
+                            {user.avatar_url ? (
+                              <img 
+                                src={user.avatar_url} 
+                                alt={user.display_name || 'User'}
+                                className="h-16 w-16 rounded-full object-cover"
+                              />
+                            ) : (
+                              <User className="h-8 w-8 text-emerald-600" />
+                            )}
+                          </div>
                         </Link>
-                        {user.username && (
-                          <p className="text-sm text-gray-600">@{user.username}</p>
-                        )}
-                        <p className="text-xs text-gray-500">
-                          Member since {new Date(user.created_at).toLocaleDateString()}
-                        </p>
+                        <div className="flex-1 min-w-0">
+                          <Link to={`/user/${user.id}`} className="block">
+                            <h3 className="font-semibold text-gray-800 hover:text-emerald-600 transition-colors text-lg leading-tight">
+                              {(user.roles.some(role => role.role === 'admin' || role.role === 'member') && user.full_name) 
+                                ? user.full_name 
+                                : user.display_name || user.username || 'Community Member'}
+                            </h3>
+                          </Link>
+                          {user.username && (
+                            <p className="text-sm text-gray-600 mt-1">@{user.username}</p>
+                          )}
+                          <p className="text-xs text-gray-500 mt-1">
+                            Member since {new Date(user.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
                       </div>
-                      <Link to={`/user/${user.id}`}>
-                        <Button variant="outline" size="sm">
-                          <ExternalLink className="h-4 w-4 mr-1" />
+                    </div>
+
+                    {/* Stats Section */}
+                    <div className="px-6 pb-4">
+                      <div className="flex gap-4">
+                        <div className="flex items-center text-sm text-gray-600">
+                          <Calendar className="h-4 w-4 mr-1 text-emerald-600" />
+                          <span>{user.event_count || 0} Events</span>
+                        </div>
+                        <div className="flex items-center text-sm text-gray-600">
+                          <MapPin className="h-4 w-4 mr-1 text-orange-600" />
+                          <span>{user.venue_count || 0} Venues</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Roles Section */}
+                    <div className="px-6 pb-4">
+                      <div className="flex flex-wrap gap-2">
+                        {user.roles.length === 0 ? (
+                          <Badge variant="outline" className="text-xs">
+                            <User className="h-3 w-3 mr-1" />
+                            Member
+                          </Badge>
+                        ) : (
+                          user.roles.map((role) => (
+                            <Badge 
+                              key={role.id} 
+                              variant={getRoleBadgeColor(role.role)}
+                              className="text-xs flex items-center gap-1"
+                            >
+                              {role.role === 'admin' && <User className="h-3 w-3" />}
+                              {role.role.charAt(0).toUpperCase() + role.role.slice(1)}
+                            </Badge>
+                          ))
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Social Links Section */}
+                    {socialLinks.length > 0 && (
+                      <div className="px-6 pb-4">
+                        <div className="flex flex-wrap gap-2">
+                          {socialLinks.map((link, index) => {
+                            const Icon = link.icon;
+                            return (
+                              <Button
+                                key={index}
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => window.open(link.url, '_blank')}
+                                className="flex items-center gap-1 h-8 px-2"
+                              >
+                                <Icon className="h-3 w-3" />
+                                <span className="text-xs">{link.label}</span>
+                              </Button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Footer with View Profile Button */}
+                    <div className="border-t bg-gray-50 px-6 py-3">
+                      <Link to={`/user/${user.id}`} className="w-full">
+                        <Button variant="outline" size="sm" className="w-full">
+                          <ExternalLink className="h-4 w-4 mr-2" />
                           View Profile
                         </Button>
                       </Link>
                     </div>
-
-                    {/* User Roles */}
-                    <div className="flex flex-wrap gap-1 mb-3">
-                      {user.roles.length === 0 ? (
-                        <Badge variant="outline" className="text-xs">
-                          <User className="h-3 w-3 mr-1" />
-                          Member
-                        </Badge>
-                      ) : (
-                        user.roles.map((role) => (
-                          <Badge 
-                            key={role.id} 
-                            variant={getRoleBadgeColor(role.role)}
-                            className="text-xs flex items-center gap-1"
-                          >
-                            {role.role === 'admin' && <User className="h-3 w-3" />}
-                            {role.role.charAt(0).toUpperCase() + role.role.slice(1)}
-                          </Badge>
-                        ))
-                      )}
-                    </div>
-
-                    {/* Event and Venue Counts */}
-                    <div className="flex gap-4 mb-3">
-                      <div className="flex items-center text-sm text-gray-600">
-                        <Calendar className="h-4 w-4 mr-1 text-emerald-600" />
-                        <span>{user.event_count || 0} Events</span>
-                      </div>
-                      <div className="flex items-center text-sm text-gray-600">
-                        <MapPin className="h-4 w-4 mr-1 text-orange-600" />
-                        <span>{user.venue_count || 0} Venues</span>
-                      </div>
-                    </div>
-
-                    {/* Social Links */}
-                    {socialLinks.length > 0 && (
-                      <div className="flex flex-wrap gap-2">
-                        {socialLinks.map((link, index) => {
-                          const Icon = link.icon;
-                          return (
-                            <Button
-                              key={index}
-                              size="sm"
-                              variant="outline"
-                              onClick={() => window.open(link.url, '_blank')}
-                              className="flex items-center gap-1"
-                            >
-                              <Icon className="h-3 w-3" />
-                              <span className="hidden sm:inline">{link.label}</span>
-                            </Button>
-                          );
-                        })}
-                      </div>
-                    )}
                   </CardContent>
                 </Card>
                 );
