@@ -11,6 +11,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { 
+  compressImages, 
+  isValidImageFile, 
+  formatFileSize, 
+  createFileFromBlob, 
+  DEFAULT_COMPRESSION_OPTIONS 
+} from '@/lib/imageUtils';
+import { 
   MapPin, 
   Phone, 
   Globe, 
@@ -129,16 +136,44 @@ const EditVenue = () => {
 
     try {
       setUploading(true);
+      const fileArray = Array.from(files);
+      
+      // Validate all files first
+      const invalidFiles = fileArray.filter(file => !isValidImageFile(file));
+      if (invalidFiles.length > 0) {
+        toast({
+          title: 'Invalid File Type',
+          description: `Please upload valid image files (JPEG, PNG, WebP, or GIF). ${invalidFiles.length} invalid file(s) detected.`,
+          variant: 'destructive'
+        });
+        return;
+      }
+
+      // Show compression progress
+      const totalOriginalSize = fileArray.reduce((sum, file) => sum + file.size, 0);
+      console.log(`Compressing ${fileArray.length} venue images (${formatFileSize(totalOriginalSize)} total)`);
+
+      // Compress all images
+      const compressedBlobs = await compressImages(fileArray, DEFAULT_COMPRESSION_OPTIONS.venue);
+      
+      const totalCompressedSize = compressedBlobs.reduce((sum, blob) => sum + blob.size, 0);
+      console.log(`Compression complete: ${formatFileSize(totalOriginalSize)} → ${formatFileSize(totalCompressedSize)}`);
+
       const uploadedUrls: string[] = [];
 
-      for (const file of Array.from(files)) {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      for (let i = 0; i < compressedBlobs.length; i++) {
+        const blob = compressedBlobs[i];
+        const originalFile = fileArray[i];
+        
+        // Create file from compressed blob
+        const compressedFile = createFileFromBlob(blob, originalFile.name, 'jpeg');
+        
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}-${i}.jpg`;
         const filePath = `venues/${fileName}`;
 
         const { error: uploadError } = await supabase.storage
           .from('venue-images')
-          .upload(filePath, file);
+          .upload(filePath, compressedFile);
 
         if (uploadError) throw uploadError;
 
@@ -152,7 +187,7 @@ const EditVenue = () => {
       setImageUrls(prev => [...prev, ...uploadedUrls]);
       toast({
         title: 'Success',
-        description: `${uploadedUrls.length} image(s) uploaded successfully`,
+        description: `${uploadedUrls.length} image(s) uploaded successfully (${formatFileSize(totalCompressedSize)} total)`,
       });
     } catch (error) {
       console.error('Error uploading images:', error);

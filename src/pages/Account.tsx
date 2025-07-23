@@ -13,6 +13,13 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Save, Globe, Facebook, Instagram, Twitter, Youtube, Loader2, Upload, X, Music } from 'lucide-react';
 import { UpgradeToArtistButton } from '@/components/UpgradeToArtistButton';
+import { 
+  compressImage, 
+  isValidImageFile, 
+  formatFileSize, 
+  createFileFromBlob, 
+  DEFAULT_COMPRESSION_OPTIONS 
+} from '@/lib/imageUtils';
 import { MusicVideoSubmissionForm } from '@/components/MusicVideoSubmissionForm';
 import { ArtistMusicVideos } from '@/components/ArtistMusicVideos';
 import { useUserRoles } from '@/hooks/useUserRoles';
@@ -82,14 +89,35 @@ const Account = () => {
     try {
       setUploading(true);
       
-      // Upload file to Supabase storage
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+      // Validate file type
+      if (!isValidImageFile(file)) {
+        toast({
+          title: "Invalid File Type",
+          description: "Please upload a valid image file (JPEG, PNG, WebP, or GIF)",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Show compression progress
+      const originalSize = formatFileSize(file.size);
+      console.log(`Compressing avatar: ${file.name} (${originalSize})`);
+
+      // Compress the image for profile use
+      const compressedBlob = await compressImage(file, DEFAULT_COMPRESSION_OPTIONS.profile);
+      const compressedSize = formatFileSize(compressedBlob.size);
+      
+      console.log(`Avatar compression complete: ${originalSize} → ${compressedSize}`);
+
+      // Create file from compressed blob
+      const compressedFile = createFileFromBlob(compressedBlob, file.name, 'jpeg');
+      
+      const fileName = `${user.id}-${Date.now()}.jpg`;
       const filePath = `avatars/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, file);
+        .upload(filePath, compressedFile);
 
       if (uploadError) throw uploadError;
 
@@ -103,7 +131,7 @@ const Account = () => {
       
       toast({
         title: 'Success',
-        description: 'Avatar uploaded successfully',
+        description: `Avatar uploaded successfully (${compressedSize})`,
       });
     } catch (error) {
       console.error('Error uploading avatar:', error);
