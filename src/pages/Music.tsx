@@ -1,15 +1,21 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useMusicVideos, MusicVideo } from "@/hooks/useMusicVideos";
+import { MusicVideoModal } from "@/components/MusicVideoModal";
 import { Music as MusicIcon, Play } from "lucide-react";
 
 export default function Music() {
   const { fetchAllVideos } = useMusicVideos();
+  const navigate = useNavigate();
   const [approvedVideos, setApprovedVideos] = useState<MusicVideo[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedVideo, setSelectedVideo] = useState<MusicVideo | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const loadApprovedVideos = async () => {
@@ -29,6 +35,15 @@ export default function Music() {
 
   const getYouTubeEmbedUrl = (youtubeId: string) => {
     return `https://www.youtube.com/embed/${youtubeId}`;
+  };
+
+  const handlePlayVideo = (video: MusicVideo) => {
+    setSelectedVideo(video);
+    setIsModalOpen(true);
+  };
+
+  const handleArtistClick = (artistId: string) => {
+    navigate(`/user/${artistId}`);
   };
 
   if (loading) {
@@ -71,7 +86,7 @@ export default function Music() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {approvedVideos.map((video) => (
               <Card key={video.id} className="overflow-hidden">
-                <div className="aspect-video">
+                <div className="aspect-video relative group">
                   <iframe
                     src={getYouTubeEmbedUrl(video.youtube_id)}
                     title={video.title}
@@ -80,11 +95,29 @@ export default function Music() {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                   />
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <Button
+                      onClick={() => handlePlayVideo(video)}
+                      size="lg"
+                      className="bg-primary/90 hover:bg-primary text-primary-foreground"
+                    >
+                      <Play className="w-6 h-6 mr-2" />
+                      Play Full Screen
+                    </Button>
+                  </div>
                 </div>
                 <CardHeader>
-                  <CardTitle className="line-clamp-2">{video.title}</CardTitle>
+                  <CardTitle 
+                    className="line-clamp-2 cursor-pointer hover:text-primary transition-colors"
+                    onClick={() => handlePlayVideo(video)}
+                  >
+                    {video.title}
+                  </CardTitle>
                   <CardDescription className="flex items-center justify-between">
-                    <span>
+                    <span 
+                      className="cursor-pointer hover:text-primary transition-colors"
+                      onClick={() => handleArtistClick(video.artist_id)}
+                    >
                       By {video.artist?.full_name || video.artist?.username || 'Unknown Artist'}
                     </span>
                     <Badge variant="secondary" className="text-xs">
@@ -99,6 +132,11 @@ export default function Music() {
         )}
       </main>
       <Footer />
+      <MusicVideoModal 
+        video={selectedVideo}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 }
