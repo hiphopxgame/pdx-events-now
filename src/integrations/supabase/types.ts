@@ -1947,6 +1947,8 @@ export type Database = {
           phone: string | null
           preferred_meeting_time: string | null
           primary_goals: string | null
+          selected_services: string[] | null
+          service_type: string | null
           status: string | null
           updated_at: string
           wants_consultation: boolean | null
@@ -1967,6 +1969,8 @@ export type Database = {
           phone?: string | null
           preferred_meeting_time?: string | null
           primary_goals?: string | null
+          selected_services?: string[] | null
+          service_type?: string | null
           status?: string | null
           updated_at?: string
           wants_consultation?: boolean | null
@@ -1987,6 +1991,8 @@ export type Database = {
           phone?: string | null
           preferred_meeting_time?: string | null
           primary_goals?: string | null
+          selected_services?: string[] | null
+          service_type?: string | null
           status?: string | null
           updated_at?: string
           wants_consultation?: boolean | null
