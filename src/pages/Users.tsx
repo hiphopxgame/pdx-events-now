@@ -13,6 +13,7 @@ import { EnhancedPagination } from '@/components/EnhancedPagination';
 interface UserProfile {
   id: string;
   display_name: string | null;
+  full_name: string | null;
   username: string | null;
   avatar_url: string | null;
   website_url: string | null;
@@ -61,6 +62,7 @@ const Users = () => {
         .select(`
           id,
           display_name,
+          full_name,
           username,
           avatar_url,
           website_url,
@@ -125,6 +127,7 @@ const Users = () => {
     if (searchTerm) {
       filtered = filtered.filter(user => 
         user.display_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.username?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
@@ -213,7 +216,9 @@ const Users = () => {
                       <div className="flex-1">
                         <Link to={`/user/${user.id}`} className="block">
                           <h3 className="font-semibold text-gray-800 hover:text-emerald-600 transition-colors">
-                            {user.display_name || user.username || 'Community Member'}
+                            {(user.roles.some(role => role.role === 'admin' || role.role === 'member') && user.full_name) 
+                              ? user.full_name 
+                              : user.display_name || user.username || 'Community Member'}
                           </h3>
                         </Link>
                         {user.username && (
