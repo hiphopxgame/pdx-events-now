@@ -6,8 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
-import { Users as UsersIcon, Search, User, Globe, Facebook, Instagram, Twitter, Youtube, Loader2, ExternalLink, Calendar, MapPin } from 'lucide-react';
+import { Users as UsersIcon, Search, User, Globe, Facebook, Instagram, Twitter, Youtube, Loader2, ExternalLink, Calendar, MapPin, Filter } from 'lucide-react';
 import { EnhancedPagination } from '@/components/EnhancedPagination';
 
 interface UserProfile {
@@ -26,7 +27,7 @@ interface UserProfile {
   venue_count?: number;
   roles: Array<{
     id: string;
-    role: 'admin' | 'moderator' | 'member';
+    role: 'admin' | 'moderator' | 'member' | 'user' | 'artist';
   }>;
 }
 
@@ -35,6 +36,7 @@ const Users = () => {
   const [filteredUsers, setFilteredUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedRole, setSelectedRole] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const scrollTargetRef = useRef<HTMLElement>(null);
@@ -45,12 +47,12 @@ const Users = () => {
 
   useEffect(() => {
     filterUsers();
-  }, [users, searchTerm]);
+  }, [users, searchTerm, selectedRole]);
 
-  // Reset pagination when search changes
+  // Reset pagination when search or role filter changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, itemsPerPage]);
+  }, [searchTerm, selectedRole, itemsPerPage]);
 
   const fetchUsers = async () => {
     try {
@@ -102,7 +104,7 @@ const Users = () => {
         // Get user roles and map old 'user' roles to 'member'
         const userRoles = (roles?.filter(role => role.user_id === user.id) || []).map(role => ({
           ...role,
-          role: role.role === 'user' ? 'member' as const : role.role as 'admin' | 'moderator' | 'member'
+          role: role.role as 'admin' | 'moderator' | 'member' | 'user' | 'artist'
         }));
 
         usersWithCounts.push({
@@ -124,12 +126,24 @@ const Users = () => {
   const filterUsers = () => {
     let filtered = users;
 
+    // Filter by search term
     if (searchTerm) {
       filtered = filtered.filter(user => 
         user.display_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.username?.toLowerCase().includes(searchTerm.toLowerCase())
       );
+    }
+
+    // Filter by role
+    if (selectedRole !== 'all') {
+      filtered = filtered.filter(user => {
+        if (selectedRole === 'member') {
+          // Include users with 'member' role or users with 'user' role (legacy)
+          return user.roles.some(role => role.role === 'member' || role.role === 'user');
+        }
+        return user.roles.some(role => role.role === selectedRole);
+      });
     }
 
     setFilteredUsers(filtered);
@@ -148,8 +162,10 @@ const Users = () => {
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
       case 'admin': return 'destructive';
+      case 'artist': return 'default';
       case 'moderator': return 'default';
       case 'member': return 'secondary';
+      case 'user': return 'secondary';
       default: return 'outline';
     }
   };
@@ -167,20 +183,38 @@ const Users = () => {
           <p className="text-gray-600">Discover and connect with event organizers and community members</p>
         </div>
 
-        {/* Search */}
+        {/* Search and Filters */}
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle>Search Community</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Filter className="h-5 w-5" />
+              Search & Filter Community
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-                placeholder="Search by name or username..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Input
+                  placeholder="Search by name or username..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <div className="w-full sm:w-48">
+                <Select value={selectedRole} onValueChange={setSelectedRole}>
+                  <SelectTrigger className="w-full bg-background">
+                    <SelectValue placeholder="Filter by role" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background border border-border z-50">
+                    <SelectItem value="all">All Roles</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="artist">Artist</SelectItem>
+                    <SelectItem value="member">Member</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -265,7 +299,7 @@ const Users = () => {
                               className="text-xs flex items-center gap-1"
                             >
                               {role.role === 'admin' && <User className="h-3 w-3" />}
-                              {role.role.charAt(0).toUpperCase() + role.role.slice(1)}
+                              {role.role === 'user' ? 'Member' : role.role.charAt(0).toUpperCase() + role.role.slice(1)}
                             </Badge>
                           ))
                         )}
