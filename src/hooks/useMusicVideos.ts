@@ -40,7 +40,7 @@ export const useMusicVideos = () => {
         .from('music_videos')
         .select(`
           *,
-          artist:por_eve_profiles(full_name, username)
+          artist:por_eve_profiles!music_videos_artist_id_fkey(full_name, username)
         `)
         .eq('artist_id', user.id)
         .order('created_at', { ascending: false });
@@ -65,7 +65,7 @@ export const useMusicVideos = () => {
         .from('music_videos')
         .select(`
           *,
-          artist:por_eve_profiles(full_name, username)
+          artist:por_eve_profiles!music_videos_artist_id_fkey(full_name, username)
         `)
         .order('created_at', { ascending: false });
 
