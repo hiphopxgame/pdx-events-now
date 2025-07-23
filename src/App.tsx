@@ -20,6 +20,7 @@ import Account from "./pages/Account";
 import AdminUsers from "./pages/AdminUsers";
 import AdminVenues from "./pages/AdminVenues";
 import EditVenue from "./pages/EditVenue";
+import Music from "./pages/Music";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import NotFound from "./pages/NotFound";
 
@@ -49,6 +50,7 @@ const App = () => (
             <Route path="/admin/users" element={<AdminProtectedRoute><AdminUsers /></AdminProtectedRoute>} />
             <Route path="/admin/venues" element={<AdminProtectedRoute><AdminVenues /></AdminProtectedRoute>} />
             <Route path="/admin/venues/:venueId" element={<AdminProtectedRoute><EditVenue /></AdminProtectedRoute>} />
+            <Route path="/music" element={<Music />} />
             <Route path="/auth" element={<Auth />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

@@ -11,7 +11,11 @@ import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { User, Save, Globe, Facebook, Instagram, Twitter, Youtube, Loader2, Upload, X } from 'lucide-react';
+import { User, Save, Globe, Facebook, Instagram, Twitter, Youtube, Loader2, Upload, X, Music } from 'lucide-react';
+import { UpgradeToArtistButton } from '@/components/UpgradeToArtistButton';
+import { MusicVideoSubmissionForm } from '@/components/MusicVideoSubmissionForm';
+import { ArtistMusicVideos } from '@/components/ArtistMusicVideos';
+import { useUserRoles } from '@/hooks/useUserRoles';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 interface UserProfile {
@@ -26,11 +30,15 @@ interface UserProfile {
   instagram_url: string | null;
   twitter_url: string | null;
   youtube_url: string | null;
+  spotify_url: string | null;
+  bandcamp_url: string | null;
+  soundcloud_url: string | null;
   is_email_public: boolean;
 }
 
 const Account = () => {
   const { user } = useAuth();
+  const { hasRole } = useUserRoles();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -126,6 +134,9 @@ const Account = () => {
           instagram_url: profile.instagram_url,
           twitter_url: profile.twitter_url,
           youtube_url: profile.youtube_url,
+          spotify_url: profile.spotify_url,
+          bandcamp_url: profile.bandcamp_url,
+          soundcloud_url: profile.soundcloud_url,
           is_email_public: profile.is_email_public
         })
         .eq('id', user.id);
@@ -375,8 +386,66 @@ const Account = () => {
                     placeholder="https://youtube.com/yourchannel"
                   />
                 </div>
+                {hasRole('artist') && (
+                  <>
+                    <div>
+                      <Label htmlFor="spotify_url" className="flex items-center">
+                        <Music className="h-4 w-4 mr-2" />
+                        Spotify
+                      </Label>
+                      <Input
+                        id="spotify_url"
+                        value={profile.spotify_url || ''}
+                        onChange={(e) => updateProfile('spotify_url', e.target.value)}
+                        placeholder="https://open.spotify.com/artist/..."
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="bandcamp_url" className="flex items-center">
+                        <Music className="h-4 w-4 mr-2" />
+                        Bandcamp
+                      </Label>
+                      <Input
+                        id="bandcamp_url"
+                        value={profile.bandcamp_url || ''}
+                        onChange={(e) => updateProfile('bandcamp_url', e.target.value)}
+                        placeholder="https://artistname.bandcamp.com"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="soundcloud_url" className="flex items-center">
+                        <Music className="h-4 w-4 mr-2" />
+                        SoundCloud
+                      </Label>
+                      <Input
+                        id="soundcloud_url"
+                        value={profile.soundcloud_url || ''}
+                        onChange={(e) => updateProfile('soundcloud_url', e.target.value)}
+                        placeholder="https://soundcloud.com/artistname"
+                      />
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
+
+            {/* Role Management */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Role Management</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <UpgradeToArtistButton />
+              </CardContent>
+            </Card>
+
+            {/* Artist Features */}
+            {hasRole('artist') && (
+              <div className="space-y-6">
+                <MusicVideoSubmissionForm />
+                <ArtistMusicVideos />
+              </div>
+            )}
 
             {/* Save Button */}
             <div className="flex justify-end">

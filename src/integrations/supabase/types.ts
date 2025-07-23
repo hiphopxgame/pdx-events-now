@@ -1022,6 +1022,63 @@ export type Database = {
         }
         Relationships: []
       }
+      music_videos: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          artist_id: string
+          created_at: string
+          id: string
+          rejection_reason: string | null
+          status: string
+          title: string
+          updated_at: string
+          youtube_id: string
+          youtube_url: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          artist_id: string
+          created_at?: string
+          id?: string
+          rejection_reason?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+          youtube_id: string
+          youtube_url: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          artist_id?: string
+          created_at?: string
+          id?: string
+          rejection_reason?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+          youtube_id?: string
+          youtube_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "music_videos_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "por_eve_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "music_videos_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "por_eve_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       oregon_tires_appointments: {
         Row: {
           actual_duration_minutes: number | null
@@ -1580,6 +1637,7 @@ export type Database = {
       por_eve_profiles: {
         Row: {
           avatar_url: string | null
+          bandcamp_url: string | null
           created_at: string
           display_name: string | null
           email: string
@@ -1588,6 +1646,8 @@ export type Database = {
           id: string
           instagram_url: string | null
           is_email_public: boolean | null
+          soundcloud_url: string | null
+          spotify_url: string | null
           twitter_url: string | null
           updated_at: string
           username: string | null
@@ -1596,6 +1656,7 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          bandcamp_url?: string | null
           created_at?: string
           display_name?: string | null
           email: string
@@ -1604,6 +1665,8 @@ export type Database = {
           id: string
           instagram_url?: string | null
           is_email_public?: boolean | null
+          soundcloud_url?: string | null
+          spotify_url?: string | null
           twitter_url?: string | null
           updated_at?: string
           username?: string | null
@@ -1612,6 +1675,7 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          bandcamp_url?: string | null
           created_at?: string
           display_name?: string | null
           email?: string
@@ -1620,6 +1684,8 @@ export type Database = {
           id?: string
           instagram_url?: string | null
           is_email_public?: boolean | null
+          soundcloud_url?: string | null
+          spotify_url?: string | null
           twitter_url?: string | null
           updated_at?: string
           username?: string | null
@@ -2198,9 +2264,13 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      upgrade_to_artist: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
-      app_role: "admin" | "moderator" | "user" | "member"
+      app_role: "admin" | "moderator" | "user" | "member" | "artist"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2328,7 +2398,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "moderator", "user", "member"],
+      app_role: ["admin", "moderator", "user", "member", "artist"],
     },
   },
 } as const

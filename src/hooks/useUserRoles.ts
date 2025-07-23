@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 export interface UserRole {
   id: string;
   user_id: string;
-  role: 'admin' | 'moderator' | 'member';
+  role: 'admin' | 'moderator' | 'member' | 'artist';
   created_at: string;
   updated_at: string;
 }
@@ -58,7 +58,7 @@ export const useUserRoles = () => {
       // Filter out any old 'user' roles and map them to 'member'
       const mappedRoles = (data || []).map(role => ({
         ...role,
-        role: role.role === 'user' ? 'member' as const : role.role as 'admin' | 'moderator' | 'member'
+        role: role.role === 'user' ? 'member' as const : role.role as 'admin' | 'moderator' | 'member' | 'artist'
       }));
       setUserRoles(mappedRoles);
     } catch (error) {
@@ -94,7 +94,7 @@ export const useUserRoles = () => {
         created_at: profile.created_at,
         roles: roles.filter(role => role.user_id === profile.id).map(role => ({
           ...role,
-          role: role.role === 'user' ? 'member' as const : role.role as 'admin' | 'moderator' | 'member'
+          role: role.role === 'user' ? 'member' as const : role.role as 'admin' | 'moderator' | 'member' | 'artist'
         }))
       }));
 
@@ -105,7 +105,7 @@ export const useUserRoles = () => {
     }
   };
 
-  const updateUserRole = async (userId: string, role: 'admin' | 'moderator' | 'member', action: 'add' | 'remove') => {
+  const updateUserRole = async (userId: string, role: 'admin' | 'moderator' | 'member' | 'artist', action: 'add' | 'remove') => {
     try {
       if (action === 'add') {
         const { error } = await supabase
@@ -127,12 +127,31 @@ export const useUserRoles = () => {
     }
   };
 
+  const upgradeToArtist = async () => {
+    try {
+      const { error } = await supabase.rpc('upgrade_to_artist');
+      if (error) throw error;
+      
+      // Refresh user roles after upgrade
+      await fetchUserRoles();
+    } catch (error) {
+      console.error('Error upgrading to artist:', error);
+      throw error;
+    }
+  };
+
+  const hasRole = (role: 'admin' | 'moderator' | 'member' | 'artist') => {
+    return userRoles.some(userRole => userRole.role === role);
+  };
+
   return {
     isAdmin,
     userRoles,
     loading,
     fetchAllUsers,
     updateUserRole,
+    upgradeToArtist,
+    hasRole,
     checkAdminStatus
   };
 };
