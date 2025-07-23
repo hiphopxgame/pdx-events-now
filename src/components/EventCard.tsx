@@ -4,7 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { Calendar, MapPin, Clock, Tag, User, Repeat } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { SocialShare } from '@/components/SocialShare';
 import { supabase } from '@/integrations/supabase/client';
+import { createEventUrl, createVenueUrl, createUserUrl } from '@/lib/seo';
+import { mobileStyles } from '@/lib/mobile';
 
 interface Event {
   id: string;
@@ -48,8 +51,8 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
       if (onEventClick) {
         onEventClick(event);
       } else {
-        console.log('Navigating to:', `/event/${event.id}`);
-        navigate(`/event/${event.id}`);
+        console.log('Navigating to:', createEventUrl(event.title, event.id));
+        navigate(createEventUrl(event.title, event.id));
       }
     } catch (error) {
       console.error('Navigation error:', error);
@@ -80,8 +83,9 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
     e.stopPropagation();
     
     try {
-      console.log('Navigating to venue:', `/venue/${encodeURIComponent(event.venue)}`);
-      navigate(`/venue/${encodeURIComponent(event.venue)}`);
+      const venueUrl = createVenueUrl(event.venue, event.venue);
+      console.log('Navigating to venue:', venueUrl);
+      navigate(venueUrl);
     } catch (error) {
       console.error('Venue navigation error:', error);
     }
@@ -156,10 +160,10 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
   };
 
   return (
-    <Card className="group hover:shadow-xl transition-all duration-300 border-emerald-100 hover:border-emerald-300 overflow-hidden cursor-pointer" onClick={handleEventClick}>
+    <Card className={`group hover:shadow-xl transition-all duration-300 border-emerald-100 hover:border-emerald-300 overflow-hidden cursor-pointer ${mobileStyles.card}`} onClick={handleEventClick}>
       <CardHeader className="p-0">
         <div 
-          className="aspect-video bg-gradient-to-br from-emerald-100 to-orange-100 relative overflow-hidden"
+          className={`${mobileStyles.aspectRatio} bg-gradient-to-br from-emerald-100 to-orange-100 relative overflow-hidden`}
         >
           <img 
             src={event.imageUrl} 
@@ -177,29 +181,33 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
         </div>
       </CardHeader>
       
-      <CardContent className="p-6">
-        <h3 className="text-xl font-bold text-gray-800 mb-3 group-hover:text-emerald-700 transition-colors">
+      <CardContent className={`${mobileStyles.card} ${mobileStyles.spacing}`}>
+        <h3 className={`${mobileStyles.h3} text-gray-800 mb-3 group-hover:text-emerald-700 transition-colors line-clamp-2`}>
           {event.title}
         </h3>
         
-        <div className="space-y-2 mb-4">
-          <div className="flex items-center text-gray-600 flex-wrap">
-            <Calendar className="h-4 w-4 mr-2 text-emerald-600" />
-            <span className="text-sm">{formatDate(event.date)}</span>
-            <Clock className="h-4 w-4 ml-4 mr-2 text-emerald-600" />
-            <span className="text-sm">
-              {event.time}
-              {event.endTime && (
-                <> - {event.endTime}</>
-              )}
-            </span>
+        <div className="space-y-3 mb-4">
+          <div className={`${mobileStyles.flexRow} text-gray-600 text-sm`}>
+            <div className="flex items-center">
+              <Calendar className="h-4 w-4 mr-2 text-emerald-600" />
+              <span>{formatDate(event.date)}</span>
+            </div>
+            <div className="flex items-center">
+              <Clock className="h-4 w-4 mr-2 text-emerald-600" />
+              <span>
+                {event.time}
+                {event.endTime && (
+                  <> - {event.endTime}</>
+                )}
+              </span>
+            </div>
             {event.recurrencePattern && (
-              <>
-                <Repeat className="h-4 w-4 ml-4 mr-1 text-orange-500" />
-                <span className="text-sm text-orange-600 font-medium">
+              <div className="flex items-center text-orange-600">
+                <Repeat className="h-4 w-4 mr-1 text-orange-500" />
+                <span className="text-sm font-medium">
                   {formatRecurrencePattern(event.recurrencePattern)}
                 </span>
-              </>
+              </div>
             )}
           </div>
           
@@ -223,7 +231,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/user/${event.createdBy}`);
+                      navigate(createUserUrl(submittedByUser, event.createdBy || ''));
                     }}
                     className="text-primary hover:text-primary/80 hover:underline font-medium"
                   >
@@ -241,21 +249,42 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
           </div>
         </div>
         
-        <p className="text-gray-600 text-sm line-clamp-3">
+        <p className={`text-gray-600 ${mobileStyles.body} line-clamp-2 sm:line-clamp-3 mb-4`}>
           {event.description}
         </p>
+
+        {/* Social Share - Mobile optimized */}
+        <div className="sm:hidden">
+          <SocialShare 
+            url={window.location.origin + createEventUrl(event.title, event.id)}
+            title={event.title}
+            description={event.description}
+            variant="button"
+            className="justify-center"
+          />
+        </div>
       </CardContent>
       
-      <CardFooter className="p-6 pt-0">
+      <CardFooter className={`${mobileStyles.card} pt-0 ${mobileStyles.flexRow} gap-2`}>
         <button 
           onClick={(e) => {
             e.stopPropagation();
             handleEventClick(e);
           }}
-          className="w-full bg-gradient-primary text-white py-3 rounded-lg font-semibold hover:scale-105 transition-all duration-300 transform group-hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary"
+          className={`flex-1 bg-gradient-primary text-white py-3 rounded-lg font-semibold hover:scale-105 transition-all duration-300 transform group-hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary ${mobileStyles.button} min-h-[48px] min-w-[48px]`}
         >
           Event Details
         </button>
+        
+        {/* Social Share - Desktop */}
+        <div className="hidden sm:block">
+          <SocialShare 
+            url={window.location.origin + createEventUrl(event.title, event.id)}
+            title={event.title}
+            description={event.description}
+            variant="dropdown"
+          />
+        </div>
       </CardFooter>
     </Card>
   );

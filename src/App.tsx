@@ -36,11 +36,11 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/events" element={<Events />} />
-            <Route path="/event/:eventId" element={<Event />} />
+            <Route path="/event/:eventSlug" element={<Event />} />
             <Route path="/venues" element={<Venues />} />
-            <Route path="/venue/:venueName" element={<Venue />} />
+            <Route path="/venue/:venueSlug" element={<Venue />} />
             <Route path="/users" element={<Users />} />
-            <Route path="/user/:userId" element={<User />} />
+            <Route path="/user/:userSlug" element={<User />} />
             <Route path="/account" element={<Account />} />
             <Route path="/submit-event" element={<SubmitEvent />} />
             <Route path="/my-events" element={<MyEvents />} />
@@ -52,6 +52,10 @@ const App = () => (
             <Route path="/admin/venues/:venueId" element={<AdminProtectedRoute><EditVenue /></AdminProtectedRoute>} />
             <Route path="/music" element={<Music />} />
             <Route path="/auth" element={<Auth />} />
+            {/* Legacy route redirects for SEO */}
+            <Route path="/event/:eventId" element={<Event />} />
+            <Route path="/venue/:venueName" element={<Venue />} />
+            <Route path="/user/:userId" element={<User />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

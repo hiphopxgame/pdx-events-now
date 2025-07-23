@@ -4,18 +4,48 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Portland.Events - Discover Portland's Best Events</title>
-    <meta name="description" content="Find the best events happening in Portland, Oregon. From concerts to food festivals, tech meetups to outdoor adventures." />
-    <meta name="author" content="Portland.Events" />
-
-    <meta property="og:title" content="Portland.Events - Discover Portland's Best Events" />
-    <meta property="og:description" content="Find the best events happening in Portland, Oregon. From concerts to food festivals, tech meetups to outdoor adventures." />
+    
+    <!-- Primary Meta Tags -->
+    <title>Portland.Events - Discover Events, Venues & Music in Portland, Oregon</title>
+    <meta name="title" content="Portland.Events - Discover Events, Venues & Music in Portland, Oregon" />
+    <meta name="description" content="Portland, Oregon based events, venues and music. Discover local events, explore venues, and enjoy music from local artists." />
+    <meta name="keywords" content="Portland events, Oregon events, Portland venues, Portland music, local events, event listings" />
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="English" />
+    
+    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
-
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@PortlandEvents" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta property="og:url" content="https://portland.events" />
+    <meta property="og:title" content="Portland.Events - Discover Events, Venues & Music in Portland, Oregon" />
+    <meta property="og:description" content="Portland, Oregon based events, venues and music. Discover local events, explore venues, and enjoy music from local artists." />
+    <meta property="og:image" content="https://portland.events/assets/portland_events_logo_bridge.png" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content="Portland.Events" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://portland.events" />
+    <meta property="twitter:title" content="Portland.Events - Discover Events, Venues & Music in Portland, Oregon" />
+    <meta property="twitter:description" content="Portland, Oregon based events, venues and music. Discover local events, explore venues, and enjoy music from local artists." />
+    <meta property="twitter:image" content="https://portland.events/assets/portland_events_logo_bridge.png" />
+    
+    <!-- Schema.org markup -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Portland.Events",
+      "url": "https://portland.events",
+      "description": "Portland, Oregon based events, venues and music",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://portland.events/events?search={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   </head>
 
   <body>

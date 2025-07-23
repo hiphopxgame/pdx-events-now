@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { useEvents } from '@/hooks/useEvents';
@@ -9,10 +9,15 @@ import { Calendar, MapPin, Clock, ExternalLink, User, ArrowLeft, Globe, Facebook
 import { Loader2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { SocialShare } from '@/components/SocialShare';
+import { extractIdFromSlug, updateMetaTags } from '@/lib/seo';
 
 const Event = () => {
-  const { eventId } = useParams<{ eventId: string }>();
+  const { eventSlug } = useParams<{ eventSlug: string }>();
   const navigate = useNavigate();
+
+  // Extract event ID from slug (supports both new slug format and legacy ID format)
+  const eventId = eventSlug ? extractIdFromSlug(eventSlug) : '';
 
   const { data: allEvents = [], isLoading } = useEvents();
 
@@ -38,6 +43,20 @@ const Event = () => {
     },
     enabled: !!event?.venue_name,
   });
+
+  // Update meta tags when event is loaded
+  useEffect(() => {
+    if (event) {
+      const currentUrl = window.location.href;
+      updateMetaTags({
+        title: event.title,
+        description: event.description || `Join us for ${event.title} at ${event.venue_name} on ${formatDate(event.start_date)}`,
+        image: event.image_url || 'https://portland.events/assets/portland_events_logo_bridge.png',
+        url: currentUrl,
+        type: 'article'
+      });
+    }
+  }, [event]);
 
   const formatDate = (dateString: string) => {
     try {
@@ -95,7 +114,8 @@ const Event = () => {
 
   const handleVenueClick = () => {
     if (event?.venue_name) {
-      navigate(`/venue/${encodeURIComponent(event.venue_name)}`);
+      const venueSlug = `${event.venue_name.toLowerCase().replace(/[^a-z0-9 -]/g, '').replace(/\s+/g, '-')}-${event.venue_name}`;
+      navigate(`/venue/${encodeURIComponent(venueSlug)}`);
     }
   };
 
@@ -341,6 +361,16 @@ const Event = () => {
                 </Button>
               </div>
             )}
+
+            {/* Social Sharing */}
+            <div className="border-t pt-6">
+              <SocialShare 
+                url={window.location.href}
+                title={event.title}
+                description={event.description || `Join us for ${event.title} at ${event.venue_name}`}
+                variant="card"
+              />
+            </div>
           </div>
         </div>
       </div>
