@@ -15,19 +15,20 @@ export const UpgradeToArtistButton = () => {
 
   // Show current roles for debugging and user information
   const currentRoles = userRoles.map(role => role.role).join(', ');
-  const isMember = hasRole('member'); // All users should have 'member' role (migrated from legacy 'user' role)
+  const isMember = hasRole('member');
+  const isAdmin = hasRole('admin');
   const isArtist = hasRole('artist');
 
-  // Only show upgrade button if user has member/user role but not artist
-  if (!isMember || isArtist) {
+  // Only show upgrade button if user has member or admin role but not artist
+  if ((!isMember && !isAdmin) || isArtist) {
     return (
       <div className="space-y-2">
         <p className="text-sm text-gray-600">Current roles: {currentRoles || 'None'}</p>
         {isArtist && (
           <p className="text-sm text-green-600">✓ You already have Artist privileges</p>
         )}
-        {!isMember && (
-          <p className="text-sm text-gray-600">You need to be a member to upgrade to Artist</p>
+        {!isMember && !isAdmin && (
+          <p className="text-sm text-gray-600">You need to be a member or admin to upgrade to Artist</p>
         )}
       </div>
     );
