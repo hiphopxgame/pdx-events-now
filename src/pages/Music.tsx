@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useMusicVideos, MusicVideo } from "@/hooks/useMusicVideos";
 import { MusicVideoModal } from "@/components/MusicVideoModal";
 import { Music as MusicIcon, Play } from "lucide-react";
@@ -16,6 +17,7 @@ export default function Music() {
   const [loading, setLoading] = useState(true);
   const [selectedVideo, setSelectedVideo] = useState<MusicVideo | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedArtist, setSelectedArtist] = useState<string>("all");
 
   useEffect(() => {
     const loadApprovedVideos = async () => {
@@ -46,6 +48,37 @@ export default function Music() {
     navigate(`/user/${artistId}`);
   };
 
+  // Memoized filtered and sorted videos
+  const filteredAndSortedVideos = useMemo(() => {
+    let filtered = approvedVideos;
+    
+    // Filter by artist
+    if (selectedArtist !== "all") {
+      filtered = filtered.filter(video => video.artist_id === selectedArtist);
+    }
+    
+    // Sort by title
+    return filtered.sort((a, b) => a.title.localeCompare(b.title));
+  }, [approvedVideos, selectedArtist]);
+
+  // Get unique artists for dropdown
+  const uniqueArtists = useMemo(() => {
+    const artists = approvedVideos.map(video => ({
+      id: video.artist_id,
+      name: video.artist?.full_name || video.artist?.username || 'Unknown Artist'
+    }));
+    
+    // Remove duplicates based on artist_id
+    const uniqueMap = new Map();
+    artists.forEach(artist => {
+      if (!uniqueMap.has(artist.id)) {
+        uniqueMap.set(artist.id, artist);
+      }
+    });
+    
+    return Array.from(uniqueMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+  }, [approvedVideos]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
@@ -67,9 +100,30 @@ export default function Music() {
             <MusicIcon className="w-8 h-8" />
             Music Videos
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-lg text-muted-foreground mb-6">
             Discover amazing music videos from our community artists
           </p>
+          
+          {approvedVideos.length > 0 && (
+            <div className="flex items-center gap-4 mb-4">
+              <label htmlFor="artist-filter" className="text-sm font-medium">
+                Filter by Artist:
+              </label>
+              <Select value={selectedArtist} onValueChange={setSelectedArtist}>
+                <SelectTrigger className="w-64">
+                  <SelectValue placeholder="All Artists" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Artists</SelectItem>
+                  {uniqueArtists.map((artist) => (
+                    <SelectItem key={artist.id} value={artist.id}>
+                      {artist.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
         </div>
 
         {approvedVideos.length === 0 ? (
@@ -84,7 +138,7 @@ export default function Music() {
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {approvedVideos.map((video) => (
+            {filteredAndSortedVideos.map((video) => (
               <Card key={video.id} className="overflow-hidden">
                 <div className="aspect-video relative group">
                   <iframe
