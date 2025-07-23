@@ -98,7 +98,7 @@ export default function Music() {
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-4 flex items-center gap-2">
             <MusicIcon className="w-8 h-8" />
-            Music Videos
+            Portland Music
           </h1>
           <p className="text-lg text-muted-foreground mb-6">
             Discover amazing music videos from our community artists
