@@ -7,6 +7,7 @@ import { useEvents, useCategories } from '@/hooks/useEvents';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { EnhancedPagination } from '@/components/EnhancedPagination';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const Events = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -96,7 +97,27 @@ const Events = () => {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">Portland Events</h1>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+            <h1 className="text-4xl font-bold text-gray-800">Events Calendar</h1>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span>Show</span>
+              <Select
+                value={itemsPerPage.toString()}
+                onValueChange={(value) => setItemsPerPage(Number(value))}
+              >
+                <SelectTrigger className="w-20">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="20">20</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                  <SelectItem value="100">100</SelectItem>
+                </SelectContent>
+              </Select>
+              <span>per page</span>
+            </div>
+          </div>
           <p className="text-gray-600">Discover what's happening in Portland</p>
         </div>
 
