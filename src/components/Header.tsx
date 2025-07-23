@@ -5,6 +5,7 @@ import { Calendar, Plus, User, LogOut, CheckCircle, MapPin, Shield, Users, Build
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserRoles } from '@/hooks/useUserRoles';
+import { AdminMusicManagement } from '@/components/AdminMusicManagement';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -128,14 +129,19 @@ export const Header = () => {
                             Manage Users
                           </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link to="/admin/venues" className="flex items-center">
-                            <Building2 className="mr-2 h-4 w-4" />
-                            Manage Venues
-                          </Link>
-                        </DropdownMenuItem>
-                      </>
-                    )}
+                         <DropdownMenuItem asChild>
+                           <Link to="/admin/venues" className="flex items-center">
+                             <Building2 className="mr-2 h-4 w-4" />
+                             Manage Venues
+                           </Link>
+                         </DropdownMenuItem>
+                       </>
+                     )}
+                     {isAdmin && (
+                       <div className="px-2 py-1">
+                         <AdminMusicManagement />
+                       </div>
+                     )}
                     <DropdownMenuItem onClick={handleSignOut}>
                       <LogOut className="mr-2 h-4 w-4" />
                       Sign Out
