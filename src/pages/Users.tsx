@@ -25,7 +25,7 @@ interface UserProfile {
   venue_count?: number;
   roles: Array<{
     id: string;
-    role: 'admin' | 'moderator' | 'user';
+    role: 'admin' | 'moderator' | 'member';
   }>;
 }
 
@@ -97,8 +97,11 @@ const Users = () => {
           .select('id', { count: 'exact', head: true })
           .eq('created_by', user.id);
 
-        // Get user roles
-        const userRoles = roles?.filter(role => role.user_id === user.id) || [];
+        // Get user roles and map old 'user' roles to 'member'
+        const userRoles = (roles?.filter(role => role.user_id === user.id) || []).map(role => ({
+          ...role,
+          role: role.role === 'user' ? 'member' as const : role.role as 'admin' | 'moderator' | 'member'
+        }));
 
         usersWithCounts.push({
           ...user,
@@ -143,7 +146,7 @@ const Users = () => {
     switch (role) {
       case 'admin': return 'destructive';
       case 'moderator': return 'default';
-      case 'user': return 'secondary';
+      case 'member': return 'secondary';
       default: return 'outline';
     }
   };
@@ -210,7 +213,7 @@ const Users = () => {
                       <div className="flex-1">
                         <Link to={`/user/${user.id}`} className="block">
                           <h3 className="font-semibold text-gray-800 hover:text-emerald-600 transition-colors">
-                            {user.display_name || 'Anonymous User'}
+                            {user.display_name || user.username || 'Community Member'}
                           </h3>
                         </Link>
                         {user.username && (

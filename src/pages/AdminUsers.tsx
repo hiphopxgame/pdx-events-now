@@ -93,7 +93,7 @@ const AdminUsers = () => {
     setFilteredUsers(filtered);
   };
 
-  const handleRoleChange = async (userId: string, role: 'admin' | 'moderator' | 'user', action: 'add' | 'remove') => {
+  const handleRoleChange = async (userId: string, role: 'admin' | 'moderator' | 'member', action: 'add' | 'remove') => {
     const result = await updateUserRole(userId, role, action);
     
     if (result.success) {
@@ -115,7 +115,7 @@ const AdminUsers = () => {
     switch (role) {
       case 'admin': return 'destructive';
       case 'moderator': return 'default';
-      case 'user': return 'secondary';
+      case 'member': return 'secondary';
       default: return 'outline';
     }
   };
@@ -193,7 +193,7 @@ const AdminUsers = () => {
                     <SelectItem value="all">All Roles</SelectItem>
                     <SelectItem value="admin">Admin</SelectItem>
                     <SelectItem value="moderator">Moderator</SelectItem>
-                    <SelectItem value="user">User</SelectItem>
+                    <SelectItem value="member">Member</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

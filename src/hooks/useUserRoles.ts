@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 export interface UserRole {
   id: string;
   user_id: string;
-  role: 'admin' | 'moderator' | 'user';
+  role: 'admin' | 'moderator' | 'member';
   created_at: string;
   updated_at: string;
 }
@@ -55,7 +55,12 @@ export const useUserRoles = () => {
         .eq('user_id', user?.id);
       
       if (error) throw error;
-      setUserRoles(data || []);
+      // Filter out any old 'user' roles and map them to 'member'
+      const mappedRoles = (data || []).map(role => ({
+        ...role,
+        role: role.role === 'user' ? 'member' as const : role.role as 'admin' | 'moderator' | 'member'
+      }));
+      setUserRoles(mappedRoles);
     } catch (error) {
       console.error('Error fetching user roles:', error);
       setUserRoles([]);
@@ -81,13 +86,16 @@ export const useUserRoles = () => {
 
       if (rolesError) throw rolesError;
 
-      // Combine the data
+      // Combine the data and map old 'user' roles to 'member'
       const usersWithRoles = profiles.map(profile => ({
         id: profile.id,
         email: profile.email,
         full_name: profile.full_name,
         created_at: profile.created_at,
-        roles: roles.filter(role => role.user_id === profile.id)
+        roles: roles.filter(role => role.user_id === profile.id).map(role => ({
+          ...role,
+          role: role.role === 'user' ? 'member' as const : role.role as 'admin' | 'moderator' | 'member'
+        }))
       }));
 
       return usersWithRoles;
@@ -97,7 +105,7 @@ export const useUserRoles = () => {
     }
   };
 
-  const updateUserRole = async (userId: string, role: 'admin' | 'moderator' | 'user', action: 'add' | 'remove') => {
+  const updateUserRole = async (userId: string, role: 'admin' | 'moderator' | 'member', action: 'add' | 'remove') => {
     try {
       if (action === 'add') {
         const { error } = await supabase
