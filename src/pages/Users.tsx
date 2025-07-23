@@ -23,6 +23,10 @@ interface UserProfile {
   created_at: string;
   event_count?: number;
   venue_count?: number;
+  roles: Array<{
+    id: string;
+    role: 'admin' | 'moderator' | 'user';
+  }>;
 }
 
 const Users = () => {
@@ -50,7 +54,9 @@ const Users = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      
+      // Fetch user profiles
+      const { data: profiles, error: profilesError } = await supabase
         .from('por_eve_profiles')
         .select(`
           id,
@@ -66,12 +72,19 @@ const Users = () => {
         `)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (profilesError) throw profilesError;
+
+      // Fetch all user roles
+      const { data: roles, error: rolesError } = await supabase
+        .from('user_roles')
+        .select('id, user_id, role');
+
+      if (rolesError) throw rolesError;
 
       // Fetch event and venue counts for each user
       const usersWithCounts: UserProfile[] = [];
       
-      for (const user of data || []) {
+      for (const user of profiles || []) {
         // Get event count
         const { count: eventCount } = await supabase
           .from('user_events')
@@ -84,10 +97,14 @@ const Users = () => {
           .select('id', { count: 'exact', head: true })
           .eq('created_by', user.id);
 
+        // Get user roles
+        const userRoles = roles?.filter(role => role.user_id === user.id) || [];
+
         usersWithCounts.push({
           ...user,
           event_count: eventCount || 0,
-          venue_count: venueCount || 0
+          venue_count: venueCount || 0,
+          roles: userRoles
         });
       }
 
@@ -120,6 +137,15 @@ const Users = () => {
     if (user.twitter_url) links.push({ icon: Twitter, url: user.twitter_url, label: 'Twitter' });
     if (user.youtube_url) links.push({ icon: Youtube, url: user.youtube_url, label: 'YouTube' });
     return links;
+  };
+
+  const getRoleBadgeColor = (role: string) => {
+    switch (role) {
+      case 'admin': return 'destructive';
+      case 'moderator': return 'default';
+      case 'user': return 'secondary';
+      default: return 'outline';
+    }
   };
 
   return (
@@ -200,6 +226,27 @@ const Users = () => {
                           View Profile
                         </Button>
                       </Link>
+                    </div>
+
+                    {/* User Roles */}
+                    <div className="flex flex-wrap gap-1 mb-3">
+                      {user.roles.length === 0 ? (
+                        <Badge variant="outline" className="text-xs">
+                          <User className="h-3 w-3 mr-1" />
+                          Member
+                        </Badge>
+                      ) : (
+                        user.roles.map((role) => (
+                          <Badge 
+                            key={role.id} 
+                            variant={getRoleBadgeColor(role.role)}
+                            className="text-xs flex items-center gap-1"
+                          >
+                            {role.role === 'admin' && <User className="h-3 w-3" />}
+                            {role.role.charAt(0).toUpperCase() + role.role.slice(1)}
+                          </Badge>
+                        ))
+                      )}
                     </div>
 
                     {/* Event and Venue Counts */}
