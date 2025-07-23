@@ -126,7 +126,7 @@ export const Header = () => {
                         <DropdownMenuItem asChild>
                           <Link to="/admin/users" className="flex items-center">
                             <Users className="mr-2 h-4 w-4" />
-                            Manage Users
+                            Manage Community
                           </Link>
                         </DropdownMenuItem>
                          <DropdownMenuItem asChild>

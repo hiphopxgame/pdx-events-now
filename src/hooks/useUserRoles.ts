@@ -14,6 +14,9 @@ export interface UserWithProfile {
   id: string;
   email: string;
   full_name?: string;
+  city?: string;
+  state?: string;
+  zip_code?: string;
   roles: UserRole[];
   created_at: string;
 }
@@ -71,7 +74,7 @@ export const useUserRoles = () => {
 
   const fetchAllUsers = async (): Promise<UserWithProfile[]> => {
     try {
-      // First get all profiles
+      // First get all profiles with location data
       const { data: profiles, error: profilesError } = await supabase
         .from('por_eve_profiles')
         .select('*')
@@ -91,6 +94,9 @@ export const useUserRoles = () => {
         id: profile.id,
         email: profile.email,
         full_name: profile.full_name,
+        city: profile.city,
+        state: profile.state,
+        zip_code: profile.zip_code,
         created_at: profile.created_at,
         roles: roles.filter(role => role.user_id === profile.id).map(role => ({
           ...role,

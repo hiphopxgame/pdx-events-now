@@ -1638,6 +1638,7 @@ export type Database = {
         Row: {
           avatar_url: string | null
           bandcamp_url: string | null
+          city: string | null
           created_at: string
           display_name: string | null
           email: string
@@ -1648,15 +1649,18 @@ export type Database = {
           is_email_public: boolean | null
           soundcloud_url: string | null
           spotify_url: string | null
+          state: string | null
           twitter_url: string | null
           updated_at: string
           username: string | null
           website_url: string | null
           youtube_url: string | null
+          zip_code: string | null
         }
         Insert: {
           avatar_url?: string | null
           bandcamp_url?: string | null
+          city?: string | null
           created_at?: string
           display_name?: string | null
           email: string
@@ -1667,15 +1671,18 @@ export type Database = {
           is_email_public?: boolean | null
           soundcloud_url?: string | null
           spotify_url?: string | null
+          state?: string | null
           twitter_url?: string | null
           updated_at?: string
           username?: string | null
           website_url?: string | null
           youtube_url?: string | null
+          zip_code?: string | null
         }
         Update: {
           avatar_url?: string | null
           bandcamp_url?: string | null
+          city?: string | null
           created_at?: string
           display_name?: string | null
           email?: string
@@ -1686,11 +1693,13 @@ export type Database = {
           is_email_public?: boolean | null
           soundcloud_url?: string | null
           spotify_url?: string | null
+          state?: string | null
           twitter_url?: string | null
           updated_at?: string
           username?: string | null
           website_url?: string | null
           youtube_url?: string | null
+          zip_code?: string | null
         }
         Relationships: []
       }

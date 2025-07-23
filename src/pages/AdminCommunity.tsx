@@ -8,20 +8,27 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Users, Search, UserCheck, UserMinus, Loader2, Shield, User, Edit } from 'lucide-react';
+import { Users, Search, UserCheck, UserMinus, Loader2, Shield, User, Edit, MapPin } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { EditUserDialog } from '@/components/EditUserDialog';
 import { AdminMusicManagement } from '@/components/AdminMusicManagement';
 import { supabase } from '@/integrations/supabase/client';
 
-const AdminUsers = () => {
+// Enhanced UserWithProfile interface to include location data
+interface EnhancedUserWithProfile extends UserWithProfile {
+  city?: string;
+  state?: string;
+  zip_code?: string;
+}
+
+const AdminCommunity = () => {
   const { isAdmin, loading: rolesLoading, updateUserRole, fetchAllUsers } = useUserRoles();
-  const [users, setUsers] = useState<UserWithProfile[]>([]);
-  const [filteredUsers, setFilteredUsers] = useState<UserWithProfile[]>([]);
+  const [users, setUsers] = useState<EnhancedUserWithProfile[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<EnhancedUserWithProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('all');
-  const [editingUser, setEditingUser] = useState<UserWithProfile | null>(null);
+  const [editingUser, setEditingUser] = useState<EnhancedUserWithProfile | null>(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const { toast } = useToast();
 
@@ -61,8 +68,38 @@ const AdminUsers = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const allUsers = await fetchAllUsers();
-      setUsers(allUsers);
+      
+      // Get all profiles with location data
+      const { data: profiles, error: profilesError } = await supabase
+        .from('por_eve_profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (profilesError) throw profilesError;
+
+      // Get all user roles
+      const { data: roles, error: rolesError } = await supabase
+        .from('user_roles')
+        .select('*');
+
+      if (rolesError) throw rolesError;
+
+      // Combine the data and map old 'user' roles to 'member'
+      const usersWithRoles = profiles.map(profile => ({
+        id: profile.id,
+        email: profile.email,
+        full_name: profile.full_name,
+        city: profile.city,
+        state: profile.state,
+        zip_code: profile.zip_code,
+        created_at: profile.created_at,
+        roles: roles.filter(role => role.user_id === profile.id).map(role => ({
+          ...role,
+          role: role.role === 'user' ? 'member' as const : role.role as 'admin' | 'moderator' | 'member' | 'artist'
+        }))
+      }));
+
+      setUsers(usersWithRoles);
     } catch (error) {
       console.error('Error fetching users:', error);
       toast({
@@ -94,7 +131,7 @@ const AdminUsers = () => {
     setFilteredUsers(filtered);
   };
 
-  const handleRoleChange = async (userId: string, role: 'admin' | 'moderator' | 'member', action: 'add' | 'remove') => {
+  const handleRoleChange = async (userId: string, role: 'admin' | 'moderator' | 'member' | 'artist', action: 'add' | 'remove') => {
     const result = await updateUserRole(userId, role, action);
     
     if (result.success) {
@@ -115,17 +152,18 @@ const AdminUsers = () => {
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
       case 'admin': return 'destructive';
+      case 'artist': return 'default';
       case 'moderator': return 'default';
       case 'member': return 'secondary';
       default: return 'outline';
     }
   };
 
-  const hasRole = (user: UserWithProfile, role: string) => {
+  const hasRole = (user: EnhancedUserWithProfile, role: string) => {
     return user.roles.some(r => r.role === role);
   };
 
-  const handleEditUser = (user: UserWithProfile) => {
+  const handleEditUser = (user: EnhancedUserWithProfile) => {
     setEditingUser(user);
     setShowEditDialog(true);
   };
@@ -165,9 +203,9 @@ const AdminUsers = () => {
               <div>
                 <h1 className="text-4xl font-bold text-gray-800 mb-4 flex items-center">
                   <Users className="h-8 w-8 mr-3 text-emerald-600" />
-                  User Management
+                  Manage Community
                 </h1>
-                <p className="text-gray-600">Manage user accounts and permissions</p>
+                <p className="text-gray-600">Manage community member accounts and permissions</p>
               </div>
               <div className="flex items-center gap-4">
                 <AdminMusicManagement />
@@ -202,6 +240,7 @@ const AdminUsers = () => {
                     <SelectItem value="admin">Admin</SelectItem>
                     <SelectItem value="moderator">Moderator</SelectItem>
                     <SelectItem value="member">Member</SelectItem>
+                    <SelectItem value="artist">Artist</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -218,12 +257,12 @@ const AdminUsers = () => {
               {filteredUsers.map((user) => (
                 <Card key={user.id} className="hover:shadow-lg transition-shadow">
                   <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start space-x-4 flex-1">
                         <div className="h-10 w-10 bg-emerald-100 rounded-full flex items-center justify-center">
                           <User className="h-5 w-5 text-emerald-600" />
                         </div>
-                        <div>
+                        <div className="flex-1">
                           <h3 className="font-semibold text-gray-800">
                             {user.full_name || 'No name provided'}
                           </h3>
@@ -231,12 +270,22 @@ const AdminUsers = () => {
                           <p className="text-xs text-gray-500">
                             Joined: {new Date(user.created_at).toLocaleDateString()}
                           </p>
+                          
+                          {/* Location Information for Artists */}
+                          {hasRole(user, 'artist') && (user.city || user.state || user.zip_code) && (
+                            <div className="flex items-center gap-1 mt-2 text-sm text-gray-600">
+                              <MapPin className="h-3 w-3" />
+                              <span>
+                                {[user.city, user.state, user.zip_code].filter(Boolean).join(', ')}
+                              </span>
+                            </div>
+                          )}
                         </div>
                       </div>
                       
-                      <div className="flex items-center space-x-4">
+                      <div className="flex flex-col items-end space-y-4">
                         {/* Current Roles */}
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-2 justify-end">
                           {user.roles.length === 0 ? (
                             <Badge variant="outline">No roles</Badge>
                           ) : (
@@ -253,8 +302,8 @@ const AdminUsers = () => {
                           )}
                         </div>
 
-                        {/* Action Buttons */}
-                        <div className="flex gap-2">
+                        <div className="flex flex-wrap gap-2 justify-end">
+                          {/* Action Buttons */}
                           <Button
                             size="sm"
                             variant="outline"
@@ -264,10 +313,8 @@ const AdminUsers = () => {
                             <Edit className="h-4 w-4 mr-1" />
                             Edit
                           </Button>
-                        </div>
 
-                        {/* Role Management Buttons */}
-                        <div className="flex gap-2">
+                          {/* Role Management Buttons */}
                           {!hasRole(user, 'admin') && (
                             <Button
                               size="sm"
@@ -289,6 +336,28 @@ const AdminUsers = () => {
                             >
                               <UserMinus className="h-4 w-4 mr-1" />
                               Remove Admin
+                            </Button>
+                          )}
+
+                          {!hasRole(user, 'artist') && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleRoleChange(user.id, 'artist', 'add')}
+                              className="text-purple-600 border-purple-200 hover:bg-purple-50"
+                            >
+                              Make Artist
+                            </Button>
+                          )}
+                          
+                          {hasRole(user, 'artist') && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleRoleChange(user.id, 'artist', 'remove')}
+                              className="text-gray-600 border-gray-200 hover:bg-gray-50"
+                            >
+                              Remove Artist
                             </Button>
                           )}
 
@@ -344,4 +413,4 @@ const AdminUsers = () => {
   );
 };
 
-export default AdminUsers;
+export default AdminCommunity;

@@ -17,7 +17,7 @@ import Venue from "./pages/Venue";
 import Users from "./pages/Users";
 import User from "./pages/User";
 import Account from "./pages/Account";
-import AdminUsers from "./pages/AdminUsers";
+import AdminCommunity from "./pages/AdminCommunity";
 import AdminVenues from "./pages/AdminVenues";
 import EditVenue from "./pages/EditVenue";
 import Music from "./pages/Music";
@@ -47,7 +47,7 @@ const App = () => (
             <Route path="/approve-events" element={<ManageEvents />} />
             <Route path="/manage-events" element={<ManageEvents />} />
             <Route path="/admin/events" element={<AdminProtectedRoute><ManageEvents /></AdminProtectedRoute>} />
-            <Route path="/admin/users" element={<AdminProtectedRoute><AdminUsers /></AdminProtectedRoute>} />
+            <Route path="/admin/users" element={<AdminProtectedRoute><AdminCommunity /></AdminProtectedRoute>} />
             <Route path="/admin/venues" element={<AdminProtectedRoute><AdminVenues /></AdminProtectedRoute>} />
             <Route path="/admin/venues/:venueId" element={<AdminProtectedRoute><EditVenue /></AdminProtectedRoute>} />
             <Route path="/music" element={<Music />} />
