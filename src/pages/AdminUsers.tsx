@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Users, Search, UserCheck, UserMinus, Loader2, Shield, User, Edit } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { EditUserDialog } from '@/components/EditUserDialog';
+import { supabase } from '@/integrations/supabase/client';
 
 const AdminUsers = () => {
   const { isAdmin, loading: rolesLoading, updateUserRole, fetchAllUsers } = useUserRoles();
@@ -26,6 +27,29 @@ const AdminUsers = () => {
   useEffect(() => {
     if (isAdmin) {
       fetchUsers();
+      
+      // Set up real-time subscription for live updates
+      const subscription = supabase
+        .channel('admin-users-changes')
+        .on('postgres_changes', 
+          { event: '*', schema: 'public', table: 'por_eve_profiles' },
+          () => {
+            console.log('User profile changed, refreshing users...');
+            fetchUsers();
+          }
+        )
+        .on('postgres_changes',
+          { event: '*', schema: 'public', table: 'user_roles' },
+          () => {
+            console.log('User roles changed, refreshing users...');
+            fetchUsers();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        subscription.unsubscribe();
+      };
     }
   }, [isAdmin]);
 
