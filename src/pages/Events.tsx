@@ -3,7 +3,8 @@ import { Header } from '@/components/Header';
 import { EventsGrid } from '@/components/EventsGrid';
 import { SearchFilters } from '@/components/SearchFilters';
 import { Footer } from '@/components/Footer';
-import { useEvents, useCategories } from '@/hooks/useEvents';
+import { useEvents } from '@/hooks/useEvents';
+import { useCategoriesWithCounts } from '@/hooks/events/useCategoriesWithCounts';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { EnhancedPagination } from '@/components/EnhancedPagination';
@@ -28,7 +29,7 @@ const Events = () => {
     dateFilter: selectedDate,
   });
 
-  const { data: categories = [], isLoading: categoriesLoading } = useCategories();
+  const { data: categories = [], isLoading: categoriesLoading } = useCategoriesWithCounts();
   
   // Reset pagination when filters change
   React.useEffect(() => {

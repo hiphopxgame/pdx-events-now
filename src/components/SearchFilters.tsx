@@ -13,6 +13,7 @@ interface Category {
   icon: string | null;
   is_active: boolean;
   created_at: string;
+  event_count?: number;
 }
 
 interface SearchFiltersProps {
@@ -66,7 +67,7 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
               ) : (
                 categories.map((category) => (
                   <SelectItem key={category.id} value={category.slug} className="hover:bg-emerald-50">
-                    {category.name}
+                    {category.name} {category.event_count && `(${category.event_count})`}
                   </SelectItem>
                 ))
               )}

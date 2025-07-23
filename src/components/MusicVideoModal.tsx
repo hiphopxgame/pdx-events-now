@@ -16,22 +16,24 @@ export function MusicVideoModal({ video, isOpen, onClose }: MusicVideoModalProps
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl w-full h-[80vh]">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-bold">{video.title}</DialogTitle>
+      <DialogContent className="max-w-6xl w-[95vw] max-h-[95vh] p-0 overflow-hidden">
+        <DialogHeader className="p-6 pb-0">
+          <DialogTitle className="text-xl font-bold truncate">{video.title}</DialogTitle>
         </DialogHeader>
-        <div className="flex-1 aspect-video">
+        <div className="relative w-full" style={{ aspectRatio: '16/9' }}>
           <iframe
             src={getYouTubeEmbedUrl(video.youtube_id)}
             title={video.title}
-            className="w-full h-full rounded-lg"
+            className="absolute inset-0 w-full h-full"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
           />
         </div>
-        <div className="text-center text-muted-foreground">
-          By {video.artist?.full_name || video.artist?.username || 'Unknown Artist'}
+        <div className="p-6 pt-0">
+          <div className="text-center text-muted-foreground">
+            By {video.artist?.full_name || video.artist?.username || 'Unknown Artist'}
+          </div>
         </div>
       </DialogContent>
     </Dialog>

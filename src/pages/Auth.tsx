@@ -103,7 +103,16 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-orange-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+      <div className="w-full max-w-md relative">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate('/')}
+          className="absolute -top-12 left-0 text-gray-600 hover:text-gray-800"
+        >
+          ← Back to Events
+        </Button>
+        <Card className="w-full">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">Portland Events</CardTitle>
           <CardDescription className="text-center">Sign in to your account or create a new one</CardDescription>
@@ -211,7 +220,8 @@ const Auth = () => {
             </TabsContent>
           </Tabs>
         </CardContent>
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 };
