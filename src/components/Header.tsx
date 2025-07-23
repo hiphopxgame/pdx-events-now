@@ -5,6 +5,7 @@ import { Calendar, Plus, User, LogOut, CheckCircle, MapPin, Shield, Users, Build
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserRoles } from '@/hooks/useUserRoles';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { AdminMusicManagement } from '@/components/AdminMusicManagement';
 import {
   DropdownMenu,
@@ -16,6 +17,7 @@ import {
 export const Header = () => {
   const { user, signOut } = useAuth();
   const { isAdmin } = useUserRoles();
+  const isMobile = useIsMobile();
   const navigate = useNavigate();
 
   const handleNavClick = (path: string, event?: React.MouseEvent) => {
@@ -84,14 +86,16 @@ export const Header = () => {
           <div className="flex items-center space-x-4">
             {user ? (
               <>
-                <Button 
-                  onClick={(e) => handleNavClick('/submit-event', e)}
-                  variant="outline" 
-                  className="border-primary/30 text-primary hover:bg-accent cursor-pointer"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  <span>Submit Event</span>
-                </Button>
+                {!isMobile && (
+                  <Button 
+                    onClick={(e) => handleNavClick('/submit-event', e)}
+                    variant="outline" 
+                    className="border-primary/30 text-primary hover:bg-accent cursor-pointer"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    <span>Submit Event</span>
+                  </Button>
+                )}
                 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -101,6 +105,14 @@ export const Header = () => {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="z-50 bg-background">
+                    {isMobile && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/submit-event" className="flex items-center">
+                          <Plus className="mr-2 h-4 w-4" />
+                          Submit Event
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuItem asChild>
                       <Link to="/account" className="flex items-center">
                         <User className="mr-2 h-4 w-4" />
