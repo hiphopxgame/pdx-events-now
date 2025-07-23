@@ -6,9 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
-import { Users as UsersIcon, Search, User, Globe, Facebook, Instagram, Twitter, Youtube, Loader2, ExternalLink, Calendar, MapPin, Filter } from 'lucide-react';
+import { Users as UsersIcon, Search, User, Globe, Facebook, Instagram, Twitter, Youtube, Loader2, ExternalLink, Calendar, Music, Filter } from 'lucide-react';
 import { EnhancedPagination } from '@/components/EnhancedPagination';
 
 interface UserProfile {
@@ -24,7 +25,7 @@ interface UserProfile {
   youtube_url: string | null;
   created_at: string;
   event_count?: number;
-  venue_count?: number;
+  music_count?: number;
   roles: Array<{
     id: string;
     role: 'admin' | 'moderator' | 'member' | 'user' | 'artist';
@@ -36,7 +37,7 @@ const Users = () => {
   const [filteredUsers, setFilteredUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedRole, setSelectedRole] = useState('all');
+  const [showArtistsOnly, setShowArtistsOnly] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const scrollTargetRef = useRef<HTMLElement>(null);
@@ -47,12 +48,12 @@ const Users = () => {
 
   useEffect(() => {
     filterUsers();
-  }, [users, searchTerm, selectedRole]);
+  }, [users, searchTerm, showArtistsOnly]);
 
-  // Reset pagination when search or role filter changes
+  // Reset pagination when search or artist filter changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, selectedRole, itemsPerPage]);
+  }, [searchTerm, showArtistsOnly, itemsPerPage]);
 
   const fetchUsers = async () => {
     try {
@@ -95,11 +96,12 @@ const Users = () => {
           .select('id', { count: 'exact', head: true })
           .eq('created_by', user.id);
 
-        // Get venue count from poreve_venues
-        const { count: venueCount } = await supabase
-          .from('poreve_venues')
+        // Get music video count for artists
+        const { count: musicCount } = await supabase
+          .from('music_videos')
           .select('id', { count: 'exact', head: true })
-          .eq('created_by', user.id);
+          .eq('artist_id', user.id)
+          .eq('status', 'approved');
 
         // Get user roles and map old 'user' roles to 'member'
         const userRoles = (roles?.filter(role => role.user_id === user.id) || []).map(role => ({
@@ -110,7 +112,7 @@ const Users = () => {
         usersWithCounts.push({
           ...user,
           event_count: eventCount || 0,
-          venue_count: venueCount || 0,
+          music_count: musicCount || 0,
           roles: userRoles
         });
       }
@@ -135,15 +137,11 @@ const Users = () => {
       );
     }
 
-    // Filter by role
-    if (selectedRole !== 'all') {
-      filtered = filtered.filter(user => {
-        if (selectedRole === 'member') {
-          // Include users with 'member' role or users with 'user' role (legacy)
-          return user.roles.some(role => role.role === 'member' || role.role === 'user');
-        }
-        return user.roles.some(role => role.role === selectedRole);
-      });
+    // Filter by artists only
+    if (showArtistsOnly) {
+      filtered = filtered.filter(user => 
+        user.roles.some(role => role.role === 'artist')
+      );
     }
 
     setFilteredUsers(filtered);
@@ -202,18 +200,15 @@ const Users = () => {
                   className="pl-10"
                 />
               </div>
-              <div className="w-full sm:w-48">
-                <Select value={selectedRole} onValueChange={setSelectedRole}>
-                  <SelectTrigger className="w-full bg-background">
-                    <SelectValue placeholder="Filter by role" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-background border border-border z-50">
-                    <SelectItem value="all">All Roles</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
-                    <SelectItem value="artist">Artist</SelectItem>
-                    <SelectItem value="member">Member</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="artists-only"
+                  checked={showArtistsOnly}
+                  onCheckedChange={setShowArtistsOnly}
+                />
+                <Label htmlFor="artists-only" className="text-sm font-medium">
+                  View Artists Only
+                </Label>
               </div>
             </div>
           </CardContent>
@@ -277,8 +272,8 @@ const Users = () => {
                           <span>{user.event_count || 0} Events</span>
                         </div>
                         <div className="flex items-center text-sm text-gray-600">
-                          <MapPin className="h-4 w-4 mr-1 text-orange-600" />
-                          <span>{user.venue_count || 0} Venues</span>
+                          <Music className="h-4 w-4 mr-1 text-purple-600" />
+                          <span>{user.music_count || 0} Music</span>
                         </div>
                       </div>
                     </div>
