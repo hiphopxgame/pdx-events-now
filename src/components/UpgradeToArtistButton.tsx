@@ -5,12 +5,32 @@ import { toast } from "sonner";
 import { Music } from "lucide-react";
 
 export const UpgradeToArtistButton = () => {
-  const { hasRole, upgradeToArtist } = useUserRoles();
+  const { hasRole, upgradeToArtist, userRoles, loading } = useUserRoles();
   const [isUpgrading, setIsUpgrading] = useState(false);
 
-  // Only show if user is a member but not an artist
-  if (!hasRole('member') || hasRole('artist')) {
-    return null;
+  // Don't show anything while loading
+  if (loading) {
+    return <div className="text-sm text-gray-500">Loading roles...</div>;
+  }
+
+  // Show current roles for debugging and user information
+  const currentRoles = userRoles.map(role => role.role).join(', ');
+  const isMember = hasRole('member'); // All users should have 'member' role (migrated from legacy 'user' role)
+  const isArtist = hasRole('artist');
+
+  // Only show upgrade button if user has member/user role but not artist
+  if (!isMember || isArtist) {
+    return (
+      <div className="space-y-2">
+        <p className="text-sm text-gray-600">Current roles: {currentRoles || 'None'}</p>
+        {isArtist && (
+          <p className="text-sm text-green-600">✓ You already have Artist privileges</p>
+        )}
+        {!isMember && (
+          <p className="text-sm text-gray-600">You need to be a member to upgrade to Artist</p>
+        )}
+      </div>
+    );
   }
 
   const handleUpgrade = async () => {
