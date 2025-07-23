@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Users, Search, UserCheck, UserMinus, Loader2, Shield, User, Edit } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { EditUserDialog } from '@/components/EditUserDialog';
+import { AdminMusicManagement } from '@/components/AdminMusicManagement';
 import { supabase } from '@/integrations/supabase/client';
 
 const AdminUsers = () => {
@@ -160,11 +161,18 @@ const AdminUsers = () => {
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="mb-8">
-            <h1 className="text-4xl font-bold text-gray-800 mb-4 flex items-center">
-              <Users className="h-8 w-8 mr-3 text-emerald-600" />
-              User Management
-            </h1>
-            <p className="text-gray-600">Manage user accounts and permissions</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-4xl font-bold text-gray-800 mb-4 flex items-center">
+                  <Users className="h-8 w-8 mr-3 text-emerald-600" />
+                  User Management
+                </h1>
+                <p className="text-gray-600">Manage user accounts and permissions</p>
+              </div>
+              <div className="flex items-center gap-4">
+                <AdminMusicManagement />
+              </div>
+            </div>
           </div>
 
           {/* Filters */}
