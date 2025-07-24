@@ -126,34 +126,33 @@ export const Header = () => {
                       </Link>
                     </DropdownMenuItem>
                     {isAdmin && (
-                      <DropdownMenuItem asChild>
-                        <Link to="/manage-events" className="flex items-center">
-                          <Settings className="mr-2 h-4 w-4" />
-                          Manage Events
-                        </Link>
-                      </DropdownMenuItem>
-                    )}
-                    {isAdmin && (
                       <>
+                        <DropdownMenuItem asChild>
+                          <Link to="/manage-events" className="flex items-center">
+                            <Settings className="mr-2 h-4 w-4" />
+                            Manage Events
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/admin/venues" className="flex items-center">
+                            <Building2 className="mr-2 h-4 w-4" />
+                            Venues
+                          </Link>
+                        </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                           <Link to="/admin/users" className="flex items-center">
                             <Users className="mr-2 h-4 w-4" />
-                            Manage Community
+                            Community
                           </Link>
                         </DropdownMenuItem>
-                         <DropdownMenuItem asChild>
-                           <Link to="/admin/venues" className="flex items-center">
-                             <Building2 className="mr-2 h-4 w-4" />
-                             Manage Venues
-                           </Link>
-                         </DropdownMenuItem>
-                       </>
-                     )}
-                     {isAdmin && (
-                       <div className="px-2 py-1">
-                         <AdminMusicManagement />
-                       </div>
-                     )}
+                        <DropdownMenuItem asChild>
+                          <div className="flex items-center cursor-pointer">
+                            <Music className="mr-2 h-4 w-4" />
+                            <AdminMusicManagement />
+                          </div>
+                        </DropdownMenuItem>
+                      </>
+                    )}
                     <DropdownMenuItem onClick={handleSignOut}>
                       <LogOut className="mr-2 h-4 w-4" />
                       Sign Out
