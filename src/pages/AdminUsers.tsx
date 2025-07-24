@@ -80,7 +80,7 @@ const AdminUsers = () => {
     if (searchTerm) {
       filtered = filtered.filter(user => 
         user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.full_name?.toLowerCase().includes(searchTerm.toLowerCase())
+        user.display_name?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -217,7 +217,7 @@ const AdminUsers = () => {
                         </div>
                         <div>
                           <h3 className="font-semibold text-gray-800">
-                            {user.full_name || 'No name provided'}
+                            {user.display_name || 'No name provided'}
                           </h3>
                           <p className="text-gray-600">{user.email}</p>
                           <p className="text-xs text-gray-500">
