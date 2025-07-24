@@ -101,9 +101,9 @@ export const Header = () => {
                     >
                       <User className="h-4 w-4 flex-shrink-0" />
                       <span className="hidden xs:inline sm:inline truncate text-sm">
-                        {user?.user_metadata?.display_name || 'Account'}
+                        {user?.user_metadata?.display_name || 'Menu'}
                       </span>
-                      <span className="xs:hidden text-xs">Account</span>
+                      <span className="xs:hidden text-xs">Menu</span>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="z-50 bg-background min-w-48">
