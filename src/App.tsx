@@ -21,6 +21,7 @@ import AdminUsers from "./pages/AdminUsers";
 import AdminVenues from "./pages/AdminVenues";
 import EditVenue from "./pages/EditVenue";
 import ManageContent from "./pages/ManageContent";
+import Content from "./pages/Content";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import NotFound from "./pages/NotFound";
 
@@ -51,6 +52,7 @@ const App = () => (
             <Route path="/admin/venues" element={<AdminProtectedRoute><AdminVenues /></AdminProtectedRoute>} />
             <Route path="/admin/venues/:venueId" element={<AdminProtectedRoute><EditVenue /></AdminProtectedRoute>} />
             <Route path="/manage-content" element={<AdminProtectedRoute><ManageContent /></AdminProtectedRoute>} />
+            <Route path="/content" element={<Content />} />
             <Route path="/auth" element={<Auth />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

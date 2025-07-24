@@ -46,7 +46,7 @@ const ManageContent = () => {
         .from('artist_content')
         .select(`
           *,
-          profile:por_eve_profiles!inner(display_name, username, full_name)
+          profile:por_eve_profiles(display_name, username, full_name)
         `)
         .order('created_at', { ascending: false });
 
