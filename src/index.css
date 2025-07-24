@@ -59,12 +59,12 @@
     --sidebar-ring: 212 65% 56%;
     
     /* Form state colors - light mode */
-    --form-filled: 158 50% 96%;
+    --form-filled: 158 93% 95%;
     --form-filled-border: 158 93% 22%;
     --form-filled-foreground: 158 93% 22%;
-    --form-empty: 158 20% 98%;
-    --form-empty-border: 158 30% 85%;
-    --form-empty-foreground: 158 30% 40%;
+    --form-empty: 43 100% 95%;
+    --form-empty-border: 43 100% 55%;
+    --form-empty-foreground: 43 100% 30%;
     --form-required: 0 84% 96%;
     --form-required-border: 0 84% 60%;
     --form-success: 120 100% 96%;
@@ -124,12 +124,12 @@
     --sidebar-ring: 212 65% 56%;
     
     /* Form state colors - dark mode */
-    --form-filled: 158 50% 15%;
-    --form-filled-border: 43 100% 55%;
-    --form-filled-foreground: 43 100% 55%;
-    --form-empty: 158 30% 12%;
-    --form-empty-border: 158 30% 25%;
-    --form-empty-foreground: 158 20% 60%;
+    --form-filled: 158 93% 10%;
+    --form-filled-border: 158 93% 22%;
+    --form-filled-foreground: 158 93% 85%;
+    --form-empty: 43 100% 10%;
+    --form-empty-border: 43 100% 55%;
+    --form-empty-foreground: 43 100% 70%;
     --form-required: 0 84% 15%;
     --form-required-border: 0 84% 60%;
     --form-success: 120 100% 15%;
