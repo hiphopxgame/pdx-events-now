@@ -116,7 +116,7 @@ export const Header = () => {
                     <DropdownMenuItem asChild>
                       <Link to="/account" className="flex items-center">
                         <User className="mr-2 h-4 w-4" />
-                        My Account
+                        Account
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
