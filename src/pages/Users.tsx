@@ -73,11 +73,12 @@ const Users = () => {
       const usersWithCounts: UserProfile[] = [];
       
       for (const user of data || []) {
-        // Get event count
+        // Get event count (only approved events)
         const { count: eventCount } = await supabase
           .from('user_events')
           .select('id', { count: 'exact', head: true })
-          .eq('created_by', user.id);
+          .eq('created_by', user.id)
+          .eq('status', 'approved');
 
         // Get venue count from poreve_venues
         const { count: venueCount } = await supabase
@@ -117,6 +118,20 @@ const Users = () => {
         user.username?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
+
+    // Sort by approved events count (descending), then alphabetically by display name
+    filtered = filtered.sort((a, b) => {
+      // First sort by event count (descending - higher counts first)
+      const eventCountDiff = (b.event_count || 0) - (a.event_count || 0);
+      if (eventCountDiff !== 0) {
+        return eventCountDiff;
+      }
+      
+      // If event counts are equal, sort alphabetically by display name
+      const nameA = a.display_name || a.username || '';
+      const nameB = b.display_name || b.username || '';
+      return nameA.toLowerCase().localeCompare(nameB.toLowerCase());
+    });
 
     setFilteredUsers(filtered);
   };
