@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,7 +9,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { Video, Play, Loader2 } from 'lucide-react';
 import { DataField } from '@/components/DataField';
 import { VideoModal } from '@/components/VideoModal';
-import { EnhancedPagination } from '@/components/EnhancedPagination';
 
 interface ArtistContent {
   id: string;
@@ -33,9 +32,6 @@ const Content = () => {
   const [content, setContent] = useState<ContentWithProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedVideo, setSelectedVideo] = useState<{url: string; title: string} | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const scrollTargetRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     fetchContent();
@@ -127,21 +123,6 @@ const Content = () => {
           <p className="text-gray-600">Discover videos, live footage, and content from our community artists</p>
         </div>
 
-        {/* Per-page selector at the top */}
-        <div className="mb-6">
-          <EnhancedPagination
-            currentPage={currentPage}
-            totalItems={content.length}
-            itemsPerPage={itemsPerPage}
-            onPageChange={setCurrentPage}
-            onItemsPerPageChange={setItemsPerPage}
-            scrollTargetRef={scrollTargetRef}
-          />
-        </div>
-
-        {/* Add ref for scroll target */}
-        <div ref={(el) => { if (el) scrollTargetRef.current = el; }} />
-        
         <div className="grid gap-6">
           {content.length === 0 ? (
             <Card>
@@ -151,7 +132,7 @@ const Content = () => {
               </CardContent>
             </Card>
           ) : (
-            content.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((item) => {
+            content.map((item) => {
               const youtubeId = getYouTubeId(item.youtube_url);
               const artistName = item.profile?.display_name || item.profile?.username || 'Unknown Artist';
 
@@ -225,17 +206,6 @@ const Content = () => {
             })
           )}
         </div>
-        
-        {content.length > 0 && (
-          <EnhancedPagination
-            currentPage={currentPage}
-            totalItems={content.length}
-            itemsPerPage={itemsPerPage}
-            onPageChange={setCurrentPage}
-            onItemsPerPageChange={setItemsPerPage}
-            scrollTargetRef={scrollTargetRef}
-          />
-        )}
       </div>
       
       {selectedVideo && (

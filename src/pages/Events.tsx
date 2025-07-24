@@ -117,18 +117,6 @@ const Events = () => {
           </div>
         </div>
 
-        {/* Per-page selector at the top */}
-        <div className="mb-6">
-          <EnhancedPagination
-            currentPage={currentPage}
-            totalItems={transformedEvents.length}
-            itemsPerPage={itemsPerPage}
-            onPageChange={setCurrentPage}
-            onItemsPerPageChange={setItemsPerPage}
-            scrollTargetRef={scrollTargetRef}
-          />
-        </div>
-
         <SearchFilters
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
