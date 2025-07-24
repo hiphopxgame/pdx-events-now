@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 export interface UserRole {
   id: string;
   user_id: string;
-  role: 'admin' | 'moderator' | 'user';
+  role: 'admin' | 'moderator' | 'user' | 'member' | 'artist';
   created_at: string;
   updated_at: string;
 }
@@ -97,7 +97,7 @@ export const useUserRoles = () => {
     }
   };
 
-  const updateUserRole = async (userId: string, role: 'admin' | 'moderator' | 'user', action: 'add' | 'remove') => {
+  const updateUserRole = async (userId: string, role: 'admin' | 'moderator' | 'user' | 'member' | 'artist', action: 'add' | 'remove') => {
     try {
       if (action === 'add') {
         const { error } = await supabase

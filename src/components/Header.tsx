@@ -112,25 +112,29 @@ export const Header = () => {
                       </Link>
                     </DropdownMenuItem>
                     {isAdmin && (
-                      <DropdownMenuItem asChild>
-                        <Link to="/manage-events" className="flex items-center">
-                          <Settings className="mr-2 h-4 w-4" />
-                          Manage Events
-                        </Link>
-                      </DropdownMenuItem>
-                    )}
-                    {isAdmin && (
                       <>
                         <DropdownMenuItem asChild>
-                          <Link to="/admin/users" className="flex items-center">
-                            <Users className="mr-2 h-4 w-4" />
-                            Manage Users
+                          <Link to="/manage-events" className="flex items-center">
+                            <Settings className="mr-2 h-4 w-4" />
+                            Manage Events
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                           <Link to="/admin/venues" className="flex items-center">
                             <Building2 className="mr-2 h-4 w-4" />
                             Manage Venues
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/admin/users" className="flex items-center">
+                            <Users className="mr-2 h-4 w-4" />
+                            Manage Community
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/manage-content" className="flex items-center">
+                            <Settings className="mr-2 h-4 w-4" />
+                            Manage Content
                           </Link>
                         </DropdownMenuItem>
                       </>

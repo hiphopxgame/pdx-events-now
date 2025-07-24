@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      artist_content: {
+        Row: {
+          category: Database["public"]["Enums"]["content_category"]
+          created_at: string
+          id: string
+          status: string | null
+          title: string
+          updated_at: string
+          user_id: string
+          youtube_url: string
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["content_category"]
+          created_at?: string
+          id?: string
+          status?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+          youtube_url: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["content_category"]
+          created_at?: string
+          id?: string
+          status?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+          youtube_url?: string
+        }
+        Relationships: []
+      }
       bitcoin_crypto_data: {
         Row: {
           cmc_id: number
@@ -1022,6 +1055,63 @@ export type Database = {
         }
         Relationships: []
       }
+      music_videos: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          artist_id: string
+          created_at: string
+          id: string
+          rejection_reason: string | null
+          status: string
+          title: string
+          updated_at: string
+          youtube_id: string
+          youtube_url: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          artist_id: string
+          created_at?: string
+          id?: string
+          rejection_reason?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+          youtube_id: string
+          youtube_url: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          artist_id?: string
+          created_at?: string
+          id?: string
+          rejection_reason?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+          youtube_id?: string
+          youtube_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "music_videos_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "por_eve_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "music_videos_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "por_eve_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       oregon_tires_appointments: {
         Row: {
           actual_duration_minutes: number | null
@@ -1580,6 +1670,8 @@ export type Database = {
       por_eve_profiles: {
         Row: {
           avatar_url: string | null
+          bandcamp_url: string | null
+          city: string | null
           created_at: string
           display_name: string | null
           email: string
@@ -1588,14 +1680,20 @@ export type Database = {
           id: string
           instagram_url: string | null
           is_email_public: boolean | null
+          soundcloud_url: string | null
+          spotify_url: string | null
+          state: string | null
           twitter_url: string | null
           updated_at: string
           username: string | null
           website_url: string | null
           youtube_url: string | null
+          zip_code: string | null
         }
         Insert: {
           avatar_url?: string | null
+          bandcamp_url?: string | null
+          city?: string | null
           created_at?: string
           display_name?: string | null
           email: string
@@ -1604,14 +1702,20 @@ export type Database = {
           id: string
           instagram_url?: string | null
           is_email_public?: boolean | null
+          soundcloud_url?: string | null
+          spotify_url?: string | null
+          state?: string | null
           twitter_url?: string | null
           updated_at?: string
           username?: string | null
           website_url?: string | null
           youtube_url?: string | null
+          zip_code?: string | null
         }
         Update: {
           avatar_url?: string | null
+          bandcamp_url?: string | null
+          city?: string | null
           created_at?: string
           display_name?: string | null
           email?: string
@@ -1620,11 +1724,15 @@ export type Database = {
           id?: string
           instagram_url?: string | null
           is_email_public?: boolean | null
+          soundcloud_url?: string | null
+          spotify_url?: string | null
+          state?: string | null
           twitter_url?: string | null
           updated_at?: string
           username?: string | null
           website_url?: string | null
           youtube_url?: string | null
+          zip_code?: string | null
         }
         Relationships: []
       }
@@ -1881,6 +1989,8 @@ export type Database = {
           phone: string | null
           preferred_meeting_time: string | null
           primary_goals: string | null
+          selected_services: string[] | null
+          service_type: string | null
           status: string | null
           updated_at: string
           wants_consultation: boolean | null
@@ -1901,6 +2011,8 @@ export type Database = {
           phone?: string | null
           preferred_meeting_time?: string | null
           primary_goals?: string | null
+          selected_services?: string[] | null
+          service_type?: string | null
           status?: string | null
           updated_at?: string
           wants_consultation?: boolean | null
@@ -1921,6 +2033,8 @@ export type Database = {
           phone?: string | null
           preferred_meeting_time?: string | null
           primary_goals?: string | null
+          selected_services?: string[] | null
+          service_type?: string | null
           status?: string | null
           updated_at?: string
           wants_consultation?: boolean | null
@@ -2198,9 +2312,18 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      upgrade_to_artist: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
-      app_role: "admin" | "moderator" | "user"
+      app_role: "admin" | "moderator" | "user" | "member" | "artist"
+      content_category:
+        | "Live Footage"
+        | "Music Videos"
+        | "Interviews"
+        | "Miscellaneous"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2328,7 +2451,13 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "moderator", "user"],
+      app_role: ["admin", "moderator", "user", "member", "artist"],
+      content_category: [
+        "Live Footage",
+        "Music Videos",
+        "Interviews",
+        "Miscellaneous",
+      ],
     },
   },
 } as const
