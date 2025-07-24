@@ -21,6 +21,7 @@ interface Event {
   venueState?: string;
   ticketUrl?: string;
   organizerName?: string;
+  createdBy?: string;
 }
 
 interface FeaturedEventsProps {
@@ -106,6 +107,7 @@ export const FeaturedEvents: React.FC<FeaturedEventsProps> = ({ onEventClick }) 
       venueState: event.venue_state,
       ticketUrl: event.ticket_url,
       organizerName: event.organizer_name,
+      createdBy: event.created_by,
     };
   });
 
