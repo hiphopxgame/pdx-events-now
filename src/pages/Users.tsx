@@ -85,11 +85,12 @@ const Users = () => {
           .select('id', { count: 'exact', head: true })
           .eq('created_by', user.id);
 
-        // Get video count from artist_content
+        // Get video count from artist_content (only approved videos)
         const { count: videoCount } = await supabase
           .from('artist_content')
           .select('id', { count: 'exact', head: true })
-          .eq('user_id', user.id);
+          .eq('user_id', user.id)
+          .eq('status', 'approved');
 
         usersWithCounts.push({
           ...user,
