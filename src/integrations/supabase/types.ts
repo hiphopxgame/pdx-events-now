@@ -1676,7 +1676,6 @@ export type Database = {
           display_name: string | null
           email: string
           facebook_url: string | null
-          full_name: string | null
           id: string
           instagram_url: string | null
           is_email_public: boolean | null
@@ -1698,7 +1697,6 @@ export type Database = {
           display_name?: string | null
           email: string
           facebook_url?: string | null
-          full_name?: string | null
           id: string
           instagram_url?: string | null
           is_email_public?: boolean | null
@@ -1720,7 +1718,6 @@ export type Database = {
           display_name?: string | null
           email?: string
           facebook_url?: string | null
-          full_name?: string | null
           id?: string
           instagram_url?: string | null
           is_email_public?: boolean | null

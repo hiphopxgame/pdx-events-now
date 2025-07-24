@@ -21,7 +21,6 @@ interface UserProfile {
   email: string;
   display_name: string | null;
   username: string | null;
-  full_name: string | null;
   avatar_url: string | null;
   website_url: string | null;
   facebook_url: string | null;
@@ -141,7 +140,6 @@ const Account = () => {
         .update({
           display_name: profile.display_name,
           username: profile.username,
-          full_name: profile.full_name,
           avatar_url: profile.avatar_url,
           website_url: profile.website_url,
           facebook_url: profile.facebook_url,
@@ -307,7 +305,7 @@ const Account = () => {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="display_name">Display Name</Label>
+                    <Label htmlFor="display_name" fieldValue={profile.display_name}>Name</Label>
                     <Input
                       id="display_name"
                       value={profile.display_name || ''}
@@ -316,7 +314,7 @@ const Account = () => {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="username">Username</Label>
+                    <Label htmlFor="username" fieldValue={profile.username}>Username</Label>
                     <Input
                       id="username"
                       value={profile.username || ''}
@@ -325,15 +323,6 @@ const Account = () => {
                     />
                   </div>
                 </div>
-                  <div>
-                    <Label htmlFor="full_name">Full Name</Label>
-                    <Input
-                      id="full_name"
-                      value={profile.full_name || ''}
-                      onChange={(e) => updateProfile('full_name', e.target.value)}
-                      placeholder="Your full name"
-                    />
-                  </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <Label htmlFor="city">City</Label>

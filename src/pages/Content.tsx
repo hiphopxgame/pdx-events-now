@@ -24,7 +24,6 @@ interface ContentWithProfile extends ArtistContent {
   profile?: {
     display_name: string | null;
     username: string | null;
-    full_name: string | null;
   };
 }
 
@@ -55,7 +54,7 @@ const Content = () => {
       const userIds = contentData?.map(content => content.user_id) || [];
       const { data: profilesData, error: profilesError } = await supabase
         .from('por_eve_profiles')
-        .select('id, display_name, username, full_name')
+        .select('id, display_name, username')
         .in('id', userIds);
 
       if (profilesError) throw profilesError;
@@ -67,8 +66,7 @@ const Content = () => {
           ...content,
           profile: profile ? {
             display_name: profile.display_name,
-            username: profile.username,
-            full_name: profile.full_name
+            username: profile.username
           } : undefined
         } as ContentWithProfile;
       }) || [];
@@ -136,7 +134,7 @@ const Content = () => {
           ) : (
             content.map((item) => {
               const youtubeId = getYouTubeId(item.youtube_url);
-              const artistName = item.profile?.display_name || item.profile?.full_name || item.profile?.username || 'Unknown Artist';
+              const artistName = item.profile?.display_name || item.profile?.username || 'Unknown Artist';
 
               return (
                 <Card key={item.id}>

@@ -62,12 +62,12 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
       if (event.createdBy) {
         const { data } = await supabase
           .from('por_eve_profiles')
-          .select('display_name, full_name, username')
+          .select('display_name, username')
           .eq('id', event.createdBy)
           .single();
-        
+
         if (data) {
-          setSubmittedByUser(data.display_name || data.full_name || data.username || 'Unknown User');
+          setSubmittedByUser(data.display_name || data.username || 'Unknown User');
         }
       }
     };

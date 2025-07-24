@@ -18,7 +18,6 @@ interface EditUserDialogProps {
 
 interface UserProfile {
   username: string;
-  full_name: string;
   display_name: string;
   website_url: string;
   facebook_url: string;
@@ -37,7 +36,6 @@ export const EditUserDialog: React.FC<EditUserDialogProps> = ({
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState<UserProfile>({
     username: '',
-    full_name: '',
     display_name: '',
     website_url: '',
     facebook_url: '',
@@ -69,7 +67,6 @@ export const EditUserDialog: React.FC<EditUserDialogProps> = ({
       if (data) {
         setProfile({
           username: data.username || '',
-          full_name: data.full_name || '',
           display_name: data.display_name || '',
           website_url: data.website_url || '',
           facebook_url: data.facebook_url || '',
@@ -99,7 +96,6 @@ export const EditUserDialog: React.FC<EditUserDialogProps> = ({
         .from('por_eve_profiles')
         .update({
           username: profile.username || null,
-          full_name: profile.full_name || null,
           display_name: profile.display_name || null,
           website_url: profile.website_url || null,
           facebook_url: profile.facebook_url || null,
@@ -157,18 +153,9 @@ export const EditUserDialog: React.FC<EditUserDialogProps> = ({
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="full_name">Full Name</Label>
-              <Input
-                id="full_name"
-                value={profile.full_name}
-                onChange={(e) => handleInputChange('full_name', e.target.value)}
-                placeholder="Enter full name"
-              />
-            </div>
 
             <div className="space-y-2">
-              <Label htmlFor="display_name">Display Name</Label>
+              <Label htmlFor="display_name" fieldValue={profile.display_name}>Name</Label>
               <Input
                 id="display_name"
                 value={profile.display_name}
