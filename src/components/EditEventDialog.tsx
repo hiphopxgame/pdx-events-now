@@ -74,12 +74,12 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
     return options;
   };
   
-  const { register, handleSubmit, setValue, formState: { isSubmitting } } = useForm({
+  const { register, handleSubmit, setValue, watch, formState: { isSubmitting } } = useForm({
     defaultValues: {
-      title: event.title,
+      title: event.title || '',
       description: event.description || '',
-      category: event.category,
-      venue_name: event.venue_name,
+      category: event.category || '',
+      venue_name: event.venue_name || '',
       venue_address: event.venue_address || '',
       venue_city: event.venue_city || 'Portland',
       venue_state: event.venue_state || 'Oregon',
@@ -96,7 +96,7 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
       instagram_url: event.instagram_url || '',
       twitter_url: event.twitter_url || '',
       youtube_url: event.youtube_url || '',
-      start_date: event.start_date,
+      start_date: event.start_date || '',
       start_time: event.start_time || '',
       end_time: event.end_time || '',
     }
@@ -288,9 +288,12 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
 
               <div>
                 <Label htmlFor="category">Category *</Label>
-                <Select onValueChange={(value) => setValue('category', value)} defaultValue={event.category}>
+                <Select 
+                  onValueChange={(value) => setValue('category', value)} 
+                  value={watch('category') || event.category || ''}
+                >
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Music">Music</SelectItem>
