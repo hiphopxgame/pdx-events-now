@@ -3,6 +3,7 @@ import { Header } from '@/components/Header';
 import { EventsGrid } from '@/components/EventsGrid';
 import { SearchFilters } from '@/components/SearchFilters';
 import { Footer } from '@/components/Footer';
+import { FeaturedEvents } from '@/components/FeaturedEvents';
 import { useEvents, useCategories } from '@/hooks/useEvents';
 import { useNavigate } from 'react-router-dom';
 import { Loader2, Plus } from 'lucide-react';
@@ -127,6 +128,8 @@ const Events = () => {
           categories={categories}
           categoriesLoading={categoriesLoading}
         />
+        
+        <FeaturedEvents onEventClick={handleEventClick} />
         
         {eventsLoading ? (
           <div className="flex justify-center items-center py-16">
