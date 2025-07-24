@@ -159,6 +159,18 @@ const Users = () => {
           <p className="text-gray-600">Discover and connect with event organizers and community members</p>
         </div>
 
+        {/* Per-page selector at the top */}
+        <div className="mb-6">
+          <EnhancedPagination
+            currentPage={currentPage}
+            totalItems={filteredUsers.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={setItemsPerPage}
+            scrollTargetRef={scrollTargetRef}
+          />
+        </div>
+
         {/* Search */}
         <Card className="mb-8">
           <CardHeader>

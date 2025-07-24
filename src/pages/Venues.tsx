@@ -100,6 +100,18 @@ const Venues = () => {
           <p className="text-gray-600">Discover the best event venues in Portland</p>
         </div>
 
+        {/* Per-page selector at the top */}
+        <div className="mb-6">
+          <EnhancedPagination
+            currentPage={currentPage}
+            totalItems={venues.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={setItemsPerPage}
+            scrollTargetRef={scrollTargetRef}
+          />
+        </div>
+
         {/* Search */}
         <div className="mb-8">
           <input
