@@ -13,7 +13,7 @@ export interface UserRole {
 export interface UserWithProfile {
   id: string;
   email: string;
-  full_name?: string;
+  display_name?: string;
   roles: UserRole[];
   created_at: string;
 }
@@ -85,7 +85,7 @@ export const useUserRoles = () => {
       const usersWithRoles = profiles.map(profile => ({
         id: profile.id,
         email: profile.email,
-        full_name: profile.full_name,
+        display_name: profile.display_name,
         created_at: profile.created_at,
         roles: roles.filter(role => role.user_id === profile.id)
       }));

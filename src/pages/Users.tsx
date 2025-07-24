@@ -13,7 +13,6 @@ import { EnhancedPagination } from '@/components/EnhancedPagination';
 interface UserProfile {
   id: string;
   display_name: string | null;
-  full_name: string | null;
   username: string | null;
   avatar_url: string | null;
   website_url: string | null;
@@ -57,7 +56,6 @@ const Users = () => {
         .select(`
           id,
           display_name,
-          full_name,
           username,
           avatar_url,
           website_url,
@@ -184,7 +182,7 @@ const Users = () => {
                         {user.avatar_url ? (
                           <img 
                             src={user.avatar_url} 
-                            alt={user.display_name || user.full_name || 'User'}
+                            alt={user.display_name || 'User'}
                             className="h-16 w-16 rounded-full object-cover"
                           />
                         ) : (
@@ -194,11 +192,11 @@ const Users = () => {
                       <div className="flex-1 min-w-0">
                         <Link to={`/user/${user.id}`} className="block">
                           <h3 className={`font-semibold hover:text-primary transition-colors truncate ${
-                            user.display_name || user.full_name 
+                            user.display_name 
                               ? 'text-foreground' 
                               : 'text-muted-foreground italic'
                           }`}>
-                            {user.display_name || user.full_name || (
+                            {user.display_name || (
                               <span className="bg-muted/50 px-2 py-1 rounded text-xs border border-muted">
                                 Anonymous User
                               </span>

@@ -14,7 +14,6 @@ import { useEvents } from '@/hooks/useEvents';
 interface UserProfile {
   id: string;
   email: string;
-  full_name: string | null;
   username: string | null;
   display_name: string | null;
   avatar_url: string | null;
@@ -108,7 +107,7 @@ const User = () => {
     );
   }
 
-  const displayName = profile.display_name || profile.full_name || profile.username || 'Anonymous User';
+  const displayName = profile.display_name || profile.username || 'Anonymous User';
   const socialLinks = getSocialLinks();
 
   return (
