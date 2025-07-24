@@ -13,16 +13,16 @@ import { SocialShare } from '@/components/SocialShare';
 import { extractIdFromSlug, updateMetaTags } from '@/lib/seo';
 
 const Event = () => {
-  const { eventSlug } = useParams<{ eventSlug: string }>();
+  const { eventId } = useParams<{ eventId: string }>();
   const navigate = useNavigate();
 
   // Extract event ID from slug (supports both new slug format and legacy ID format)
-  const eventId = eventSlug ? extractIdFromSlug(eventSlug) : '';
+  const extractedEventId = eventId ? extractIdFromSlug(eventId) : '';
 
   const { data: allEvents = [], isLoading } = useEvents();
 
   // Find the specific event
-  const event = allEvents.find(e => e.id === eventId);
+  const event = allEvents.find(e => e.id === extractedEventId);
 
   // Fetch venue details for social media links
   const { data: venueData } = useQuery({
