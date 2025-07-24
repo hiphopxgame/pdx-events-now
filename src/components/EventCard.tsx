@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, MapPin, Clock, Tag, User, Repeat } from 'lucide-react';
+import { Calendar, MapPin, Clock, User, Repeat } from 'lucide-react';
 import { DataField } from '@/components/DataField';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -38,7 +38,6 @@ interface EventCardProps {
 export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => {
   const navigate = useNavigate();
   const [submittedByUser, setSubmittedByUser] = useState<string>('');
-  const [organizerUser, setOrganizerUser] = useState<string>('');
 
   const handleEventClick = (e?: React.MouseEvent) => {
     console.log('Event card clicked:', event.id, event.title);
@@ -227,12 +226,6 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
                   navigate(`/user/${event.createdBy}`);
                 }
               }}
-            />
-            <DataField
-              label="Organizer"
-              value={event.organizerName}
-              placeholder="No organizer specified"
-              icon={<Tag className="h-4 w-4" />}
             />
           </div>
         </div>
