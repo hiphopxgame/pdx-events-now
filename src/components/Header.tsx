@@ -76,11 +76,11 @@ export const Header = () => {
               className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none cursor-pointer"
             >
               <Video className="h-4 w-4 mr-2" />
-              Media
+              Content
             </button>
           </nav>
           
-          <div className="flex items-center space-x-2 md:space-x-4">
+          <div className="flex items-center space-x-4">
             {user ? (
               <>
                 <Button 
@@ -94,19 +94,12 @@ export const Header = () => {
                 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="flex items-center space-x-1 md:space-x-2 min-w-0 flex-shrink-0"
-                    >
-                      <User className="h-4 w-4 flex-shrink-0" />
-                      <span className="hidden xs:inline sm:inline truncate text-sm">
-                        {user?.user_metadata?.display_name || 'Menu'}
-                      </span>
-                      <span className="xs:hidden text-xs">Menu</span>
+                    <Button variant="ghost" size="sm" className="flex items-center space-x-2">
+                      <User className="h-4 w-4" />
+                      <span className="hidden sm:inline">{user?.user_metadata?.display_name || 'Account'}</span>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="z-50 bg-background min-w-48">
+                  <DropdownMenuContent align="end" className="z-50 bg-background">
                     <DropdownMenuItem className="md:hidden" asChild>
                       <Link to="/submit-event" className="flex items-center">
                         <Plus className="mr-2 h-4 w-4" />
@@ -116,7 +109,7 @@ export const Header = () => {
                     <DropdownMenuItem asChild>
                       <Link to="/account" className="flex items-center">
                         <User className="mr-2 h-4 w-4" />
-                        Account
+                        My Account
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
@@ -148,7 +141,7 @@ export const Header = () => {
                         <DropdownMenuItem asChild>
                           <Link to="/manage-content" className="flex items-center">
                             <Video className="mr-2 h-4 w-4" />
-                            Manage Media
+                            Manage Content
                           </Link>
                         </DropdownMenuItem>
                       </>

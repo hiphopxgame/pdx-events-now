@@ -3,14 +3,12 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Video, Play, Loader2 } from 'lucide-react';
+import { Video, ExternalLink, Loader2 } from 'lucide-react';
 import { DataField } from '@/components/DataField';
-import { VideoModal } from '@/components/VideoModal';
 
-interface ArtistMedia {
+interface ArtistContent {
   id: string;
   title: string;
   youtube_url: string;
@@ -20,7 +18,7 @@ interface ArtistMedia {
   user_id: string;
 }
 
-interface MediaWithProfile extends ArtistMedia {
+interface ContentWithProfile extends ArtistContent {
   profile?: {
     display_name: string | null;
     username: string | null;
@@ -30,29 +28,28 @@ interface MediaWithProfile extends ArtistMedia {
 
 const Content = () => {
   const { toast } = useToast();
-  const [media, setMedia] = useState<MediaWithProfile[]>([]);
+  const [content, setContent] = useState<ContentWithProfile[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedVideo, setSelectedVideo] = useState<{ url: string; title: string } | null>(null);
 
   useEffect(() => {
-    fetchMedia();
+    fetchContent();
   }, []);
 
-  const fetchMedia = async () => {
+  const fetchContent = async () => {
     try {
       setLoading(true);
       
-      // Get approved media
-      const { data: mediaData, error: mediaError } = await supabase
+      // Get approved content
+      const { data: contentData, error: contentError } = await supabase
         .from('artist_content')
         .select('*')
         .eq('status', 'approved')
         .order('created_at', { ascending: false });
 
-      if (mediaError) throw mediaError;
+      if (contentError) throw contentError;
 
-      // Get user profiles for the media creators
-      const userIds = mediaData?.map(media => media.user_id) || [];
+      // Get user profiles for the content creators
+      const userIds = contentData?.map(content => content.user_id) || [];
       const { data: profilesData, error: profilesError } = await supabase
         .from('por_eve_profiles')
         .select('id, display_name, username, full_name')
@@ -60,25 +57,25 @@ const Content = () => {
 
       if (profilesError) throw profilesError;
 
-      // Combine media with profiles
-      const mediaWithProfiles: MediaWithProfile[] = mediaData?.map(media => {
-        const profile = profilesData?.find(p => p.id === media.user_id);
+      // Combine content with profiles
+      const contentWithProfiles: ContentWithProfile[] = contentData?.map(content => {
+        const profile = profilesData?.find(p => p.id === content.user_id);
         return {
-          ...media,
+          ...content,
           profile: profile ? {
             display_name: profile.display_name,
             username: profile.username,
             full_name: profile.full_name
           } : undefined
-        } as MediaWithProfile;
+        } as ContentWithProfile;
       }) || [];
 
-      setMedia(mediaWithProfiles);
+      setContent(contentWithProfiles);
     } catch (error) {
-      console.error('Error fetching media:', error);
+      console.error('Error fetching content:', error);
       toast({
         title: 'Error',
-        description: 'Failed to load media',
+        description: 'Failed to load content',
         variant: 'destructive'
       });
     } finally {
@@ -120,21 +117,21 @@ const Content = () => {
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-4 flex items-center">
             <Video className="h-8 w-8 mr-3 text-emerald-600" />
-            Portland Media
+            Artist Content
           </h1>
-          <p className="text-gray-600">Discover videos, live footage, and media from our community artists</p>
+          <p className="text-gray-600">Discover videos, live footage, and content from our community artists</p>
         </div>
 
         <div className="grid gap-6">
-          {media.length === 0 ? (
+          {content.length === 0 ? (
             <Card>
               <CardContent className="py-16 text-center">
                 <Video className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                <p className="text-gray-500">No media available yet</p>
+                <p className="text-gray-500">No content available yet</p>
               </CardContent>
             </Card>
           ) : (
-            media.map((item) => {
+            content.map((item) => {
               const youtubeId = getYouTubeId(item.youtube_url);
               const artistName = item.profile?.display_name || item.profile?.full_name || item.profile?.username || 'Unknown Artist';
 
@@ -153,42 +150,39 @@ const Content = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="grid md:grid-cols-2 gap-6">
-                      {/* Video Preview */}
+                      {/* YouTube Embed */}
                       <div>
                         {youtubeId ? (
-                          <div className="relative aspect-video group cursor-pointer" 
-                               onClick={() => setSelectedVideo({ url: item.youtube_url, title: item.title })}>
-                            <img
-                              src={`https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`}
-                              alt={item.title}
-                              className="w-full h-full object-cover rounded-lg"
+                          <div className="aspect-video">
+                            <iframe
+                              src={`https://www.youtube.com/embed/${youtubeId}`}
+                              title={item.title}
+                              className="w-full h-full rounded-lg"
+                              allowFullScreen
                             />
-                            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors rounded-lg flex items-center justify-center">
-                              <Play className="h-16 w-16 text-white drop-shadow-lg" />
-                            </div>
                           </div>
                         ) : (
-                          <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-                            <p className="text-muted-foreground">Invalid video URL</p>
+                          <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
+                            <p className="text-gray-500">Invalid YouTube URL</p>
                           </div>
                         )}
                         <div className="mt-4">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setSelectedVideo({ url: item.youtube_url, title: item.title })}
-                            className="w-full"
+                          <a
+                            href={item.youtube_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
                           >
-                            <Play className="h-4 w-4 mr-2" />
-                            Watch Video
-                          </Button>
+                            <ExternalLink className="h-4 w-4 mr-1" />
+                            View on YouTube
+                          </a>
                         </div>
                       </div>
 
-                      {/* Media Info */}
+                      {/* Content Info */}
                       <div className="space-y-4">
                         <div>
-                          <h4 className="font-medium text-foreground mb-4">Media Details</h4>
+                          <h4 className="font-medium text-foreground mb-4">Content Details</h4>
                           <div className="space-y-3">
                             <DataField
                               label="Artist"
@@ -216,14 +210,6 @@ const Content = () => {
       </div>
       
       <Footer />
-      
-      {/* Video Modal */}
-      <VideoModal
-        isOpen={!!selectedVideo}
-        onClose={() => setSelectedVideo(null)}
-        videoUrl={selectedVideo?.url || ''}
-        title={selectedVideo?.title || ''}
-      />
     </div>
   );
 };

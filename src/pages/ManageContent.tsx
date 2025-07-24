@@ -13,8 +13,8 @@ interface ArtistContent {
   id: string;
   title: string;
   youtube_url: string;
-  category: string;
-  status: string;
+  category: 'Live Footage' | 'Music Videos' | 'Interviews' | 'Miscellaneous';
+  status: 'pending' | 'approved' | 'rejected';
   created_at: string;
   user_id: string;
 }
@@ -41,30 +41,17 @@ const ManageContent = () => {
     try {
       setLoading(true);
       
-      // Get all artist content
-      const { data: contentData, error: contentError } = await supabase
+      // Get all content with user profiles
+      const { data, error } = await supabase
         .from('artist_content')
-        .select('*')
+        .select(`
+          *,
+          profile:por_eve_profiles(display_name, username, full_name)
+        `)
         .order('created_at', { ascending: false });
 
-      if (contentError) throw contentError;
-
-      // Get user profiles for all content creators
-      const userIds = contentData?.map(content => content.user_id) || [];
-      const { data: profilesData, error: profilesError } = await supabase
-        .from('por_eve_profiles')
-        .select('id, display_name, username, full_name')
-        .in('id', userIds);
-
-      if (profilesError) throw profilesError;
-
-      // Combine content with profiles
-      const contentWithProfiles = contentData?.map(content => ({
-        ...content,
-        profile: profilesData?.find(profile => profile.id === content.user_id)
-      })) || [];
-
-      setContent(contentWithProfiles);
+      if (error) throw error;
+      setContent((data as any) || []);
     } catch (error) {
       console.error('Error fetching content:', error);
       toast({
@@ -148,9 +135,9 @@ const ManageContent = () => {
           <div className="mb-8">
             <h1 className="text-4xl font-bold text-gray-800 mb-4 flex items-center">
               <Video className="h-8 w-8 mr-3 text-emerald-600" />
-              Manage Media
+              Manage Content
             </h1>
-            <p className="text-gray-600">Review and approve artist-submitted media</p>
+            <p className="text-gray-600">Review and approve artist-submitted content</p>
           </div>
 
           <div className="grid gap-6">
