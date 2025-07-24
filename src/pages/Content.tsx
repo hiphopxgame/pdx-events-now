@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Video, ExternalLink, Loader2 } from 'lucide-react';
+import { DataField } from '@/components/DataField';
 
 interface ArtistContent {
   id: string;
@@ -181,17 +182,21 @@ const Content = () => {
                       {/* Content Info */}
                       <div className="space-y-4">
                         <div>
-                          <h4 className="font-medium text-gray-700 mb-2">Content Details</h4>
-                          <div className="space-y-2 text-sm">
-                            <div>
-                              <span className="font-medium">Artist:</span> {artistName}
-                            </div>
-                            <div>
-                              <span className="font-medium">Category:</span> {item.category}
-                            </div>
-                            <div>
-                              <span className="font-medium">Published:</span> {new Date(item.created_at).toLocaleString()}
-                            </div>
+                          <h4 className="font-medium text-foreground mb-4">Content Details</h4>
+                          <div className="space-y-3">
+                            <DataField
+                              label="Artist"
+                              value={artistName !== 'Unknown Artist' ? artistName : null}
+                              placeholder="Unknown artist"
+                            />
+                            <DataField
+                              label="Category"
+                              value={item.category}
+                            />
+                            <DataField
+                              label="Published"
+                              value={new Date(item.created_at).toLocaleString()}
+                            />
                           </div>
                         </div>
                       </div>

@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, MapPin, Clock, ExternalLink, User, ArrowLeft, Globe, Facebook, Instagram, Twitter, Youtube } from 'lucide-react';
+import { DataField } from '@/components/DataField';
 import { Loader2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -176,43 +177,45 @@ const Event = () => {
             
             {/* Event Details */}
             <div className="grid md:grid-cols-2 gap-8 mb-8">
-              <div className="space-y-4">
-                <div className="flex items-center text-gray-600">
-                  <Calendar className="h-5 w-5 mr-3 text-emerald-600" />
-                  <div>
-                    <p className="font-medium">{formatDate(event.start_date)}</p>
-                    <p className="text-sm text-gray-500">{formatTimeRange()}</p>
-                  </div>
-                </div>
+              <div className="space-y-6 bg-card p-6 rounded-lg border">
+                <h3 className="text-lg font-semibold text-foreground mb-4">Event Information</h3>
                 
-                <div className="flex items-start text-gray-600">
-                  <MapPin className="h-5 w-5 mr-3 text-emerald-600 mt-0.5" />
-                  <div>
-                    <p 
-                      className="font-medium cursor-pointer hover:text-emerald-600 hover:underline"
-                      onClick={handleVenueClick}
-                    >
-                      {event.venue_name}
-                    </p>
-                    {fullAddress && (
-                      <p className="text-sm text-gray-500">{fullAddress}</p>
-                    )}
-                  </div>
-                </div>
+                <DataField
+                  label="Date & Time"
+                  value={`${formatDate(event.start_date)} at ${formatTimeRange()}`}
+                  icon={<Calendar className="h-5 w-5" />}
+                />
+                
+                <DataField
+                  label="Venue"
+                  value={event.venue_name}
+                  placeholder="Venue not specified"
+                  icon={<MapPin className="h-5 w-5" />}
+                  isLink={!!event.venue_name}
+                  onClick={handleVenueClick}
+                />
 
-                {event.organizer_name && (
-                  <div className="flex items-center text-gray-600">
-                    <User className="h-5 w-5 mr-3 text-emerald-600" />
-                    <div>
-                      <p className="font-medium">Organized by</p>
-                      <p className="text-sm text-gray-500">{event.organizer_name}</p>
-                      {event.created_by && (
-                        <p className="text-xs text-emerald-600 hover:text-emerald-700 cursor-pointer"
-                           onClick={() => navigate(`/user/${event.created_by}`)}>
-                          View profile →
-                        </p>
-                      )}
-                    </div>
+                <DataField
+                  label="Address"
+                  value={fullAddress}
+                  placeholder="Address not provided"
+                />
+
+                <DataField
+                  label="Organizer"
+                  value={event.organizer_name}
+                  placeholder="Organizer not specified"
+                  icon={<User className="h-5 w-5" />}
+                />
+
+                {event.created_by && (
+                  <div className="pt-2">
+                    <button
+                      onClick={() => navigate(`/user/${event.created_by}`)}
+                      className="text-primary hover:text-primary/80 text-sm hover:underline"
+                    >
+                      View organizer profile →
+                    </button>
                   </div>
                 )}
               </div>

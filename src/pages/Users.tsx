@@ -193,14 +193,28 @@ const Users = () => {
                       </Link>
                       <div className="flex-1 min-w-0">
                         <Link to={`/user/${user.id}`} className="block">
-                          <h3 className="font-semibold text-gray-800 hover:text-emerald-600 transition-colors truncate">
-                            {user.display_name || user.full_name || 'Anonymous User'}
+                          <h3 className={`font-semibold hover:text-primary transition-colors truncate ${
+                            user.display_name || user.full_name 
+                              ? 'text-foreground' 
+                              : 'text-muted-foreground italic'
+                          }`}>
+                            {user.display_name || user.full_name || (
+                              <span className="bg-muted/50 px-2 py-1 rounded text-xs border border-muted">
+                                Anonymous User
+                              </span>
+                            )}
                           </h3>
                         </Link>
-                        {user.username && (
-                          <p className="text-sm text-gray-600 truncate">@{user.username}</p>
-                        )}
-                        <p className="text-xs text-gray-500">
+                        <div className="mt-1">
+                          {user.username ? (
+                            <p className="text-sm text-foreground truncate">@{user.username}</p>
+                          ) : (
+                            <span className="text-xs text-muted-foreground italic bg-muted/30 px-2 py-1 rounded border border-muted">
+                              No username set
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">
                           Member since {new Date(user.created_at).toLocaleDateString()}
                         </p>
                       </div>
@@ -218,20 +232,32 @@ const Users = () => {
 
                     {/* Content Counts - Better aligned grid */}
                     <div className="grid grid-cols-3 gap-2 mb-4">
-                      <div className="flex flex-col items-center text-center p-2 bg-emerald-50 rounded-lg">
-                        <Calendar className="h-4 w-4 text-emerald-600 mb-1" />
-                        <span className="text-sm font-medium text-gray-800">{user.event_count || 0}</span>
-                        <span className="text-xs text-gray-600">Events</span>
+                      <div className={`flex flex-col items-center text-center p-3 rounded-lg border transition-colors ${
+                        (user.event_count || 0) > 0 
+                          ? 'bg-primary/10 border-primary/20 text-primary' 
+                          : 'bg-muted/30 border-muted text-muted-foreground'
+                      }`}>
+                        <Calendar className="h-4 w-4 mb-1" />
+                        <span className="text-sm font-bold">{user.event_count || 0}</span>
+                        <span className="text-xs">Events</span>
                       </div>
-                      <div className="flex flex-col items-center text-center p-2 bg-orange-50 rounded-lg">
-                        <MapPin className="h-4 w-4 text-orange-600 mb-1" />
-                        <span className="text-sm font-medium text-gray-800">{user.venue_count || 0}</span>
-                        <span className="text-xs text-gray-600">Venues</span>
+                      <div className={`flex flex-col items-center text-center p-3 rounded-lg border transition-colors ${
+                        (user.venue_count || 0) > 0 
+                          ? 'bg-secondary/10 border-secondary/20 text-secondary' 
+                          : 'bg-muted/30 border-muted text-muted-foreground'
+                      }`}>
+                        <MapPin className="h-4 w-4 mb-1" />
+                        <span className="text-sm font-bold">{user.venue_count || 0}</span>
+                        <span className="text-xs">Venues</span>
                       </div>
-                      <div className="flex flex-col items-center text-center p-2 bg-blue-50 rounded-lg">
-                        <Video className="h-4 w-4 text-blue-600 mb-1" />
-                        <span className="text-sm font-medium text-gray-800">{user.video_count || 0}</span>
-                        <span className="text-xs text-gray-600">Videos</span>
+                      <div className={`flex flex-col items-center text-center p-3 rounded-lg border transition-colors ${
+                        (user.video_count || 0) > 0 
+                          ? 'bg-accent/10 border-accent/20 text-accent' 
+                          : 'bg-muted/30 border-muted text-muted-foreground'
+                      }`}>
+                        <Video className="h-4 w-4 mb-1" />
+                        <span className="text-sm font-bold">{user.video_count || 0}</span>
+                        <span className="text-xs">Videos</span>
                       </div>
                     </div>
 

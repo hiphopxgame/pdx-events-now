@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, MapPin, Clock, Tag, User, Repeat } from 'lucide-react';
+import { DataField } from '@/components/DataField';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
@@ -214,30 +215,25 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
           </div>
 
           {/* User Information */}
-          <div className="space-y-2 pt-3 border-t border-gray-200">
-            {submittedByUser && (
-              <div className="flex items-center text-gray-700">
-                <User className="h-4 w-4 mr-2 text-primary" />
-                <span className="text-sm">
-                  Submitted by{' '}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/user/${event.createdBy}`);
-                    }}
-                    className="text-primary hover:text-primary/80 hover:underline font-medium"
-                  >
-                    {submittedByUser}
-                  </button>
-                </span>
-              </div>
-            )}
-            {event.organizerName && (
-              <div className="flex items-center text-gray-700">
-                <Tag className="h-4 w-4 mr-2 text-secondary" />
-                <span className="text-sm font-medium">Organizer: {event.organizerName}</span>
-              </div>
-            )}
+          <div className="space-y-3 pt-3 border-t border-border">
+            <DataField
+              label="Submitted by"
+              value={submittedByUser}
+              placeholder="Unknown user"
+              icon={<User className="h-4 w-4" />}
+              isLink={!!submittedByUser}
+              onClick={() => {
+                if (event.createdBy) {
+                  navigate(`/user/${event.createdBy}`);
+                }
+              }}
+            />
+            <DataField
+              label="Organizer"
+              value={event.organizerName}
+              placeholder="No organizer specified"
+              icon={<Tag className="h-4 w-4" />}
+            />
           </div>
         </div>
         
