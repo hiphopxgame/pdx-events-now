@@ -3,10 +3,12 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Video, ExternalLink, Loader2 } from 'lucide-react';
+import { Video, Play, Loader2 } from 'lucide-react';
 import { DataField } from '@/components/DataField';
+import { VideoModal } from '@/components/VideoModal';
 
 interface ArtistContent {
   id: string;
@@ -30,6 +32,7 @@ const Content = () => {
   const { toast } = useToast();
   const [content, setContent] = useState<ContentWithProfile[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedVideo, setSelectedVideo] = useState<{url: string; title: string} | null>(null);
 
   useEffect(() => {
     fetchContent();
@@ -117,7 +120,7 @@ const Content = () => {
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-4 flex items-center">
             <Video className="h-8 w-8 mr-3 text-emerald-600" />
-            Artist Content
+            Portland Content
           </h1>
           <p className="text-gray-600">Discover videos, live footage, and content from our community artists</p>
         </div>
@@ -167,22 +170,20 @@ const Content = () => {
                           </div>
                         )}
                         <div className="mt-4">
-                          <a
-                            href={item.youtube_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
+                          <Button
+                            onClick={() => setSelectedVideo({url: item.youtube_url, title: item.title})}
+                            className="bg-red-600 hover:bg-red-700 text-white"
                           >
-                            <ExternalLink className="h-4 w-4 mr-1" />
-                            View on YouTube
-                          </a>
+                            <Play className="h-4 w-4 mr-2" />
+                            Play
+                          </Button>
                         </div>
                       </div>
 
                       {/* Content Info */}
                       <div className="space-y-4">
                         <div>
-                          <h4 className="font-medium text-foreground mb-4">Content Details</h4>
+                          <h4 className="font-medium text-foreground mb-4">Media Details</h4>
                           <div className="space-y-3">
                             <DataField
                               label="Artist"
@@ -208,6 +209,15 @@ const Content = () => {
           )}
         </div>
       </div>
+      
+      {selectedVideo && (
+        <VideoModal
+          isOpen={!!selectedVideo}
+          onClose={() => setSelectedVideo(null)}
+          youtubeUrl={selectedVideo.url}
+          title={selectedVideo.title}
+        />
+      )}
       
       <Footer />
     </div>

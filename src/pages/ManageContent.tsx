@@ -56,7 +56,7 @@ const ManageContent = () => {
       console.error('Error fetching content:', error);
       toast({
         title: 'Error',
-        description: 'Failed to load content',
+        description: 'Failed to load media',
         variant: 'destructive'
       });
     } finally {
@@ -83,13 +83,13 @@ const ManageContent = () => {
 
       toast({
         title: 'Success',
-        description: `Content ${status} successfully`,
+        description: `Media ${status} successfully`,
       });
     } catch (error) {
       console.error('Error updating content status:', error);
       toast({
         title: 'Error',
-        description: 'Failed to update content status',
+        description: 'Failed to update media status',
         variant: 'destructive'
       });
     } finally {
@@ -135,9 +135,9 @@ const ManageContent = () => {
           <div className="mb-8">
             <h1 className="text-4xl font-bold text-gray-800 mb-4 flex items-center">
               <Video className="h-8 w-8 mr-3 text-emerald-600" />
-              Manage Content
+              Manage Media
             </h1>
-            <p className="text-gray-600">Review and approve artist-submitted content</p>
+            <p className="text-gray-600">Review and approve artist-submitted media</p>
           </div>
 
           <div className="grid gap-6">
@@ -145,7 +145,7 @@ const ManageContent = () => {
               <Card>
                 <CardContent className="py-16 text-center">
                   <Video className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                  <p className="text-gray-500">No content submissions yet</p>
+                  <p className="text-gray-500">No media submissions yet</p>
                 </CardContent>
               </Card>
             ) : (
@@ -200,7 +200,7 @@ const ManageContent = () => {
                         {/* Actions */}
                         <div className="space-y-4">
                           <div>
-                            <h4 className="font-medium text-gray-700 mb-2">Content Details</h4>
+                            <h4 className="font-medium text-gray-700 mb-2">Media Details</h4>
                             <div className="space-y-2 text-sm">
                               <div>
                                 <span className="font-medium">Category:</span> {item.category}
