@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { useEvents } from '@/hooks/useEvents';
@@ -14,11 +14,31 @@ import { supabase } from '@/integrations/supabase/client';
 const Event = () => {
   const { eventId } = useParams<{ eventId: string }>();
   const navigate = useNavigate();
+  const [submittedByUser, setSubmittedByUser] = useState<string>('');
 
   const { data: allEvents = [], isLoading } = useEvents();
 
   // Find the specific event
   const event = allEvents.find(e => e.id === eventId);
+
+  // Fetch user info for submitted by field
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      if (event?.created_by) {
+        const { data } = await supabase
+          .from('por_eve_profiles')
+          .select('display_name, username')
+          .eq('id', event.created_by)
+          .single();
+
+        if (data) {
+          setSubmittedByUser(data.display_name || data.username || 'Unknown User');
+        }
+      }
+    };
+
+    fetchUserInfo();
+  }, [event?.created_by]);
 
   // Fetch venue details for social media links
   const { data: venueData } = useQuery({
@@ -202,22 +222,17 @@ const Event = () => {
                 />
 
                 <DataField
-                  label="Organizer"
-                  value={event.organizer_name}
-                  placeholder="Organizer not specified"
+                  label="Submitted by"
+                  value={submittedByUser}
+                  placeholder="User not specified"
                   icon={<User className="h-5 w-5" />}
+                  isLink={!!event.created_by}
+                  onClick={() => {
+                    if (event.created_by) {
+                      navigate(`/user/${event.created_by}`);
+                    }
+                  }}
                 />
-
-                {event.created_by && (
-                  <div className="pt-2">
-                    <button
-                      onClick={() => navigate(`/user/${event.created_by}`)}
-                      className="text-primary hover:text-primary/80 text-sm hover:underline"
-                    >
-                      View organizer profile →
-                    </button>
-                  </div>
-                )}
               </div>
 
               {/* Venue Information & Social Media */}
