@@ -166,17 +166,18 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
 
           <div className="space-y-4">
             <div>
-              <Label htmlFor="title">Event Title *</Label>
+              <Label htmlFor="title" isRequired={true} fieldValue={watch('title')}>Event Title</Label>
               <Input 
                 id="title" 
                 {...register('title', { required: 'Event title is required' })}
                 placeholder="Enter event title"
+                isRequired={true}
               />
               {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
             </div>
 
             <div>
-              <Label htmlFor="description">Event Description</Label>
+              <Label htmlFor="description" fieldValue={watch('description')}>Event Description</Label>
               <Textarea 
                 id="description" 
                 {...register('description')}
@@ -186,7 +187,7 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
             </div>
 
             <div>
-              <Label htmlFor="category">Category *</Label>
+              <Label htmlFor="category" isRequired={true} fieldValue={watch('category')}>Category</Label>
               {categoriesLoading ? (
                 <div className="text-sm text-muted-foreground">Loading categories...</div>
               ) : (
@@ -257,12 +258,13 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
                 </div>
               ) : (
                 <div>
-                  <Label htmlFor="venue_name" className="text-base">Venue Name *</Label>
+                  <Label htmlFor="venue_name" isRequired={true} fieldValue={watch('venue_name')}>Venue Name</Label>
                   <Input 
                     id="venue_name" 
                     {...register('venue_name', { required: 'Venue name is required' })}
                     placeholder="Enter the venue name"
                     className="h-12"
+                    isRequired={true}
                   />
                   {errors.venue_name && <p className="text-red-500 text-sm">{errors.venue_name.message}</p>}
                 </div>
@@ -272,7 +274,7 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
             {!useExistingVenue && (
               <>
                 <div>
-                  <Label htmlFor="venue_address">Venue Address</Label>
+                  <Label htmlFor="venue_address" fieldValue={watch('venue_address')}>Venue Address</Label>
                   <Input 
                     id="venue_address" 
                     {...register('venue_address')}
@@ -363,7 +365,7 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
             )}
 
             <div>
-              <Label htmlFor="price_display">Price Display</Label>
+              <Label htmlFor="price_display" fieldValue={watch('price_display')}>Price Display</Label>
               <Input 
                 id="price_display" 
                 {...register('price_display')}
@@ -373,7 +375,7 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
 
 
             <div>
-              <Label htmlFor="organizer_name">Organizer Name</Label>
+              <Label htmlFor="organizer_name" fieldValue={watch('organizer_name')}>Organizer Name</Label>
               <Input 
                 id="organizer_name" 
                 {...register('organizer_name')}
@@ -383,7 +385,7 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="organizer_email">Contact Email</Label>
+                <Label htmlFor="organizer_email" fieldValue={watch('organizer_email')}>Contact Email</Label>
                 <Input 
                   id="organizer_email" 
                   type="email"
@@ -392,7 +394,7 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
                 />
               </div>
               <div>
-                <Label htmlFor="organizer_phone">Contact Phone</Label>
+                <Label htmlFor="organizer_phone" fieldValue={watch('organizer_phone')}>Contact Phone</Label>
                 <Input 
                   id="organizer_phone" 
                   {...register('organizer_phone')}
@@ -402,7 +404,7 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
             </div>
 
             <div>
-              <Label htmlFor="ticket_url">Ticket/Registration URL</Label>
+              <Label htmlFor="ticket_url" fieldValue={watch('ticket_url')}>Ticket/Registration URL</Label>
               <Input 
                 id="ticket_url" 
                 {...register('ticket_url')}
@@ -411,7 +413,7 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
             </div>
 
             <div>
-              <Label htmlFor="website_url">Website URL</Label>
+              <Label htmlFor="website_url" fieldValue={watch('website_url')}>Website URL</Label>
               <Input 
                 id="website_url" 
                 {...register('website_url')}
@@ -423,7 +425,7 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
               <h4 className="font-medium text-gray-700">Event Social Media</h4>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="facebook_url">Facebook URL</Label>
+                  <Label htmlFor="facebook_url" fieldValue={watch('facebook_url')}>Facebook URL</Label>
                   <Input 
                     id="facebook_url" 
                     {...register('facebook_url')}
@@ -431,7 +433,7 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="instagram_url">Instagram URL</Label>
+                  <Label htmlFor="instagram_url" fieldValue={watch('instagram_url')}>Instagram URL</Label>
                   <Input 
                     id="instagram_url" 
                     {...register('instagram_url')}
@@ -439,7 +441,7 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="twitter_url">Twitter URL</Label>
+                  <Label htmlFor="twitter_url" fieldValue={watch('twitter_url')}>Twitter URL</Label>
                   <Input 
                     id="twitter_url" 
                     {...register('twitter_url')}
@@ -447,7 +449,7 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="youtube_url">YouTube URL</Label>
+                  <Label htmlFor="youtube_url" fieldValue={watch('youtube_url')}>YouTube URL</Label>
                   <Input 
                     id="youtube_url" 
                     {...register('youtube_url')}

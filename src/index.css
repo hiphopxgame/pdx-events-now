@@ -57,6 +57,19 @@
     --sidebar-accent-foreground: 158 93% 22%;
     --sidebar-border: 158 30% 85%;
     --sidebar-ring: 212 65% 56%;
+    
+    /* Form state colors - light mode */
+    --form-filled: 158 50% 96%;
+    --form-filled-border: 158 93% 22%;
+    --form-filled-foreground: 158 93% 22%;
+    --form-empty: 158 20% 98%;
+    --form-empty-border: 158 30% 85%;
+    --form-empty-foreground: 158 30% 40%;
+    --form-required: 0 84% 96%;
+    --form-required-border: 0 84% 60%;
+    --form-success: 120 100% 96%;
+    --form-success-border: 120 100% 35%;
+    --form-success-foreground: 120 100% 20%;
   }
 
   .dark {
@@ -109,6 +122,49 @@
     --sidebar-accent-foreground: 0 0% 95%;
     --sidebar-border: 158 30% 25%;
     --sidebar-ring: 212 65% 56%;
+    
+    /* Form state colors - dark mode */
+    --form-filled: 158 50% 15%;
+    --form-filled-border: 43 100% 55%;
+    --form-filled-foreground: 43 100% 55%;
+    --form-empty: 158 30% 12%;
+    --form-empty-border: 158 30% 25%;
+    --form-empty-foreground: 158 20% 60%;
+    --form-required: 0 84% 15%;
+    --form-required-border: 0 84% 60%;
+    --form-success: 120 100% 15%;
+    --form-success-border: 120 100% 35%;
+    --form-success-foreground: 120 100% 70%;
+  }
+}
+
+@layer components {
+  .form-field-filled {
+    @apply bg-[hsl(var(--form-filled))] border-[hsl(var(--form-filled-border))] text-[hsl(var(--form-filled-foreground))];
+  }
+  
+  .form-field-empty {
+    @apply bg-[hsl(var(--form-empty))] border-[hsl(var(--form-empty-border))] text-[hsl(var(--form-empty-foreground))];
+  }
+  
+  .form-field-required {
+    @apply border-l-4 border-l-[hsl(var(--form-required-border))] bg-[hsl(var(--form-required))];
+  }
+  
+  .form-field-success {
+    @apply bg-[hsl(var(--form-success))] border-[hsl(var(--form-success-border))] text-[hsl(var(--form-success-foreground))];
+  }
+  
+  .form-label-filled {
+    @apply text-[hsl(var(--form-filled-foreground))] font-medium;
+  }
+  
+  .form-label-empty {
+    @apply text-[hsl(var(--form-empty-foreground))];
+  }
+  
+  .form-label-required {
+    @apply text-[hsl(var(--form-required-border))] font-medium;
   }
 }
 

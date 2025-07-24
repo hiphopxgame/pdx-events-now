@@ -156,19 +156,20 @@ export const EditVenueDialog: React.FC<EditVenueDialogProps> = ({
         <div className="space-y-6">
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Venue Name *</Label>
+              <Label htmlFor="name" isRequired={true} fieldValue={formData.name}>Venue Name</Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => handleInputChange('name', e.target.value)}
                 placeholder="Enter venue name"
+                isRequired={true}
                 required
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
+                <Label htmlFor="phone" fieldValue={formData.phone}>Phone Number</Label>
                 <Input
                   id="phone"
                   type="tel"
@@ -179,7 +180,7 @@ export const EditVenueDialog: React.FC<EditVenueDialogProps> = ({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="website">Website</Label>
+                <Label htmlFor="website" fieldValue={formData.website}>Website</Label>
                 <Input
                   id="website"
                   type="url"
@@ -190,7 +191,7 @@ export const EditVenueDialog: React.FC<EditVenueDialogProps> = ({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="ages">Age Requirement</Label>
+                <Label htmlFor="ages" fieldValue={formData.ages}>Age Requirement</Label>
                 <Select value={formData.ages} onValueChange={(value) => handleInputChange('ages', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select age requirement" />
@@ -208,7 +209,7 @@ export const EditVenueDialog: React.FC<EditVenueDialogProps> = ({
           <div className="space-y-4">
             <h4 className="font-medium text-gray-700">Address</h4>
             <div className="space-y-2">
-              <Label htmlFor="address">Street Address</Label>
+              <Label htmlFor="address" fieldValue={formData.address}>Street Address</Label>
               <Input
                 id="address"
                 value={formData.address}
