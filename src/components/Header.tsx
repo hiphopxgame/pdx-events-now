@@ -80,7 +80,7 @@ export const Header = () => {
             </button>
           </nav>
           
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 md:space-x-4">
             {user ? (
               <>
                 <Button 
@@ -94,12 +94,19 @@ export const Header = () => {
                 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className="flex items-center space-x-2">
-                      <User className="h-4 w-4" />
-                      <span className="hidden sm:inline">{user?.user_metadata?.display_name || 'Account'}</span>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="flex items-center space-x-1 md:space-x-2 min-w-0 flex-shrink-0"
+                    >
+                      <User className="h-4 w-4 flex-shrink-0" />
+                      <span className="hidden xs:inline sm:inline truncate text-sm">
+                        {user?.user_metadata?.display_name || 'Account'}
+                      </span>
+                      <span className="xs:hidden text-xs">Account</span>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="z-50 bg-background">
+                  <DropdownMenuContent align="end" className="z-50 bg-background min-w-48">
                     <DropdownMenuItem className="md:hidden" asChild>
                       <Link to="/submit-event" className="flex items-center">
                         <Plus className="mr-2 h-4 w-4" />
