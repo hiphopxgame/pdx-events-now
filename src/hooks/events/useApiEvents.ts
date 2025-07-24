@@ -11,6 +11,7 @@ export const useApiEvents = () => {
         .from('poreve_events')
         .select('*')
         .eq('is_active', true)
+        .gte('start_date', new Date().toISOString())
         .order('start_date', { ascending: true });
 
       if (error) {

@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 export interface UserRole {
   id: string;
   user_id: string;
-  role: 'admin' | 'moderator' | 'member' | 'artist';
+  role: 'admin' | 'moderator' | 'user';
   created_at: string;
   updated_at: string;
 }
@@ -14,9 +14,6 @@ export interface UserWithProfile {
   id: string;
   email: string;
   full_name?: string;
-  city?: string;
-  state?: string;
-  zip_code?: string;
   roles: UserRole[];
   created_at: string;
 }
@@ -58,12 +55,7 @@ export const useUserRoles = () => {
         .eq('user_id', user?.id);
       
       if (error) throw error;
-      // Filter out any old 'user' roles and map them to 'member'
-      const mappedRoles = (data || []).map(role => ({
-        ...role,
-        role: role.role === 'user' ? 'member' as const : role.role as 'admin' | 'moderator' | 'member' | 'artist'
-      }));
-      setUserRoles(mappedRoles);
+      setUserRoles(data || []);
     } catch (error) {
       console.error('Error fetching user roles:', error);
       setUserRoles([]);
@@ -74,7 +66,7 @@ export const useUserRoles = () => {
 
   const fetchAllUsers = async (): Promise<UserWithProfile[]> => {
     try {
-      // First get all profiles with location data
+      // First get all profiles
       const { data: profiles, error: profilesError } = await supabase
         .from('por_eve_profiles')
         .select('*')
@@ -89,19 +81,13 @@ export const useUserRoles = () => {
 
       if (rolesError) throw rolesError;
 
-      // Combine the data and map old 'user' roles to 'member'
+      // Combine the data
       const usersWithRoles = profiles.map(profile => ({
         id: profile.id,
         email: profile.email,
         full_name: profile.full_name,
-        city: profile.city,
-        state: profile.state,
-        zip_code: profile.zip_code,
         created_at: profile.created_at,
-        roles: roles.filter(role => role.user_id === profile.id).map(role => ({
-          ...role,
-          role: role.role === 'user' ? 'member' as const : role.role as 'admin' | 'moderator' | 'member' | 'artist'
-        }))
+        roles: roles.filter(role => role.user_id === profile.id)
       }));
 
       return usersWithRoles;
@@ -111,7 +97,7 @@ export const useUserRoles = () => {
     }
   };
 
-  const updateUserRole = async (userId: string, role: 'admin' | 'moderator' | 'member' | 'artist', action: 'add' | 'remove') => {
+  const updateUserRole = async (userId: string, role: 'admin' | 'moderator' | 'user', action: 'add' | 'remove') => {
     try {
       if (action === 'add') {
         const { error } = await supabase
@@ -133,31 +119,12 @@ export const useUserRoles = () => {
     }
   };
 
-  const upgradeToArtist = async () => {
-    try {
-      const { error } = await supabase.rpc('upgrade_to_artist');
-      if (error) throw error;
-      
-      // Refresh user roles after upgrade
-      await fetchUserRoles();
-    } catch (error) {
-      console.error('Error upgrading to artist:', error);
-      throw error;
-    }
-  };
-
-  const hasRole = (role: 'admin' | 'moderator' | 'member' | 'artist') => {
-    return userRoles.some(userRole => userRole.role === role);
-  };
-
   return {
     isAdmin,
     userRoles,
     loading,
     fetchAllUsers,
     updateUserRole,
-    upgradeToArtist,
-    hasRole,
     checkAdminStatus
   };
 };

@@ -1,12 +1,10 @@
 
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Calendar, Plus, User, LogOut, CheckCircle, MapPin, Shield, Users, Building2, Settings, Music } from 'lucide-react';
+import { Calendar, Plus, User, LogOut, CheckCircle, MapPin, Shield, Users, Building2, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserRoles } from '@/hooks/useUserRoles';
-import { useIsMobile } from '@/hooks/use-mobile';
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,7 +15,6 @@ import {
 export const Header = () => {
   const { user, signOut } = useAuth();
   const { isAdmin } = useUserRoles();
-  const isMobile = useIsMobile();
   const navigate = useNavigate();
 
   const handleNavClick = (path: string, event?: React.MouseEvent) => {
@@ -65,13 +62,6 @@ export const Header = () => {
               <MapPin className="h-4 w-4 mr-2" />
               Venues
             </button>
-            <button 
-              onClick={(e) => handleNavClick('/music', e)}
-              className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none cursor-pointer"
-            >
-              <Music className="h-4 w-4 mr-2" />
-              Music
-            </button>
             {user && (
               <button 
                 onClick={(e) => handleNavClick('/users', e)}
@@ -86,16 +76,14 @@ export const Header = () => {
           <div className="flex items-center space-x-4">
             {user ? (
               <>
-                {!isMobile && (
-                  <Button 
-                    onClick={(e) => handleNavClick('/submit-event', e)}
-                    variant="outline" 
-                    className="border-primary/30 text-primary hover:bg-accent cursor-pointer"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    <span>Submit Event</span>
-                  </Button>
-                )}
+                <Button 
+                  onClick={(e) => handleNavClick('/submit-event', e)}
+                  variant="outline" 
+                  className="border-primary/30 text-primary hover:bg-accent cursor-pointer"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  <span>Submit Event</span>
+                </Button>
                 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -105,14 +93,6 @@ export const Header = () => {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="z-50 bg-background">
-                    {isMobile && (
-                      <DropdownMenuItem asChild>
-                        <Link to="/submit-event" className="flex items-center">
-                          <Plus className="mr-2 h-4 w-4" />
-                          Submit Event
-                        </Link>
-                      </DropdownMenuItem>
-                    )}
                     <DropdownMenuItem asChild>
                       <Link to="/account" className="flex items-center">
                         <User className="mr-2 h-4 w-4" />
@@ -126,29 +106,25 @@ export const Header = () => {
                       </Link>
                     </DropdownMenuItem>
                     {isAdmin && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/manage-events" className="flex items-center">
+                          <Settings className="mr-2 h-4 w-4" />
+                          Manage Events
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    {isAdmin && (
                       <>
                         <DropdownMenuItem asChild>
-                          <Link to="/manage-events" className="flex items-center">
-                            <Settings className="mr-2 h-4 w-4" />
-                            Manage Events
+                          <Link to="/admin/users" className="flex items-center">
+                            <Users className="mr-2 h-4 w-4" />
+                            Manage Users
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                           <Link to="/admin/venues" className="flex items-center">
                             <Building2 className="mr-2 h-4 w-4" />
                             Manage Venues
-                          </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link to="/admin/users" className="flex items-center">
-                            <Users className="mr-2 h-4 w-4" />
-                            Manage Community
-                          </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link to="/admin/music" className="flex items-center">
-                            <Music className="mr-2 h-4 w-4" />
-                            Manage Music
                           </Link>
                         </DropdownMenuItem>
                       </>

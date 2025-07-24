@@ -7,13 +7,6 @@ import { useToast } from '@/hooks/use-toast';
 import { EventDateTimeStep } from './event-form/EventDateTimeStep';
 import { EventDetailsStep } from './event-form/EventDetailsStep';
 import { EventFormData } from './event-form/types';
-import { 
-  compressImage, 
-  isValidImageFile, 
-  formatFileSize, 
-  createFileFromBlob, 
-  DEFAULT_COMPRESSION_OPTIONS 
-} from '@/lib/imageUtils';
 
 export const SubmitEventForm: React.FC = () => {
   const [step, setStep] = useState(1);
@@ -28,35 +21,13 @@ export const SubmitEventForm: React.FC = () => {
 
   const handleImageUpload = async (file: File) => {
     try {
-      // Validate file type
-      if (!isValidImageFile(file)) {
-        toast({
-          title: "Invalid File Type",
-          description: "Please upload a valid image file (JPEG, PNG, WebP, or GIF)",
-          variant: "destructive",
-        });
-        return null;
-      }
-
-      // Show compression progress
-      const originalSize = formatFileSize(file.size);
-      console.log(`Compressing image: ${file.name} (${originalSize})`);
-
-      // Compress the image
-      const compressedBlob = await compressImage(file, DEFAULT_COMPRESSION_OPTIONS.event);
-      const compressedSize = formatFileSize(compressedBlob.size);
-      
-      console.log(`Compression complete: ${originalSize} → ${compressedSize}`);
-
-      // Create file from compressed blob
-      const compressedFile = createFileFromBlob(compressedBlob, file.name, 'jpeg');
-      
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.jpg`;
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
       const filePath = `${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('event-images')
-        .upload(filePath, compressedFile);
+        .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 

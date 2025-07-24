@@ -6,16 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
-import { Users as UsersIcon, Search, User, Globe, Facebook, Instagram, Twitter, Youtube, Loader2, ExternalLink, Calendar, Music, Filter } from 'lucide-react';
+import { Users as UsersIcon, Search, User, Globe, Facebook, Instagram, Twitter, Youtube, Loader2, ExternalLink, Calendar, MapPin } from 'lucide-react';
 import { EnhancedPagination } from '@/components/EnhancedPagination';
 
 interface UserProfile {
   id: string;
   display_name: string | null;
-  full_name: string | null;
   username: string | null;
   avatar_url: string | null;
   website_url: string | null;
@@ -25,11 +22,7 @@ interface UserProfile {
   youtube_url: string | null;
   created_at: string;
   event_count?: number;
-  music_count?: number;
-  roles: Array<{
-    id: string;
-    role: 'admin' | 'moderator' | 'member' | 'user' | 'artist';
-  }>;
+  venue_count?: number;
 }
 
 const Users = () => {
@@ -37,7 +30,6 @@ const Users = () => {
   const [filteredUsers, setFilteredUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [showArtistsOnly, setShowArtistsOnly] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const scrollTargetRef = useRef<HTMLElement>(null);
@@ -48,24 +40,21 @@ const Users = () => {
 
   useEffect(() => {
     filterUsers();
-  }, [users, searchTerm, showArtistsOnly]);
+  }, [users, searchTerm]);
 
-  // Reset pagination when search or artist filter changes
+  // Reset pagination when search changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, showArtistsOnly, itemsPerPage]);
+  }, [searchTerm, itemsPerPage]);
 
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      
-      // Fetch user profiles
-      const { data: profiles, error: profilesError } = await supabase
+      const { data, error } = await supabase
         .from('por_eve_profiles')
         .select(`
           id,
           display_name,
-          full_name,
           username,
           avatar_url,
           website_url,
@@ -77,43 +66,28 @@ const Users = () => {
         `)
         .order('created_at', { ascending: false });
 
-      if (profilesError) throw profilesError;
-
-      // Fetch all user roles
-      const { data: roles, error: rolesError } = await supabase
-        .from('user_roles')
-        .select('id, user_id, role');
-
-      if (rolesError) throw rolesError;
+      if (error) throw error;
 
       // Fetch event and venue counts for each user
       const usersWithCounts: UserProfile[] = [];
       
-      for (const user of profiles || []) {
+      for (const user of data || []) {
         // Get event count
         const { count: eventCount } = await supabase
           .from('user_events')
           .select('id', { count: 'exact', head: true })
           .eq('created_by', user.id);
 
-        // Get music video count for artists
-        const { count: musicCount } = await supabase
-          .from('music_videos')
+        // Get venue count from poreve_venues
+        const { count: venueCount } = await supabase
+          .from('poreve_venues')
           .select('id', { count: 'exact', head: true })
-          .eq('artist_id', user.id)
-          .eq('status', 'approved');
-
-        // Get user roles and map old 'user' roles to 'member'
-        const userRoles = (roles?.filter(role => role.user_id === user.id) || []).map(role => ({
-          ...role,
-          role: role.role as 'admin' | 'moderator' | 'member' | 'user' | 'artist'
-        }));
+          .eq('created_by', user.id);
 
         usersWithCounts.push({
           ...user,
           event_count: eventCount || 0,
-          music_count: musicCount || 0,
-          roles: userRoles
+          venue_count: venueCount || 0
         });
       }
 
@@ -128,19 +102,10 @@ const Users = () => {
   const filterUsers = () => {
     let filtered = users;
 
-    // Filter by search term
     if (searchTerm) {
       filtered = filtered.filter(user => 
         user.display_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.username?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    // Filter by artists only
-    if (showArtistsOnly) {
-      filtered = filtered.filter(user => 
-        user.roles.some(role => role.role === 'artist')
       );
     }
 
@@ -157,17 +122,6 @@ const Users = () => {
     return links;
   };
 
-  const getRoleBadgeColor = (role: string) => {
-    switch (role) {
-      case 'admin': return 'destructive';
-      case 'artist': return 'default';
-      case 'moderator': return 'default';
-      case 'member': return 'secondary';
-      case 'user': return 'secondary';
-      default: return 'outline';
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-orange-50">
       <Header />
@@ -181,35 +135,20 @@ const Users = () => {
           <p className="text-gray-600">Discover and connect with event organizers and community members</p>
         </div>
 
-        {/* Search and Filters */}
+        {/* Search */}
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Filter className="h-5 w-5" />
-              Search & Filter Community
-            </CardTitle>
+            <CardTitle>Search Community</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <Input
-                  placeholder="Search by name or username..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="artists-only"
-                  checked={showArtistsOnly}
-                  onCheckedChange={setShowArtistsOnly}
-                />
-                <Label htmlFor="artists-only" className="text-sm font-medium">
-                  View Artists Only
-                </Label>
-              </div>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input
+                placeholder="Search by name or username..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
             </div>
           </CardContent>
         </Card>
@@ -228,111 +167,73 @@ const Users = () => {
               const socialLinks = getSocialLinks(user);
               
               return (
-                <Card key={user.id} className="hover:shadow-lg transition-shadow overflow-hidden">
-                  <CardContent className="p-0">
-                    {/* Header Section with Avatar and Basic Info */}
-                    <div className="p-6 pb-4">
-                      <div className="flex items-start space-x-4">
-                        <Link to={`/user/${user.id}`} className="shrink-0">
-                          <div className="h-16 w-16 bg-emerald-100 rounded-full flex items-center justify-center hover:bg-emerald-200 transition-colors">
-                            {user.avatar_url ? (
-                              <img 
-                                src={user.avatar_url} 
-                                alt={user.display_name || 'User'}
-                                className="h-16 w-16 rounded-full object-cover"
-                              />
-                            ) : (
-                              <User className="h-8 w-8 text-emerald-600" />
-                            )}
-                          </div>
-                        </Link>
-                        <div className="flex-1 min-w-0">
-                          <Link to={`/user/${user.id}`} className="block">
-                            <h3 className="font-semibold text-gray-800 hover:text-emerald-600 transition-colors text-lg leading-tight">
-                              {(user.roles.some(role => role.role === 'admin' || role.role === 'member') && user.full_name) 
-                                ? user.full_name 
-                                : user.display_name || user.username || 'Community Member'}
-                            </h3>
-                          </Link>
-                          {user.username && (
-                            <p className="text-sm text-gray-600 mt-1">@{user.username}</p>
-                          )}
-                          <p className="text-xs text-gray-500 mt-1">
-                            Member since {new Date(user.created_at).toLocaleDateString()}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Stats Section */}
-                    <div className="px-6 pb-4">
-                      <div className="flex gap-4">
-                        <div className="flex items-center text-sm text-gray-600">
-                          <Calendar className="h-4 w-4 mr-1 text-emerald-600" />
-                          <span>{user.event_count || 0} Events</span>
-                        </div>
-                        <div className="flex items-center text-sm text-gray-600">
-                          <Music className="h-4 w-4 mr-1 text-purple-600" />
-                          <span>{user.music_count || 0} Music</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Roles Section */}
-                    <div className="px-6 pb-4">
-                      <div className="flex flex-wrap gap-2">
-                        {user.roles.length === 0 ? (
-                          <Badge variant="outline" className="text-xs">
-                            <User className="h-3 w-3 mr-1" />
-                            Member
-                          </Badge>
+                <Card key={user.id} className="hover:shadow-lg transition-shadow">
+                  <CardContent className="p-6">
+                    <div className="flex items-center space-x-4 mb-4">
+                      <Link to={`/user/${user.id}`} className="h-12 w-12 bg-emerald-100 rounded-full flex items-center justify-center hover:bg-emerald-200 transition-colors">
+                        {user.avatar_url ? (
+                          <img 
+                            src={user.avatar_url} 
+                            alt={user.display_name || 'User'}
+                            className="h-12 w-12 rounded-full object-cover"
+                          />
                         ) : (
-                          user.roles.map((role) => (
-                            <Badge 
-                              key={role.id} 
-                              variant={getRoleBadgeColor(role.role)}
-                              className="text-xs flex items-center gap-1"
-                            >
-                              {role.role === 'admin' && <User className="h-3 w-3" />}
-                              {role.role === 'user' ? 'Member' : role.role.charAt(0).toUpperCase() + role.role.slice(1)}
-                            </Badge>
-                          ))
+                          <User className="h-6 w-6 text-emerald-600" />
                         )}
+                      </Link>
+                      <div className="flex-1">
+                        <Link to={`/user/${user.id}`} className="block">
+                          <h3 className="font-semibold text-gray-800 hover:text-emerald-600 transition-colors">
+                            {user.display_name || 'Anonymous User'}
+                          </h3>
+                        </Link>
+                        {user.username && (
+                          <p className="text-sm text-gray-600">@{user.username}</p>
+                        )}
+                        <p className="text-xs text-gray-500">
+                          Member since {new Date(user.created_at).toLocaleDateString()}
+                        </p>
                       </div>
-                    </div>
-
-                    {/* Social Links Section */}
-                    {socialLinks.length > 0 && (
-                      <div className="px-6 pb-4">
-                        <div className="flex flex-wrap gap-2">
-                          {socialLinks.map((link, index) => {
-                            const Icon = link.icon;
-                            return (
-                              <Button
-                                key={index}
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => window.open(link.url, '_blank')}
-                                className="flex items-center gap-1 h-8 px-2"
-                              >
-                                <Icon className="h-3 w-3" />
-                                <span className="text-xs">{link.label}</span>
-                              </Button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Footer with View Profile Button */}
-                    <div className="border-t bg-gray-50 px-6 py-3">
-                      <Link to={`/user/${user.id}`} className="w-full">
-                        <Button variant="outline" size="sm" className="w-full">
-                          <ExternalLink className="h-4 w-4 mr-2" />
+                      <Link to={`/user/${user.id}`}>
+                        <Button variant="outline" size="sm">
+                          <ExternalLink className="h-4 w-4 mr-1" />
                           View Profile
                         </Button>
                       </Link>
                     </div>
+
+                    {/* Event and Venue Counts */}
+                    <div className="flex gap-4 mb-3">
+                      <div className="flex items-center text-sm text-gray-600">
+                        <Calendar className="h-4 w-4 mr-1 text-emerald-600" />
+                        <span>{user.event_count || 0} Events</span>
+                      </div>
+                      <div className="flex items-center text-sm text-gray-600">
+                        <MapPin className="h-4 w-4 mr-1 text-orange-600" />
+                        <span>{user.venue_count || 0} Venues</span>
+                      </div>
+                    </div>
+
+                    {/* Social Links */}
+                    {socialLinks.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {socialLinks.map((link, index) => {
+                          const Icon = link.icon;
+                          return (
+                            <Button
+                              key={index}
+                              size="sm"
+                              variant="outline"
+                              onClick={() => window.open(link.url, '_blank')}
+                              className="flex items-center gap-1"
+                            >
+                              <Icon className="h-3 w-3" />
+                              <span className="hidden sm:inline">{link.label}</span>
+                            </Button>
+                          );
+                        })}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
                 );

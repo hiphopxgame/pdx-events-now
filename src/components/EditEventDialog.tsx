@@ -13,13 +13,6 @@ import { useToast } from '@/hooks/use-toast';
 import { useUserRoles } from '@/hooks/useUserRoles';
 import { Upload, X } from 'lucide-react';
 import { RecurrenceSelector } from './event-form/RecurrenceSelector';
-import { 
-  compressImage, 
-  isValidImageFile, 
-  formatFileSize, 
-  createFileFromBlob, 
-  DEFAULT_COMPRESSION_OPTIONS 
-} from '@/lib/imageUtils';
 
 interface EditEventDialogProps {
   event: any;
@@ -114,35 +107,13 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
 
     setIsUploading(true);
     try {
-      // Validate file type
-      if (!isValidImageFile(file)) {
-        toast({
-          title: "Invalid File Type",
-          description: "Please upload a valid image file (JPEG, PNG, WebP, or GIF)",
-          variant: "destructive",
-        });
-        return null;
-      }
-
-      // Show compression progress
-      const originalSize = formatFileSize(file.size);
-      console.log(`Compressing image: ${file.name} (${originalSize})`);
-
-      // Compress the image
-      const compressedBlob = await compressImage(file, DEFAULT_COMPRESSION_OPTIONS.event);
-      const compressedSize = formatFileSize(compressedBlob.size);
-      
-      console.log(`Compression complete: ${originalSize} → ${compressedSize}`);
-
-      // Create file from compressed blob
-      const compressedFile = createFileFromBlob(compressedBlob, file.name, 'jpeg');
-      
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.jpg`;
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
       const filePath = `${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('event-images')
-        .upload(filePath, compressedFile);
+        .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 

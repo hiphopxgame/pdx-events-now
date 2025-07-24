@@ -11,18 +11,7 @@ import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { User, Save, Globe, Facebook, Instagram, Twitter, Youtube, Loader2, Upload, X, Music } from 'lucide-react';
-import { UpgradeToArtistButton } from '@/components/UpgradeToArtistButton';
-import { 
-  compressImage, 
-  isValidImageFile, 
-  formatFileSize, 
-  createFileFromBlob, 
-  DEFAULT_COMPRESSION_OPTIONS 
-} from '@/lib/imageUtils';
-import { MusicVideoSubmissionForm } from '@/components/MusicVideoSubmissionForm';
-import { ArtistMusicVideos } from '@/components/ArtistMusicVideos';
-import { useUserRoles } from '@/hooks/useUserRoles';
+import { User, Save, Globe, Facebook, Instagram, Twitter, Youtube, Loader2, Upload, X } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 interface UserProfile {
@@ -37,15 +26,11 @@ interface UserProfile {
   instagram_url: string | null;
   twitter_url: string | null;
   youtube_url: string | null;
-  spotify_url: string | null;
-  bandcamp_url: string | null;
-  soundcloud_url: string | null;
   is_email_public: boolean;
 }
 
 const Account = () => {
   const { user } = useAuth();
-  const { hasRole } = useUserRoles();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -89,35 +74,14 @@ const Account = () => {
     try {
       setUploading(true);
       
-      // Validate file type
-      if (!isValidImageFile(file)) {
-        toast({
-          title: "Invalid File Type",
-          description: "Please upload a valid image file (JPEG, PNG, WebP, or GIF)",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Show compression progress
-      const originalSize = formatFileSize(file.size);
-      console.log(`Compressing avatar: ${file.name} (${originalSize})`);
-
-      // Compress the image for profile use
-      const compressedBlob = await compressImage(file, DEFAULT_COMPRESSION_OPTIONS.profile);
-      const compressedSize = formatFileSize(compressedBlob.size);
-      
-      console.log(`Avatar compression complete: ${originalSize} → ${compressedSize}`);
-
-      // Create file from compressed blob
-      const compressedFile = createFileFromBlob(compressedBlob, file.name, 'jpeg');
-      
-      const fileName = `${user.id}-${Date.now()}.jpg`;
+      // Upload file to Supabase storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
       const filePath = `avatars/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, compressedFile);
+        .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
@@ -131,7 +95,7 @@ const Account = () => {
       
       toast({
         title: 'Success',
-        description: `Avatar uploaded successfully (${compressedSize})`,
+        description: 'Avatar uploaded successfully',
       });
     } catch (error) {
       console.error('Error uploading avatar:', error);
@@ -162,9 +126,6 @@ const Account = () => {
           instagram_url: profile.instagram_url,
           twitter_url: profile.twitter_url,
           youtube_url: profile.youtube_url,
-          spotify_url: profile.spotify_url,
-          bandcamp_url: profile.bandcamp_url,
-          soundcloud_url: profile.soundcloud_url,
           is_email_public: profile.is_email_public
         })
         .eq('id', user.id);
@@ -244,43 +205,31 @@ const Account = () => {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="display_name" className={`flex items-center gap-2 ${profile.display_name ? 'text-emerald-700' : 'text-amber-600'}`}>
-                      Display Name
-                      <div className={`w-2 h-2 rounded-full ${profile.display_name ? 'bg-emerald-500' : 'bg-amber-400'}`} />
-                    </Label>
+                    <Label htmlFor="display_name">Display Name</Label>
                     <Input
                       id="display_name"
                       value={profile.display_name || ''}
                       onChange={(e) => updateProfile('display_name', e.target.value)}
                       placeholder="Your display name"
-                      className={`${profile.display_name ? 'border-emerald-300 bg-emerald-50/50' : 'border-amber-300 bg-amber-50/30'}`}
                     />
                   </div>
                   <div>
-                    <Label htmlFor="username" className={`flex items-center gap-2 ${profile.username ? 'text-emerald-700' : 'text-amber-600'}`}>
-                      Username
-                      <div className={`w-2 h-2 rounded-full ${profile.username ? 'bg-emerald-500' : 'bg-amber-400'}`} />
-                    </Label>
+                    <Label htmlFor="username">Username</Label>
                     <Input
                       id="username"
                       value={profile.username || ''}
                       onChange={(e) => updateProfile('username', e.target.value)}
                       placeholder="@username"
-                      className={`${profile.username ? 'border-emerald-300 bg-emerald-50/50' : 'border-amber-300 bg-amber-50/30'}`}
                     />
                   </div>
                 </div>
                 <div>
-                  <Label htmlFor="full_name" className={`flex items-center gap-2 ${profile.full_name ? 'text-emerald-700' : 'text-amber-600'}`}>
-                    Full Name
-                    <div className={`w-2 h-2 rounded-full ${profile.full_name ? 'bg-emerald-500' : 'bg-amber-400'}`} />
-                  </Label>
+                  <Label htmlFor="full_name">Full Name</Label>
                   <Input
                     id="full_name"
                     value={profile.full_name || ''}
                     onChange={(e) => updateProfile('full_name', e.target.value)}
                     placeholder="Your full name"
-                    className={`${profile.full_name ? 'border-emerald-300 bg-emerald-50/50' : 'border-amber-300 bg-amber-50/30'}`}
                   />
                 </div>
                 <div>
@@ -367,141 +316,67 @@ const Account = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="website_url" className={`flex items-center gap-2 ${profile.website_url ? 'text-emerald-700' : 'text-amber-600'}`}>
-                    <Globe className="h-4 w-4" />
+                  <Label htmlFor="website_url" className="flex items-center">
+                    <Globe className="h-4 w-4 mr-2" />
                     Website
-                    <div className={`w-2 h-2 rounded-full ${profile.website_url ? 'bg-emerald-500' : 'bg-amber-400'}`} />
                   </Label>
                   <Input
                     id="website_url"
                     value={profile.website_url || ''}
                     onChange={(e) => updateProfile('website_url', e.target.value)}
                     placeholder="https://yourwebsite.com"
-                    className={`${profile.website_url ? 'border-emerald-300 bg-emerald-50/50' : 'border-amber-300 bg-amber-50/30'}`}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="facebook_url" className={`flex items-center gap-2 ${profile.facebook_url ? 'text-emerald-700' : 'text-amber-600'}`}>
-                    <Facebook className="h-4 w-4" />
+                  <Label htmlFor="facebook_url" className="flex items-center">
+                    <Facebook className="h-4 w-4 mr-2" />
                     Facebook
-                    <div className={`w-2 h-2 rounded-full ${profile.facebook_url ? 'bg-emerald-500' : 'bg-amber-400'}`} />
                   </Label>
                   <Input
                     id="facebook_url"
                     value={profile.facebook_url || ''}
                     onChange={(e) => updateProfile('facebook_url', e.target.value)}
                     placeholder="https://facebook.com/yourprofile"
-                    className={`${profile.facebook_url ? 'border-emerald-300 bg-emerald-50/50' : 'border-amber-300 bg-amber-50/30'}`}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="instagram_url" className={`flex items-center gap-2 ${profile.instagram_url ? 'text-emerald-700' : 'text-amber-600'}`}>
-                    <Instagram className="h-4 w-4" />
+                  <Label htmlFor="instagram_url" className="flex items-center">
+                    <Instagram className="h-4 w-4 mr-2" />
                     Instagram
-                    <div className={`w-2 h-2 rounded-full ${profile.instagram_url ? 'bg-emerald-500' : 'bg-amber-400'}`} />
                   </Label>
                   <Input
                     id="instagram_url"
                     value={profile.instagram_url || ''}
                     onChange={(e) => updateProfile('instagram_url', e.target.value)}
                     placeholder="https://instagram.com/yourusername"
-                    className={`${profile.instagram_url ? 'border-emerald-300 bg-emerald-50/50' : 'border-amber-300 bg-amber-50/30'}`}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="twitter_url" className={`flex items-center gap-2 ${profile.twitter_url ? 'text-emerald-700' : 'text-amber-600'}`}>
-                    <Twitter className="h-4 w-4" />
+                  <Label htmlFor="twitter_url" className="flex items-center">
+                    <Twitter className="h-4 w-4 mr-2" />
                     Twitter/X
-                    <div className={`w-2 h-2 rounded-full ${profile.twitter_url ? 'bg-emerald-500' : 'bg-amber-400'}`} />
                   </Label>
                   <Input
                     id="twitter_url"
                     value={profile.twitter_url || ''}
                     onChange={(e) => updateProfile('twitter_url', e.target.value)}
                     placeholder="https://twitter.com/yourusername"
-                    className={`${profile.twitter_url ? 'border-emerald-300 bg-emerald-50/50' : 'border-amber-300 bg-amber-50/30'}`}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="youtube_url" className={`flex items-center gap-2 ${profile.youtube_url ? 'text-emerald-700' : 'text-amber-600'}`}>
-                    <Youtube className="h-4 w-4" />
+                  <Label htmlFor="youtube_url" className="flex items-center">
+                    <Youtube className="h-4 w-4 mr-2" />
                     YouTube
-                    <div className={`w-2 h-2 rounded-full ${profile.youtube_url ? 'bg-emerald-500' : 'bg-amber-400'}`} />
                   </Label>
                   <Input
                     id="youtube_url"
                     value={profile.youtube_url || ''}
                     onChange={(e) => updateProfile('youtube_url', e.target.value)}
                     placeholder="https://youtube.com/yourchannel"
-                    className={`${profile.youtube_url ? 'border-emerald-300 bg-emerald-50/50' : 'border-amber-300 bg-amber-50/30'}`}
                   />
                 </div>
-                {hasRole('artist') && (
-                  <>
-                    <div>
-                      <Label htmlFor="spotify_url" className={`flex items-center gap-2 ${profile.spotify_url ? 'text-emerald-700' : 'text-amber-600'}`}>
-                        <Music className="h-4 w-4" />
-                        Spotify
-                        <div className={`w-2 h-2 rounded-full ${profile.spotify_url ? 'bg-emerald-500' : 'bg-amber-400'}`} />
-                      </Label>
-                      <Input
-                        id="spotify_url"
-                        value={profile.spotify_url || ''}
-                        onChange={(e) => updateProfile('spotify_url', e.target.value)}
-                        placeholder="https://open.spotify.com/artist/..."
-                        className={`${profile.spotify_url ? 'border-emerald-300 bg-emerald-50/50' : 'border-amber-300 bg-amber-50/30'}`}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="bandcamp_url" className={`flex items-center gap-2 ${profile.bandcamp_url ? 'text-emerald-700' : 'text-amber-600'}`}>
-                        <Music className="h-4 w-4" />
-                        Bandcamp
-                        <div className={`w-2 h-2 rounded-full ${profile.bandcamp_url ? 'bg-emerald-500' : 'bg-amber-400'}`} />
-                      </Label>
-                      <Input
-                        id="bandcamp_url"
-                        value={profile.bandcamp_url || ''}
-                        onChange={(e) => updateProfile('bandcamp_url', e.target.value)}
-                        placeholder="https://artistname.bandcamp.com"
-                        className={`${profile.bandcamp_url ? 'border-emerald-300 bg-emerald-50/50' : 'border-amber-300 bg-amber-50/30'}`}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="soundcloud_url" className={`flex items-center gap-2 ${profile.soundcloud_url ? 'text-emerald-700' : 'text-amber-600'}`}>
-                        <Music className="h-4 w-4" />
-                        SoundCloud
-                        <div className={`w-2 h-2 rounded-full ${profile.soundcloud_url ? 'bg-emerald-500' : 'bg-amber-400'}`} />
-                      </Label>
-                      <Input
-                        id="soundcloud_url"
-                        value={profile.soundcloud_url || ''}
-                        onChange={(e) => updateProfile('soundcloud_url', e.target.value)}
-                        placeholder="https://soundcloud.com/artistname"
-                        className={`${profile.soundcloud_url ? 'border-emerald-300 bg-emerald-50/50' : 'border-amber-300 bg-amber-50/30'}`}
-                      />
-                    </div>
-                  </>
-                )}
               </CardContent>
             </Card>
-
-            {/* Role Management */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Role Management</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <UpgradeToArtistButton />
-              </CardContent>
-            </Card>
-
-            {/* Artist Features */}
-            {hasRole('artist') && (
-              <div className="space-y-6">
-                <MusicVideoSubmissionForm />
-                <ArtistMusicVideos />
-              </div>
-            )}
 
             {/* Save Button */}
             <div className="flex justify-end">

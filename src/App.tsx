@@ -17,10 +17,9 @@ import Venue from "./pages/Venue";
 import Users from "./pages/Users";
 import User from "./pages/User";
 import Account from "./pages/Account";
-import AdminCommunity from "./pages/AdminCommunity";
+import AdminUsers from "./pages/AdminUsers";
 import AdminVenues from "./pages/AdminVenues";
 import EditVenue from "./pages/EditVenue";
-import Music from "./pages/Music";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import NotFound from "./pages/NotFound";
 
@@ -47,15 +46,10 @@ const App = () => (
             <Route path="/approve-events" element={<ManageEvents />} />
             <Route path="/manage-events" element={<ManageEvents />} />
             <Route path="/admin/events" element={<AdminProtectedRoute><ManageEvents /></AdminProtectedRoute>} />
-            <Route path="/admin/users" element={<AdminProtectedRoute><AdminCommunity /></AdminProtectedRoute>} />
+            <Route path="/admin/users" element={<AdminProtectedRoute><AdminUsers /></AdminProtectedRoute>} />
             <Route path="/admin/venues" element={<AdminProtectedRoute><AdminVenues /></AdminProtectedRoute>} />
             <Route path="/admin/venues/:venueId" element={<AdminProtectedRoute><EditVenue /></AdminProtectedRoute>} />
-            <Route path="/music" element={<Music />} />
             <Route path="/auth" element={<Auth />} />
-            {/* Legacy route redirects for SEO */}
-            <Route path="/event/:eventId" element={<Event />} />
-            <Route path="/venue/:venueName" element={<Venue />} />
-            <Route path="/user/:userId" element={<User />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
