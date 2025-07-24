@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserRoles } from '@/hooks/useUserRoles';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { AdminMusicManagement } from '@/components/AdminMusicManagement';
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -136,20 +136,20 @@ export const Header = () => {
                         <DropdownMenuItem asChild>
                           <Link to="/admin/venues" className="flex items-center">
                             <Building2 className="mr-2 h-4 w-4" />
-                            Venues
+                            Manage Venues
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                           <Link to="/admin/users" className="flex items-center">
                             <Users className="mr-2 h-4 w-4" />
-                            Community
+                            Manage Community
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                          <div className="flex items-center cursor-pointer">
+                          <Link to="/admin/music" className="flex items-center">
                             <Music className="mr-2 h-4 w-4" />
-                            <AdminMusicManagement />
-                          </div>
+                            Manage Music
+                          </Link>
                         </DropdownMenuItem>
                       </>
                     )}
