@@ -38,18 +38,38 @@ const Content = () => {
     try {
       setLoading(true);
       
-      // Get approved content with user profiles
-      const { data, error } = await supabase
+      // Get approved content
+      const { data: contentData, error: contentError } = await supabase
         .from('artist_content')
-        .select(`
-          *,
-          profile:por_eve_profiles(display_name, username, full_name)
-        `)
+        .select('*')
         .eq('status', 'approved')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      setContent((data as any) || []);
+      if (contentError) throw contentError;
+
+      // Get user profiles for the content creators
+      const userIds = contentData?.map(content => content.user_id) || [];
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('por_eve_profiles')
+        .select('id, display_name, username, full_name')
+        .in('id', userIds);
+
+      if (profilesError) throw profilesError;
+
+      // Combine content with profiles
+      const contentWithProfiles: ContentWithProfile[] = contentData?.map(content => {
+        const profile = profilesData?.find(p => p.id === content.user_id);
+        return {
+          ...content,
+          profile: profile ? {
+            display_name: profile.display_name,
+            username: profile.username,
+            full_name: profile.full_name
+          } : undefined
+        } as ContentWithProfile;
+      }) || [];
+
+      setContent(contentWithProfiles);
     } catch (error) {
       console.error('Error fetching content:', error);
       toast({
