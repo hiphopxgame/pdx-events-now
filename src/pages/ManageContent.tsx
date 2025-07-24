@@ -20,7 +20,7 @@ interface ArtistContent {
 }
 
 interface ContentWithProfile extends ArtistContent {
-  profile?: {
+  por_eve_profiles?: {
     display_name: string | null;
     username: string | null;
     full_name: string | null;
@@ -46,7 +46,7 @@ const ManageContent = () => {
         .from('artist_content')
         .select(`
           *,
-          profile:por_eve_profiles(display_name, username, full_name)
+          por_eve_profiles(display_name, username, full_name)
         `)
         .order('created_at', { ascending: false });
 
@@ -151,7 +151,7 @@ const ManageContent = () => {
             ) : (
               content.map((item) => {
                 const youtubeId = getYouTubeId(item.youtube_url);
-                const artistName = item.profile?.display_name || item.profile?.full_name || item.profile?.username || 'Unknown Artist';
+                const artistName = item.por_eve_profiles?.display_name || item.por_eve_profiles?.full_name || item.por_eve_profiles?.username || 'Unknown Artist';
 
                 return (
                   <Card key={item.id}>
