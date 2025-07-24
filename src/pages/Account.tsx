@@ -547,7 +547,7 @@ const Account = () => {
               </Card>
             )}
 
-            {/* Artist Content Submission */}
+            {/* Artist Media Submission */}
             {isArtist && (
               <Card>
                 <CardHeader>

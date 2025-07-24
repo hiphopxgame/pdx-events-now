@@ -148,9 +148,9 @@ const ManageContent = () => {
           <div className="mb-8">
             <h1 className="text-4xl font-bold text-gray-800 mb-4 flex items-center">
               <Video className="h-8 w-8 mr-3 text-emerald-600" />
-              Manage Content
+              Manage Media
             </h1>
-            <p className="text-gray-600">Review and approve artist-submitted content</p>
+            <p className="text-gray-600">Review and approve artist-submitted media</p>
           </div>
 
           <div className="grid gap-6">
