@@ -7,12 +7,13 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { Users as UsersIcon, Search, User, Globe, Facebook, Instagram, Twitter, Youtube, Loader2, ExternalLink, Calendar, MapPin } from 'lucide-react';
+import { Users as UsersIcon, Search, User, Globe, Facebook, Instagram, Twitter, Youtube, Loader2, ExternalLink, Calendar, MapPin, Video } from 'lucide-react';
 import { EnhancedPagination } from '@/components/EnhancedPagination';
 
 interface UserProfile {
   id: string;
   display_name: string | null;
+  full_name: string | null;
   username: string | null;
   avatar_url: string | null;
   website_url: string | null;
@@ -23,6 +24,7 @@ interface UserProfile {
   created_at: string;
   event_count?: number;
   venue_count?: number;
+  video_count?: number;
 }
 
 const Users = () => {
@@ -55,6 +57,7 @@ const Users = () => {
         .select(`
           id,
           display_name,
+          full_name,
           username,
           avatar_url,
           website_url,
@@ -84,10 +87,17 @@ const Users = () => {
           .select('id', { count: 'exact', head: true })
           .eq('created_by', user.id);
 
+        // Get video count from artist_content
+        const { count: videoCount } = await supabase
+          .from('artist_content')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', user.id);
+
         usersWithCounts.push({
           ...user,
           event_count: eventCount || 0,
-          venue_count: venueCount || 0
+          venue_count: venueCount || 0,
+          video_count: videoCount || 0
         });
       }
 
@@ -169,48 +179,59 @@ const Users = () => {
               return (
                 <Card key={user.id} className="hover:shadow-lg transition-shadow">
                   <CardContent className="p-6">
-                    <div className="flex items-center space-x-4 mb-4">
-                      <Link to={`/user/${user.id}`} className="h-12 w-12 bg-emerald-100 rounded-full flex items-center justify-center hover:bg-emerald-200 transition-colors">
+                    <div className="flex items-start space-x-4 mb-4">
+                      <Link to={`/user/${user.id}`} className="h-16 w-16 bg-emerald-100 rounded-full flex items-center justify-center hover:bg-emerald-200 transition-colors flex-shrink-0">
                         {user.avatar_url ? (
                           <img 
                             src={user.avatar_url} 
-                            alt={user.display_name || 'User'}
-                            className="h-12 w-12 rounded-full object-cover"
+                            alt={user.display_name || user.full_name || 'User'}
+                            className="h-16 w-16 rounded-full object-cover"
                           />
                         ) : (
-                          <User className="h-6 w-6 text-emerald-600" />
+                          <User className="h-8 w-8 text-emerald-600" />
                         )}
                       </Link>
-                      <div className="flex-1">
+                      <div className="flex-1 min-w-0">
                         <Link to={`/user/${user.id}`} className="block">
-                          <h3 className="font-semibold text-gray-800 hover:text-emerald-600 transition-colors">
-                            {user.display_name || 'Anonymous User'}
+                          <h3 className="font-semibold text-gray-800 hover:text-emerald-600 transition-colors truncate">
+                            {user.display_name || user.full_name || 'Anonymous User'}
                           </h3>
                         </Link>
                         {user.username && (
-                          <p className="text-sm text-gray-600">@{user.username}</p>
+                          <p className="text-sm text-gray-600 truncate">@{user.username}</p>
                         )}
                         <p className="text-xs text-gray-500">
                           Member since {new Date(user.created_at).toLocaleDateString()}
                         </p>
                       </div>
-                      <Link to={`/user/${user.id}`}>
-                        <Button variant="outline" size="sm">
-                          <ExternalLink className="h-4 w-4 mr-1" />
+                    </div>
+
+                    {/* View Profile Button on its own line */}
+                    <div className="mb-4">
+                      <Link to={`/user/${user.id}`} className="w-full">
+                        <Button variant="outline" size="sm" className="w-full">
+                          <ExternalLink className="h-4 w-4 mr-2" />
                           View Profile
                         </Button>
                       </Link>
                     </div>
 
-                    {/* Event and Venue Counts */}
-                    <div className="flex gap-4 mb-3">
-                      <div className="flex items-center text-sm text-gray-600">
-                        <Calendar className="h-4 w-4 mr-1 text-emerald-600" />
-                        <span>{user.event_count || 0} Events</span>
+                    {/* Content Counts - Better aligned grid */}
+                    <div className="grid grid-cols-3 gap-2 mb-4">
+                      <div className="flex flex-col items-center text-center p-2 bg-emerald-50 rounded-lg">
+                        <Calendar className="h-4 w-4 text-emerald-600 mb-1" />
+                        <span className="text-sm font-medium text-gray-800">{user.event_count || 0}</span>
+                        <span className="text-xs text-gray-600">Events</span>
                       </div>
-                      <div className="flex items-center text-sm text-gray-600">
-                        <MapPin className="h-4 w-4 mr-1 text-orange-600" />
-                        <span>{user.venue_count || 0} Venues</span>
+                      <div className="flex flex-col items-center text-center p-2 bg-orange-50 rounded-lg">
+                        <MapPin className="h-4 w-4 text-orange-600 mb-1" />
+                        <span className="text-sm font-medium text-gray-800">{user.venue_count || 0}</span>
+                        <span className="text-xs text-gray-600">Venues</span>
+                      </div>
+                      <div className="flex flex-col items-center text-center p-2 bg-blue-50 rounded-lg">
+                        <Video className="h-4 w-4 text-blue-600 mb-1" />
+                        <span className="text-sm font-medium text-gray-800">{user.video_count || 0}</span>
+                        <span className="text-xs text-gray-600">Videos</span>
                       </div>
                     </div>
 
