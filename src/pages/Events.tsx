@@ -5,8 +5,10 @@ import { SearchFilters } from '@/components/SearchFilters';
 import { Footer } from '@/components/Footer';
 import { useEvents, useCategories } from '@/hooks/useEvents';
 import { useNavigate } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Plus } from 'lucide-react';
 import { EnhancedPagination } from '@/components/EnhancedPagination';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Events = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -16,6 +18,7 @@ const Events = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const scrollTargetRef = useRef<HTMLElement>(null);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleEventClick = (event: any) => {
     navigate(`/event/${event.id}`);
@@ -96,8 +99,22 @@ const Events = () => {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">Portland Events</h1>
-          <p className="text-gray-600">Discover what's happening in Portland</p>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+            <div>
+              <h1 className="text-4xl font-bold text-gray-800 mb-2">Portland Events</h1>
+              <p className="text-gray-600">Discover what's happening in Portland</p>
+            </div>
+            {user && (
+              <Button 
+                onClick={() => navigate('/submit-event')}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
+                size="lg"
+              >
+                <Plus className="h-5 w-5 mr-2" />
+                Submit Event
+              </Button>
+            )}
+          </div>
         </div>
 
         <SearchFilters

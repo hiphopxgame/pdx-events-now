@@ -83,15 +83,6 @@ export const Header = () => {
           <div className="flex items-center space-x-4">
             {user ? (
               <>
-                <Button 
-                  onClick={(e) => handleNavClick('/submit-event', e)}
-                  variant="outline" 
-                  className="hidden md:flex border-primary/30 text-primary hover:bg-accent cursor-pointer"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  <span>Submit Event</span>
-                </Button>
-                
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm" className="flex items-center space-x-2">
@@ -100,12 +91,6 @@ export const Header = () => {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="z-50 bg-background">
-                    <DropdownMenuItem className="md:hidden" asChild>
-                      <Link to="/submit-event" className="flex items-center">
-                        <Plus className="mr-2 h-4 w-4" />
-                        Submit Event
-                      </Link>
-                    </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link to="/account" className="flex items-center">
                         <User className="mr-2 h-4 w-4" />
