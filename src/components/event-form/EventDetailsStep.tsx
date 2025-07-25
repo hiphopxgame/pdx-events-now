@@ -169,7 +169,8 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
               <Label htmlFor="title" isRequired={true} fieldValue={watch('title')}>Event Title</Label>
               <Input 
                 id="title" 
-                {...register('title', { required: 'Event title is required' })}
+                value={watch('title') || ''}
+                onChange={(e) => setValue('title', e.target.value)}
                 placeholder="Enter event title"
                 isRequired={true}
               />
@@ -180,7 +181,8 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
               <Label htmlFor="description" fieldValue={watch('description')}>Event Description</Label>
               <Textarea 
                 id="description" 
-                {...register('description')}
+                value={watch('description') || ''}
+                onChange={(e) => setValue('description', e.target.value)}
                 placeholder="Describe your event"
                 rows={4}
               />
@@ -261,7 +263,8 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
                   <Label htmlFor="venue_name" isRequired={true} fieldValue={watch('venue_name')}>Venue Name</Label>
                   <Input 
                     id="venue_name" 
-                    {...register('venue_name', { required: 'Venue name is required' })}
+                    value={watch('venue_name') || ''}
+                    onChange={(e) => setValue('venue_name', e.target.value)}
                     placeholder="Enter the venue name"
                     className="h-12"
                     isRequired={true}
@@ -277,7 +280,8 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
                   <Label htmlFor="venue_address" fieldValue={watch('venue_address')}>Venue Address</Label>
                   <Input 
                     id="venue_address" 
-                    {...register('venue_address')}
+                    value={watch('venue_address') || ''}
+                    onChange={(e) => setValue('venue_address', e.target.value)}
                     placeholder="Street address"
                     className="h-12"
                   />
@@ -288,8 +292,8 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
                     <Label htmlFor="venue_city">City</Label>
                     <Input 
                       id="venue_city" 
-                      {...register('venue_city')}
-                      defaultValue="Portland"
+                      value={watch('venue_city') || 'Portland'}
+                      onChange={(e) => setValue('venue_city', e.target.value)}
                       className="h-12"
                     />
                   </div>
@@ -297,8 +301,8 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
                     <Label htmlFor="venue_state">State</Label>
                     <Input 
                       id="venue_state" 
-                      {...register('venue_state')}
-                      defaultValue="Oregon"
+                      value={watch('venue_state') || 'Oregon'}
+                      onChange={(e) => setValue('venue_state', e.target.value)}
                       className="h-12"
                     />
                   </div>
@@ -306,7 +310,8 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
                     <Label htmlFor="venue_zip">ZIP Code</Label>
                     <Input 
                       id="venue_zip" 
-                      {...register('venue_zip')}
+                      value={watch('venue_zip') || ''}
+                      onChange={(e) => setValue('venue_zip', e.target.value)}
                       placeholder="97201"
                       className="h-12"
                     />
@@ -319,12 +324,13 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
             {!useExistingVenue && (
               <div className="space-y-4 p-4 border rounded-lg bg-muted/10">
                 <h4 className="font-medium text-gray-700">Venue Social Media</h4>
-                <div className="grid grid-cols-2 gap-4">
+                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="venue_website_url">Venue Website</Label>
                     <Input 
                       id="venue_website_url" 
-                      {...register('venue_website_url')}
+                      value={watch('venue_website_url') || ''}
+                      onChange={(e) => setValue('venue_website_url', e.target.value)}
                       placeholder="https://venue-website.com"
                     />
                   </div>
@@ -332,7 +338,8 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
                     <Label htmlFor="venue_facebook_url">Venue Facebook</Label>
                     <Input 
                       id="venue_facebook_url" 
-                      {...register('venue_facebook_url')}
+                      value={watch('venue_facebook_url') || ''}
+                      onChange={(e) => setValue('venue_facebook_url', e.target.value)}
                       placeholder="https://facebook.com/venue"
                     />
                   </div>
@@ -340,7 +347,8 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
                     <Label htmlFor="venue_instagram_url">Venue Instagram</Label>
                     <Input 
                       id="venue_instagram_url" 
-                      {...register('venue_instagram_url')}
+                      value={watch('venue_instagram_url') || ''}
+                      onChange={(e) => setValue('venue_instagram_url', e.target.value)}
                       placeholder="https://instagram.com/venue"
                     />
                   </div>
@@ -348,7 +356,8 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
                     <Label htmlFor="venue_twitter_url">Venue Twitter</Label>
                     <Input 
                       id="venue_twitter_url" 
-                      {...register('venue_twitter_url')}
+                      value={watch('venue_twitter_url') || ''}
+                      onChange={(e) => setValue('venue_twitter_url', e.target.value)}
                       placeholder="https://twitter.com/venue"
                     />
                   </div>
@@ -356,7 +365,8 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
                     <Label htmlFor="venue_youtube_url">Venue YouTube</Label>
                     <Input 
                       id="venue_youtube_url" 
-                      {...register('venue_youtube_url')}
+                      value={watch('venue_youtube_url') || ''}
+                      onChange={(e) => setValue('venue_youtube_url', e.target.value)}
                       placeholder="https://youtube.com/venue"
                     />
                   </div>
@@ -368,7 +378,8 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
               <Label htmlFor="price_display" fieldValue={watch('price_display')}>Price Display</Label>
               <Input 
                 id="price_display" 
-                {...register('price_display')}
+                value={watch('price_display') || ''}
+                onChange={(e) => setValue('price_display', e.target.value)}
                 placeholder="e.g., Free, $25, $20-$50"
               />
             </div>
@@ -378,7 +389,8 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
               <Label htmlFor="ticket_url" fieldValue={watch('ticket_url')}>Ticket/Registration URL</Label>
               <Input 
                 id="ticket_url" 
-                {...register('ticket_url')}
+                value={watch('ticket_url') || ''}
+                onChange={(e) => setValue('ticket_url', e.target.value)}
                 placeholder="https://example.com/tickets"
               />
             </div>
@@ -387,7 +399,8 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
               <Label htmlFor="website_url" fieldValue={watch('website_url')}>Website URL</Label>
               <Input 
                 id="website_url" 
-                {...register('website_url')}
+                value={watch('website_url') || ''}
+                onChange={(e) => setValue('website_url', e.target.value)}
                 placeholder="https://example.com"
               />
             </div>
@@ -399,7 +412,8 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
                   <Label htmlFor="facebook_url" fieldValue={watch('facebook_url')}>Facebook URL</Label>
                   <Input 
                     id="facebook_url" 
-                    {...register('facebook_url')}
+                    value={watch('facebook_url') || ''}
+                    onChange={(e) => setValue('facebook_url', e.target.value)}
                     placeholder="https://facebook.com/yourpage"
                   />
                 </div>
@@ -407,7 +421,8 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
                   <Label htmlFor="instagram_url" fieldValue={watch('instagram_url')}>Instagram URL</Label>
                   <Input 
                     id="instagram_url" 
-                    {...register('instagram_url')}
+                    value={watch('instagram_url') || ''}
+                    onChange={(e) => setValue('instagram_url', e.target.value)}
                     placeholder="https://instagram.com/yourpage"
                   />
                 </div>
@@ -415,7 +430,8 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
                   <Label htmlFor="twitter_url" fieldValue={watch('twitter_url')}>Twitter URL</Label>
                   <Input 
                     id="twitter_url" 
-                    {...register('twitter_url')}
+                    value={watch('twitter_url') || ''}
+                    onChange={(e) => setValue('twitter_url', e.target.value)}
                     placeholder="https://twitter.com/yourpage"
                   />
                 </div>
@@ -423,7 +439,8 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
                   <Label htmlFor="youtube_url" fieldValue={watch('youtube_url')}>YouTube URL</Label>
                   <Input 
                     id="youtube_url" 
-                    {...register('youtube_url')}
+                    value={watch('youtube_url') || ''}
+                    onChange={(e) => setValue('youtube_url', e.target.value)}
                     placeholder="https://youtube.com/channel/..."
                   />
                 </div>
