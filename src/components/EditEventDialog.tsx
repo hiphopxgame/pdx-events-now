@@ -74,33 +74,7 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
     return options;
   };
   
-  const { register, handleSubmit, setValue, watch, reset, formState: { isSubmitting } } = useForm({
-    defaultValues: {
-      title: '',
-      description: '',
-      category: '',
-      venue_name: '',
-      venue_address: '',
-      venue_city: 'Portland',
-      venue_state: 'Oregon',
-      venue_zip: '',
-      price_display: '',
-      price_min: '',
-      price_max: '',
-      organizer_name: '',
-      organizer_email: '',
-      organizer_phone: '',
-      ticket_url: '',
-      website_url: '',
-      facebook_url: '',
-      instagram_url: '',
-      twitter_url: '',
-      youtube_url: '',
-      start_date: '',
-      start_time: '',
-      end_time: '',
-    }
-  });
+  const { register, handleSubmit, setValue, watch, reset, formState: { isSubmitting } } = useForm();
 
   // Reset form with event data when event changes
   useEffect(() => {
