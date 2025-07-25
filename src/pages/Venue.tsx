@@ -47,7 +47,7 @@ const Venue = () => {
         .select('*')
         .or(`name.ilike.${decodedName},name.ilike.${decodeURIComponent(venueName)}`)
         .limit(1)
-        .single();
+        .maybeSingle();
       
       if (data) {
         setVenueData(data);

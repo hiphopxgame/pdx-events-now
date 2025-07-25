@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface MapboxMapProps {
   address?: string;
@@ -28,19 +29,20 @@ export const MapboxMap: React.FC<MapboxMapProps> = ({
 
     const initializeMap = async () => {
       try {
-        // Get Mapbox token
-        const response = await fetch('https://vtknmauyvmuaryttnenx.supabase.co/functions/v1/mapbox-config', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+        // Get Mapbox token using Supabase functions
+        const { data, error } = await supabase.functions.invoke('mapbox-config');
         
-        if (!response.ok) {
+        if (error) {
+          console.error('Supabase function error:', error);
           throw new Error('Failed to fetch Mapbox token');
         }
         
-        const data = await response.json();
+        if (!data || !data.publicToken) {
+          console.error('No token in response:', data);
+          throw new Error('No Mapbox token received');
+        }
+        
+        console.log('Mapbox config received successfully');
         mapboxgl.accessToken = data.publicToken;
 
         if (!mapContainer.current || !isMounted) return;

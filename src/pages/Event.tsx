@@ -47,10 +47,10 @@ const Event = () => {
     queryFn: async () => {
       if (!event?.venue_name) return null;
       const { data, error } = await supabase
-        .from('poreve_venues')
+        .from('venues')
         .select('*')
         .eq('name', event.venue_name)
-        .single();
+        .maybeSingle();
       
       if (error) {
         console.error('Error fetching venue:', error);

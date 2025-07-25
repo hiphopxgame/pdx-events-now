@@ -45,3 +45,6 @@ verify_jwt = false
 
 [functions.google-maps-config]
 verify_jwt = false
+
+[functions.mapbox-config]
+verify_jwt = false
