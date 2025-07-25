@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MapPin, Phone, Globe, Calendar, ArrowLeft, ExternalLink, Facebook, Instagram, Twitter, Youtube } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { MapboxMap } from '@/components/MapboxMap';
+
 
 // Helper function to decode URL-friendly strings
 const decodeUrlFriendlyString = (str: string) => {
@@ -42,10 +42,11 @@ const Venue = () => {
       if (!venueName) return;
       
       const decodedName = decodeUrlFriendlyString(venueName);
+      console.log('Looking for venue:', decodedName, 'from URL:', venueName);
       const { data, error } = await supabase
         .from('venues')
         .select('*')
-        .or(`name.ilike.${decodedName},name.ilike.${decodeURIComponent(venueName)}`)
+        .or(`name.ilike.%${decodedName}%,name.ilike.%${decodeURIComponent(venueName)}%`)
         .limit(1)
         .maybeSingle();
       
@@ -246,19 +247,6 @@ const Venue = () => {
           </div>
         </div>
 
-        {/* Venue Map */}
-        {fullAddress && (
-          <div className="bg-white rounded-xl shadow-lg border border-emerald-100 p-8 mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">Location</h2>
-            <MapboxMap 
-              address={fullAddress}
-              venueName={venueDetails.venue_name}
-              latitude={venueData?.latitude}
-              longitude={venueData?.longitude}
-              className="w-full h-80 rounded-lg border border-gray-200"
-            />
-          </div>
-        )}
 
         {/* Events Tabs */}
         <Tabs defaultValue="upcoming" className="space-y-8">

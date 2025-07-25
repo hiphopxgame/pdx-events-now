@@ -10,7 +10,7 @@ import { DataField } from '@/components/DataField';
 import { Loader2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { MapboxMap } from '@/components/MapboxMap';
+
 
 const Event = () => {
   const { eventId } = useParams<{ eventId: string }>();
@@ -338,19 +338,6 @@ const Event = () => {
               </div>
             </div>
 
-            {/* Map */}
-            {fullAddress && (
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Location</h3>
-                <MapboxMap 
-                  address={fullAddress}
-                  venueName={event.venue_name}
-                  latitude={venueData?.latitude}
-                  longitude={venueData?.longitude}
-                  className="w-full h-80 rounded-lg border border-gray-200"
-                />
-              </div>
-            )}
 
             {/* Description */}
             {event.description && (
