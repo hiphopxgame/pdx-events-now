@@ -1706,6 +1706,159 @@ export type Database = {
         }
         Relationships: []
       }
+      pdxbus_businesses: {
+        Row: {
+          address: string | null
+          business_hours: Json | null
+          business_name: string
+          category: string
+          city: string
+          created_at: string
+          description: string | null
+          email: string | null
+          facebook_url: string | null
+          id: string
+          image_urls: string[] | null
+          instagram_url: string | null
+          is_approved: boolean
+          is_featured: boolean
+          linkedin_url: string | null
+          logo_url: string | null
+          owner_id: string
+          phone: string | null
+          state: string
+          twitter_url: string | null
+          updated_at: string
+          website_url: string | null
+          zip_code: string | null
+        }
+        Insert: {
+          address?: string | null
+          business_hours?: Json | null
+          business_name: string
+          category: string
+          city?: string
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          facebook_url?: string | null
+          id?: string
+          image_urls?: string[] | null
+          instagram_url?: string | null
+          is_approved?: boolean
+          is_featured?: boolean
+          linkedin_url?: string | null
+          logo_url?: string | null
+          owner_id: string
+          phone?: string | null
+          state?: string
+          twitter_url?: string | null
+          updated_at?: string
+          website_url?: string | null
+          zip_code?: string | null
+        }
+        Update: {
+          address?: string | null
+          business_hours?: Json | null
+          business_name?: string
+          category?: string
+          city?: string
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          facebook_url?: string | null
+          id?: string
+          image_urls?: string[] | null
+          instagram_url?: string | null
+          is_approved?: boolean
+          is_featured?: boolean
+          linkedin_url?: string | null
+          logo_url?: string | null
+          owner_id?: string
+          phone?: string | null
+          state?: string
+          twitter_url?: string | null
+          updated_at?: string
+          website_url?: string | null
+          zip_code?: string | null
+        }
+        Relationships: []
+      }
+      pdxbus_categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+        }
+        Relationships: []
+      }
+      pdxbus_profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          company_name: string | null
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          is_approved: boolean
+          linkedin_url: string | null
+          phone: string | null
+          position: string | null
+          updated_at: string
+          user_id: string
+          website_url: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          company_name?: string | null
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          is_approved?: boolean
+          linkedin_url?: string | null
+          phone?: string | null
+          position?: string | null
+          updated_at?: string
+          user_id: string
+          website_url?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          company_name?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          is_approved?: boolean
+          linkedin_url?: string | null
+          phone?: string | null
+          position?: string | null
+          updated_at?: string
+          user_id?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
       por_eve_profiles: {
         Row: {
           avatar_url: string | null
@@ -2166,6 +2319,10 @@ export type Database = {
         Returns: boolean
       }
       is_hiphop_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_pdxbus_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
