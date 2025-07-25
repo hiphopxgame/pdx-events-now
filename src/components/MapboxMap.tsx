@@ -144,7 +144,27 @@ export const MapboxMap: React.FC<MapboxMapProps> = ({
     return () => {
       isMounted = false;
       if (map.current) {
-        map.current.remove();
+        try {
+          // Check if map is loaded before removing
+          if (map.current.loaded()) {
+            map.current.remove();
+          } else {
+            // If not loaded, wait a bit and then remove
+            setTimeout(() => {
+              if (map.current) {
+                map.current.remove();
+              }
+            }, 100);
+          }
+        } catch (error) {
+          console.warn('Error removing Mapbox map:', error);
+          // Force remove if there's an error
+          try {
+            map.current.remove();
+          } catch (finalError) {
+            console.warn('Final cleanup error:', finalError);
+          }
+        }
       }
     };
   }, [address, venueName, latitude, longitude, isLoading]);
