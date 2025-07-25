@@ -1351,30 +1351,30 @@ export type Database = {
           employee_id: string
           end_time: string
           id: string
-          is_available: boolean
+          is_active: boolean
+          schedule_date: string
           start_time: string
           updated_at: string
-          work_date: string
         }
         Insert: {
           created_at?: string
           employee_id: string
-          end_time?: string
+          end_time: string
           id?: string
-          is_available?: boolean
-          start_time?: string
+          is_active?: boolean
+          schedule_date: string
+          start_time: string
           updated_at?: string
-          work_date: string
         }
         Update: {
           created_at?: string
           employee_id?: string
           end_time?: string
           id?: string
-          is_available?: boolean
+          is_active?: boolean
+          schedule_date?: string
           start_time?: string
           updated_at?: string
-          work_date?: string
         }
         Relationships: [
           {
@@ -1450,6 +1450,45 @@ export type Database = {
           image_url?: string
           is_active?: boolean
           language?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      oregon_tires_service_images: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string
+          is_current: boolean
+          position_x: number
+          position_y: number
+          scale: number
+          service_key: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url: string
+          is_current?: boolean
+          position_x?: number
+          position_y?: number
+          scale?: number
+          service_key: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string
+          is_current?: boolean
+          position_x?: number
+          position_y?: number
+          scale?: number
+          service_key?: string
           title?: string
           updated_at?: string
         }
