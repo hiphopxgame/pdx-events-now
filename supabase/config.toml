@@ -38,10 +38,13 @@ port = 54327
 verify_jwt = false
 
 [functions.google-places-search]
-verify_jwt = false
+verify_jwt = true
 
 [functions.google-places-details]
-verify_jwt = false
+verify_jwt = true
+
+[functions.batch-import-events]
+verify_jwt = true
 
 [functions.google-maps-config]
 verify_jwt = false

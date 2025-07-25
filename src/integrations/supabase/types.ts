@@ -1211,7 +1211,7 @@ export type Database = {
             foreignKeyName: "oregon_tires_appointments_assigned_employee_id_fkey"
             columns: ["assigned_employee_id"]
             isOneToOne: false
-            referencedRelation: "oregon_tires_employees"
+            referencedRelation: "oretir_employees"
             referencedColumns: ["id"]
           },
           {
@@ -1258,238 +1258,6 @@ export type Database = {
           message?: string
           phone?: string | null
           status?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      oregon_tires_custom_hours: {
-        Row: {
-          closing_time: string | null
-          created_at: string
-          date: string
-          id: string
-          is_closed: boolean
-          opening_time: string | null
-          simultaneous_bookings: number | null
-          updated_at: string
-        }
-        Insert: {
-          closing_time?: string | null
-          created_at?: string
-          date: string
-          id?: string
-          is_closed?: boolean
-          opening_time?: string | null
-          simultaneous_bookings?: number | null
-          updated_at?: string
-        }
-        Update: {
-          closing_time?: string | null
-          created_at?: string
-          date?: string
-          id?: string
-          is_closed?: boolean
-          opening_time?: string | null
-          simultaneous_bookings?: number | null
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      oregon_tires_email_logs: {
-        Row: {
-          appointment_id: string | null
-          body: string
-          created_at: string
-          email_type: string
-          id: string
-          recipient_email: string
-          recipient_name: string
-          recipient_type: string
-          resend_message_id: string | null
-          sent_at: string
-          subject: string
-        }
-        Insert: {
-          appointment_id?: string | null
-          body: string
-          created_at?: string
-          email_type: string
-          id?: string
-          recipient_email: string
-          recipient_name: string
-          recipient_type: string
-          resend_message_id?: string | null
-          sent_at?: string
-          subject: string
-        }
-        Update: {
-          appointment_id?: string | null
-          body?: string
-          created_at?: string
-          email_type?: string
-          id?: string
-          recipient_email?: string
-          recipient_name?: string
-          recipient_type?: string
-          resend_message_id?: string | null
-          sent_at?: string
-          subject?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "oregon_tires_email_logs_appointment_id_fkey"
-            columns: ["appointment_id"]
-            isOneToOne: false
-            referencedRelation: "oregon_tires_appointments"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      oregon_tires_employee_schedules: {
-        Row: {
-          created_at: string
-          employee_id: string
-          end_time: string
-          id: string
-          is_active: boolean
-          schedule_date: string
-          start_time: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          employee_id: string
-          end_time: string
-          id?: string
-          is_active?: boolean
-          schedule_date: string
-          start_time: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          employee_id?: string
-          end_time?: string
-          id?: string
-          is_active?: boolean
-          schedule_date?: string
-          start_time?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "oregon_tires_employee_schedules_employee_id_fkey"
-            columns: ["employee_id"]
-            isOneToOne: false
-            referencedRelation: "oregon_tires_employees"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      oregon_tires_employees: {
-        Row: {
-          created_at: string
-          email: string | null
-          id: string
-          is_active: boolean
-          name: string
-          phone: string | null
-          role: string | null
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          email?: string | null
-          id?: string
-          is_active?: boolean
-          name: string
-          phone?: string | null
-          role?: string | null
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          email?: string | null
-          id?: string
-          is_active?: boolean
-          name?: string
-          phone?: string | null
-          role?: string | null
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      oregon_tires_gallery_images: {
-        Row: {
-          created_at: string
-          description: string | null
-          display_order: number | null
-          id: string
-          image_url: string
-          is_active: boolean
-          language: string
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          description?: string | null
-          display_order?: number | null
-          id?: string
-          image_url: string
-          is_active?: boolean
-          language?: string
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          description?: string | null
-          display_order?: number | null
-          id?: string
-          image_url?: string
-          is_active?: boolean
-          language?: string
-          title?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      oregon_tires_service_images: {
-        Row: {
-          created_at: string
-          id: string
-          image_url: string
-          is_current: boolean
-          position_x: number
-          position_y: number
-          scale: number
-          service_key: string
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          image_url: string
-          is_current?: boolean
-          position_x?: number
-          position_y?: number
-          scale?: number
-          service_key: string
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          image_url?: string
-          is_current?: boolean
-          position_x?: number
-          position_y?: number
-          scale?: number
-          service_key?: string
-          title?: string
           updated_at?: string
         }
         Relationships: []
@@ -1619,6 +1387,199 @@ export type Database = {
         }
         Relationships: []
       }
+      oretir_custom_hours: {
+        Row: {
+          closing_time: string | null
+          created_at: string
+          date: string
+          id: string
+          is_closed: boolean
+          opening_time: string | null
+          simultaneous_bookings: number | null
+          updated_at: string
+        }
+        Insert: {
+          closing_time?: string | null
+          created_at?: string
+          date: string
+          id?: string
+          is_closed?: boolean
+          opening_time?: string | null
+          simultaneous_bookings?: number | null
+          updated_at?: string
+        }
+        Update: {
+          closing_time?: string | null
+          created_at?: string
+          date?: string
+          id?: string
+          is_closed?: boolean
+          opening_time?: string | null
+          simultaneous_bookings?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      oretir_email_logs: {
+        Row: {
+          appointment_id: string | null
+          body: string
+          created_at: string
+          email_type: string
+          id: string
+          recipient_email: string
+          recipient_name: string
+          recipient_type: string
+          resend_message_id: string | null
+          sent_at: string
+          subject: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          body: string
+          created_at?: string
+          email_type: string
+          id?: string
+          recipient_email: string
+          recipient_name: string
+          recipient_type: string
+          resend_message_id?: string | null
+          sent_at?: string
+          subject: string
+        }
+        Update: {
+          appointment_id?: string | null
+          body?: string
+          created_at?: string
+          email_type?: string
+          id?: string
+          recipient_email?: string
+          recipient_name?: string
+          recipient_type?: string
+          resend_message_id?: string | null
+          sent_at?: string
+          subject?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "oregon_tires_email_logs_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "oregon_tires_appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      oretir_employee_schedules: {
+        Row: {
+          created_at: string
+          employee_id: string
+          end_time: string
+          id: string
+          is_active: boolean
+          schedule_date: string
+          start_time: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          employee_id: string
+          end_time: string
+          id?: string
+          is_active?: boolean
+          schedule_date: string
+          start_time: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          employee_id?: string
+          end_time?: string
+          id?: string
+          is_active?: boolean
+          schedule_date?: string
+          start_time?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "oregon_tires_employee_schedules_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "oretir_employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      oretir_employees: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          is_active: boolean
+          name: string
+          phone: string | null
+          role: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          phone?: string | null
+          role?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          phone?: string | null
+          role?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      oretir_gallery_images: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number | null
+          id: string
+          image_url: string
+          is_active: boolean
+          language: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_url: string
+          is_active?: boolean
+          language?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_url?: string
+          is_active?: boolean
+          language?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       oretir_profiles: {
         Row: {
           created_at: string
@@ -1636,6 +1597,45 @@ export type Database = {
           created_at?: string
           id?: string
           is_admin?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      oretir_service_images: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string
+          is_current: boolean
+          position_x: number
+          position_y: number
+          scale: number
+          service_key: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url: string
+          is_current?: boolean
+          position_x?: number
+          position_y?: number
+          scale?: number
+          service_key: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string
+          is_current?: boolean
+          position_x?: number
+          position_y?: number
+          scale?: number
+          service_key?: string
+          title?: string
           updated_at?: string
         }
         Relationships: []

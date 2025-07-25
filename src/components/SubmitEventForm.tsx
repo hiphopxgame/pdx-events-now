@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { EventDateTimeStep } from './event-form/EventDateTimeStep';
 import { EventDetailsStep } from './event-form/EventDetailsStep';
 import { EventFormData } from './event-form/types';
+import { validateEventData, sanitizeText } from '@/utils/validation';
 
 export const SubmitEventForm: React.FC = () => {
   const [step, setStep] = useState(1);
@@ -21,7 +22,29 @@ export const SubmitEventForm: React.FC = () => {
 
   const handleImageUpload = async (file: File) => {
     try {
-      const fileExt = file.name.split('.').pop();
+      // Security: Validate file type and size
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      
+      if (!allowedTypes.includes(file.type)) {
+        toast({
+          title: "Invalid File Type",
+          description: "Please upload only JPEG, PNG, GIF, or WebP images",
+          variant: "destructive",
+        });
+        return null;
+      }
+      
+      if (file.size > maxSize) {
+        toast({
+          title: "File Too Large",
+          description: "Please upload images smaller than 5MB",
+          variant: "destructive",
+        });
+        return null;
+      }
+
+      const fileExt = file.name.split('.').pop()?.toLowerCase();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
       const filePath = `${fileName}`;
 
@@ -65,6 +88,26 @@ export const SubmitEventForm: React.FC = () => {
 
   const onSubmit = async (data: EventFormData, imageFiles?: File[]) => {
     try {
+      // Security: Validate and sanitize input data
+      const validation = validateEventData(data);
+      if (!validation.isValid) {
+        toast({
+          title: "Validation Error",
+          description: validation.errors.join('. '),
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Sanitize text fields
+      const sanitizedData = {
+        ...data,
+        title: sanitizeText(data.title),
+        description: sanitizeText(data.description),
+        venue_name: sanitizeText(data.venue_name),
+        venue_address: sanitizeText(data.venue_address),
+      };
+
       let imageUrl = null;
       let imageUrls: string[] = [];
 
@@ -185,7 +228,7 @@ export const SubmitEventForm: React.FC = () => {
 
       // Remove venue social media fields from event data
       const { venue_website_url, venue_facebook_url, venue_instagram_url, 
-              venue_twitter_url, venue_youtube_url, ...eventDataWithoutVenueSocial } = data;
+              venue_twitter_url, venue_youtube_url, ...eventDataWithoutVenueSocial } = sanitizedData;
 
       const eventData = {
         ...eventDataWithoutVenueSocial,

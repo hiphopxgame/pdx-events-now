@@ -43,7 +43,31 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
-      const newFiles = Array.from(files);
+      const newFiles = Array.from(files).filter(file => {
+        // Security: Validate file type and size
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        
+        if (!allowedTypes.includes(file.type)) {
+          toast({
+            title: "Invalid File Type",
+            description: `${file.name}: Please upload only JPEG, PNG, GIF, or WebP images`,
+            variant: "destructive",
+          });
+          return false;
+        }
+        
+        if (file.size > maxSize) {
+          toast({
+            title: "File Too Large",
+            description: `${file.name}: Please upload images smaller than 5MB`,
+            variant: "destructive",
+          });
+          return false;
+        }
+        
+        return true;
+      });
       
       if (isRecurring) {
         // For recurring events, allow multiple images

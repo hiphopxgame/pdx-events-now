@@ -11,6 +11,15 @@ serve(async (req) => {
     return new Response('ok', { headers: corsHeaders })
   }
 
+  // Verify JWT token for authentication
+  const authHeader = req.headers.get('authorization')
+  if (!authHeader) {
+    return new Response(
+      JSON.stringify({ error: 'Authorization header required' }),
+      { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
+  }
+
   try {
     const { placeId } = await req.json()
 
