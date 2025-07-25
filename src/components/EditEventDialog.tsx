@@ -14,6 +14,32 @@ import { useUserRoles } from '@/hooks/useUserRoles';
 import { Upload, X } from 'lucide-react';
 import { RecurrenceSelector } from './event-form/RecurrenceSelector';
 
+interface EventFormData {
+  title: string;
+  description: string;
+  category: string;
+  venue_name: string;
+  venue_address: string;
+  venue_city: string;
+  venue_state: string;
+  venue_zip: string;
+  price_display: string;
+  price_min: string;
+  price_max: string;
+  organizer_name: string;
+  organizer_email: string;
+  organizer_phone: string;
+  ticket_url: string;
+  website_url: string;
+  facebook_url: string;
+  instagram_url: string;
+  twitter_url: string;
+  youtube_url: string;
+  start_date: string;
+  start_time: string;
+  end_time: string;
+}
+
 interface EditEventDialogProps {
   event: any;
   isOpen: boolean;
@@ -74,8 +100,33 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
     return options;
   };
   
-  const { register, handleSubmit, setValue, watch, reset, formState: { isSubmitting } } = useForm({
-    mode: 'onChange'
+  const { register, handleSubmit, setValue, watch, reset, formState: { isSubmitting }, getValues } = useForm<EventFormData>({
+    mode: 'onChange',
+    defaultValues: {
+      title: '',
+      description: '',
+      category: '',
+      venue_name: '',
+      venue_address: '',
+      venue_city: 'Portland',
+      venue_state: 'Oregon',
+      venue_zip: '',
+      price_display: '',
+      price_min: '',
+      price_max: '',
+      organizer_name: '',
+      organizer_email: '',
+      organizer_phone: '',
+      ticket_url: '',
+      website_url: '',
+      facebook_url: '',
+      instagram_url: '',
+      twitter_url: '',
+      youtube_url: '',
+      start_date: '',
+      start_time: '',
+      end_time: ''
+    }
   });
 
   // Reset form with event data when event changes
@@ -321,12 +372,21 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
             <div className="space-y-4">
               <div>
                 <Label htmlFor="title">Event Title *</Label>
-                <Input {...register('title', { required: true })} />
+                <Input 
+                  {...register('title', { required: true })} 
+                  value={watch('title') || ''} 
+                  onChange={(e) => setValue('title', e.target.value)}
+                />
               </div>
 
               <div>
                 <Label htmlFor="description">Description</Label>
-                <Textarea {...register('description')} rows={3} />
+                <Textarea 
+                  {...register('description')} 
+                  value={watch('description') || ''} 
+                  onChange={(e) => setValue('description', e.target.value)}
+                  rows={3} 
+                />
               </div>
 
               <div>
@@ -359,6 +419,7 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
                 <Input 
                   type="date" 
                   {...register('start_date', { required: true })} 
+                  value={watch('start_date') || ''}
                   onChange={(e) => {
                     const date = new Date(e.target.value);
                     setSelectedDate(date);
@@ -370,11 +431,21 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="start_time">Start Time</Label>
-                  <Input type="time" {...register('start_time')} />
+                  <Input 
+                    type="time" 
+                    {...register('start_time')} 
+                    value={watch('start_time') || ''}
+                    onChange={(e) => setValue('start_time', e.target.value)}
+                  />
                 </div>
                 <div>
                   <Label htmlFor="end_time">End Time</Label>
-                  <Input type="time" {...register('end_time')} />
+                  <Input 
+                    type="time" 
+                    {...register('end_time')} 
+                    value={watch('end_time') || ''}
+                    onChange={(e) => setValue('end_time', e.target.value)}
+                  />
                 </div>
               </div>
 
@@ -404,63 +475,117 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
             <div className="space-y-4">
               <div>
                 <Label htmlFor="venue_name">Venue Name *</Label>
-                <Input {...register('venue_name', { required: true })} />
+                <Input 
+                  {...register('venue_name', { required: true })} 
+                  value={watch('venue_name') || ''} 
+                  onChange={(e) => setValue('venue_name', e.target.value)}
+                />
               </div>
 
               <div>
                 <Label htmlFor="venue_address">Venue Address</Label>
-                <Input {...register('venue_address')} />
+                <Input 
+                  {...register('venue_address')} 
+                  value={watch('venue_address') || ''} 
+                  onChange={(e) => setValue('venue_address', e.target.value)}
+                />
               </div>
 
               <div className="grid grid-cols-3 gap-4">
                 <div>
                   <Label htmlFor="venue_city">City</Label>
-                  <Input {...register('venue_city')} />
+                  <Input 
+                    {...register('venue_city')} 
+                    value={watch('venue_city') || ''} 
+                    onChange={(e) => setValue('venue_city', e.target.value)}
+                  />
                 </div>
                 <div>
                   <Label htmlFor="venue_state">State</Label>
-                  <Input {...register('venue_state')} />
+                  <Input 
+                    {...register('venue_state')} 
+                    value={watch('venue_state') || ''} 
+                    onChange={(e) => setValue('venue_state', e.target.value)}
+                  />
                 </div>
                 <div>
                   <Label htmlFor="venue_zip">ZIP</Label>
-                  <Input {...register('venue_zip')} />
+                  <Input 
+                    {...register('venue_zip')} 
+                    value={watch('venue_zip') || ''} 
+                    onChange={(e) => setValue('venue_zip', e.target.value)}
+                  />
                 </div>
               </div>
 
               <div>
                 <Label htmlFor="price_display">Price Display</Label>
-                <Input {...register('price_display')} placeholder="e.g., Free, $25, $20-$50" />
+                <Input 
+                  {...register('price_display')} 
+                  value={watch('price_display') || ''} 
+                  onChange={(e) => setValue('price_display', e.target.value)}
+                  placeholder="e.g., Free, $25, $20-$50" 
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="price_min">Min Price ($)</Label>
-                  <Input type="number" step="0.01" {...register('price_min')} />
+                  <Input 
+                    type="number" 
+                    step="0.01" 
+                    {...register('price_min')} 
+                    value={watch('price_min') || ''} 
+                    onChange={(e) => setValue('price_min', e.target.value)}
+                  />
                 </div>
                 <div>
                   <Label htmlFor="price_max">Max Price ($)</Label>
-                  <Input type="number" step="0.01" {...register('price_max')} />
+                  <Input 
+                    type="number" 
+                    step="0.01" 
+                    {...register('price_max')} 
+                    value={watch('price_max') || ''} 
+                    onChange={(e) => setValue('price_max', e.target.value)}
+                  />
                 </div>
               </div>
 
               <div>
                 <Label htmlFor="organizer_name">Organizer Name</Label>
-                <Input {...register('organizer_name')} />
+                <Input 
+                  {...register('organizer_name')} 
+                  value={watch('organizer_name') || ''} 
+                  onChange={(e) => setValue('organizer_name', e.target.value)}
+                />
               </div>
 
               <div>
                 <Label htmlFor="organizer_email">Contact Email</Label>
-                <Input type="email" {...register('organizer_email')} />
+                <Input 
+                  type="email" 
+                  {...register('organizer_email')} 
+                  value={watch('organizer_email') || ''} 
+                  onChange={(e) => setValue('organizer_email', e.target.value)}
+                />
               </div>
 
               <div>
                 <Label htmlFor="organizer_phone">Contact Phone</Label>
-                <Input {...register('organizer_phone')} />
+                <Input 
+                  {...register('organizer_phone')} 
+                  value={watch('organizer_phone') || ''} 
+                  onChange={(e) => setValue('organizer_phone', e.target.value)}
+                />
               </div>
 
               <div>
                 <Label htmlFor="ticket_url">Ticket URL</Label>
-                <Input {...register('ticket_url')} />
+                <Input 
+                  {...register('ticket_url')} 
+                  value={watch('ticket_url') || ''} 
+                  onChange={(e) => setValue('ticket_url', e.target.value)}
+                />
               </div>
             </div>
           </div>
@@ -471,23 +596,48 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="website_url">Website URL</Label>
-                <Input {...register('website_url')} placeholder="https://example.com" />
+                <Input 
+                  {...register('website_url')} 
+                  value={watch('website_url') || ''} 
+                  onChange={(e) => setValue('website_url', e.target.value)}
+                  placeholder="https://example.com" 
+                />
               </div>
               <div>
                 <Label htmlFor="facebook_url">Facebook URL</Label>
-                <Input {...register('facebook_url')} placeholder="https://facebook.com/page" />
+                <Input 
+                  {...register('facebook_url')} 
+                  value={watch('facebook_url') || ''} 
+                  onChange={(e) => setValue('facebook_url', e.target.value)}
+                  placeholder="https://facebook.com/page" 
+                />
               </div>
               <div>
                 <Label htmlFor="instagram_url">Instagram URL</Label>
-                <Input {...register('instagram_url')} placeholder="https://instagram.com/page" />
+                <Input 
+                  {...register('instagram_url')} 
+                  value={watch('instagram_url') || ''} 
+                  onChange={(e) => setValue('instagram_url', e.target.value)}
+                  placeholder="https://instagram.com/page" 
+                />
               </div>
               <div>
                 <Label htmlFor="twitter_url">Twitter URL</Label>
-                <Input {...register('twitter_url')} placeholder="https://twitter.com/page" />
+                <Input 
+                  {...register('twitter_url')} 
+                  value={watch('twitter_url') || ''} 
+                  onChange={(e) => setValue('twitter_url', e.target.value)}
+                  placeholder="https://twitter.com/page" 
+                />
               </div>
               <div>
                 <Label htmlFor="youtube_url">YouTube URL</Label>
-                <Input {...register('youtube_url')} placeholder="https://youtube.com/channel/..." />
+                <Input 
+                  {...register('youtube_url')} 
+                  value={watch('youtube_url') || ''} 
+                  onChange={(e) => setValue('youtube_url', e.target.value)}
+                  placeholder="https://youtube.com/channel/..." 
+                />
               </div>
             </div>
           </div>
