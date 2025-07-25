@@ -72,7 +72,7 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
   const { toast } = useToast();
   const { isAdmin } = useUserRoles();
 
-  const getAvailableRecurrenceOptions = (selectedDate: Date) => {
+  const getAvailableRecurrenceOptions = (selectedDate: Date, existingPattern?: string) => {
     const dayOfWeek = selectedDate.getDay();
     const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
     const dayName = dayNames[dayOfWeek];
@@ -95,6 +95,11 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
     const isLast = date + 7 > lastDayOfMonth.getDate();
     if (isLast) {
       options.push(`last-${dayName}`);
+    }
+    
+    // Always include the existing pattern if it exists and isn't already in options
+    if (existingPattern && !options.includes(existingPattern)) {
+      options.push(existingPattern);
     }
     
     return options;
@@ -183,6 +188,11 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
       );
       setImageFiles([]);
       console.log('EditEventDialog: Form reset completed');
+      console.log('EditEventDialog: Recurrence data:', {
+        is_recurring: event.is_recurring,
+        recurrence_pattern: event.recurrence_pattern,
+        recurrence_end_date: event.recurrence_end_date
+      });
       
       // Force the form to update by triggering a re-render
       setTimeout(() => {
@@ -191,6 +201,11 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
           category: watch('category'),
           venue_name: watch('venue_name'),
           start_date: watch('start_date')
+        });
+        console.log('EditEventDialog: Current recurrence state:', {
+          isRecurring,
+          recurringType,
+          endDate
         });
       }, 100);
     }
@@ -466,7 +481,7 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
                     setRecurringType={setRecurringType}
                     endDate={endDate}
                     setEndDate={setEndDate}
-                    availableOptions={getAvailableRecurrenceOptions(selectedDate)}
+                    availableOptions={getAvailableRecurrenceOptions(selectedDate, event.recurrence_pattern)}
                   />
                 )}
               </div>
