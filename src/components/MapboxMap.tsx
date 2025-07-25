@@ -47,24 +47,47 @@ export const MapboxMap: React.FC<MapboxMapProps> = ({
 
         if (!mapContainer.current || !isMounted) return;
 
-        // Use provided coordinates or default to Portland, OR
-        let center: [number, number] = [-122.6784, 45.5152];
+        // Use provided coordinates or geocode address if available
+        let center: [number, number] = [-122.6784, 45.5152]; // Default to Portland, OR
         
         if (latitude && longitude) {
           center = [longitude, latitude];
-        } else if (address || venueName) {
-          // For now, use default location. In production, you'd geocode the address
-          // You could integrate with Mapbox Geocoding API here
-          center = [-122.6784, 45.5152];
+        } else if (address) {
+          // Try to geocode the address using Mapbox Geocoding API
+          try {
+            const geocodeResponse = await fetch(
+              `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${data.publicToken}&limit=1`
+            );
+            
+            if (geocodeResponse.ok) {
+              const geocodeData = await geocodeResponse.json();
+              if (geocodeData.features && geocodeData.features.length > 0) {
+                const [lng, lat] = geocodeData.features[0].center;
+                center = [lng, lat];
+                console.log('Geocoded address:', address, 'to coordinates:', center);
+              }
+            }
+          } catch (geocodeError) {
+            console.warn('Geocoding failed, using default location:', geocodeError);
+          }
         }
 
-        // Initialize map
+        // Initialize map with error handling
         map.current = new mapboxgl.Map({
           container: mapContainer.current,
-          style: 'mapbox://styles/mapbox/light-v11',
+          style: 'mapbox://styles/mapbox/streets-v12', // Use a more basic style
           center: center,
           zoom: 15,
           pitch: 0,
+        });
+
+        // Add error handling for map
+        map.current.on('error', (e) => {
+          console.error('Mapbox map error:', e);
+          if (isMounted) {
+            setError('Map failed to load properly');
+            setIsLoading(false);
+          }
         });
 
         // Add navigation controls
@@ -100,10 +123,17 @@ export const MapboxMap: React.FC<MapboxMapProps> = ({
           }
         });
 
+        // Fallback timeout in case map doesn't load
+        setTimeout(() => {
+          if (isMounted && isLoading) {
+            setIsLoading(false);
+          }
+        }, 10000);
+
       } catch (err) {
         console.error('Error initializing Mapbox map:', err);
         if (isMounted) {
-          setError('Failed to load map');
+          setError('Failed to load map - please check Mapbox configuration');
           setIsLoading(false);
         }
       }
@@ -117,7 +147,7 @@ export const MapboxMap: React.FC<MapboxMapProps> = ({
         map.current.remove();
       }
     };
-  }, [address, venueName, latitude, longitude]);
+  }, [address, venueName, latitude, longitude, isLoading]);
 
   if (error) {
     return (
