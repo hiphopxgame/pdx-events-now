@@ -62,13 +62,6 @@ export const Header = () => {
               <MapPin className="h-4 w-4 mr-2" />
               Venues
             </button>
-            <button 
-              onClick={(e) => handleNavClick('/map-test', e)}
-              className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none cursor-pointer"
-            >
-              <MapPin className="h-4 w-4 mr-2" />
-              Map Test
-            </button>
             {user && (
               <button 
                 onClick={(e) => handleNavClick('/users', e)}
