@@ -74,7 +74,9 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
     return options;
   };
   
-  const { register, handleSubmit, setValue, watch, reset, formState: { isSubmitting } } = useForm();
+  const { register, handleSubmit, setValue, watch, reset, formState: { isSubmitting } } = useForm({
+    mode: 'onChange'
+  });
 
   // Reset form with event data when event changes
   useEffect(() => {
@@ -130,6 +132,16 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
       );
       setImageFiles([]);
       console.log('EditEventDialog: Form reset completed');
+      
+      // Force the form to update by triggering a re-render
+      setTimeout(() => {
+        console.log('EditEventDialog: Current form values after reset:', {
+          title: watch('title'),
+          category: watch('category'),
+          venue_name: watch('venue_name'),
+          start_date: watch('start_date')
+        });
+      }, 100);
     }
   }, [event, isOpen, reset]);
 
