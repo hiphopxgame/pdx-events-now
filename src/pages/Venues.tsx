@@ -9,12 +9,17 @@ import { EnhancedPagination } from '@/components/EnhancedPagination';
 
 // Helper function to create URL-friendly strings
 const createUrlFriendlyString = (str: string) => {
-  return str.replace(/\s+/g, '_').replace(/&/g, '_').replace(/[^\w_-]/g, '');
+  return str
+    .replace(/&/g, 'and')  // Replace & with 'and' instead of underscore
+    .replace(/\s+/g, '_')  // Replace spaces with underscores
+    .replace(/[^\w_-]/g, ''); // Remove special characters except underscores and hyphens
 };
 
 // Helper function to decode URL-friendly strings
 const decodeUrlFriendlyString = (str: string) => {
-  return str.replace(/_/g, ' ');
+  return str
+    .replace(/_/g, ' ')     // Replace underscores with spaces
+    .replace(/and/g, '&');  // Replace 'and' back to &
 };
 
 const Venues = () => {

@@ -14,7 +14,9 @@ import { supabase } from '@/integrations/supabase/client';
 
 // Helper function to decode URL-friendly strings
 const decodeUrlFriendlyString = (str: string) => {
-  return str.replace(/_/g, ' ');
+  return str
+    .replace(/_/g, ' ')     // Replace underscores with spaces
+    .replace(/and/g, '&');  // Replace 'and' back to &
 };
 
 const Venue = () => {
