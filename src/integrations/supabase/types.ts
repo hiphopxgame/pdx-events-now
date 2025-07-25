@@ -1844,171 +1844,6 @@ export type Database = {
         }
         Relationships: []
       }
-      poreve_events: {
-        Row: {
-          api_source: string
-          category: string
-          created_at: string
-          description: string | null
-          end_date: string | null
-          external_id: string
-          facebook_url: string | null
-          id: string
-          image_url: string | null
-          instagram_url: string | null
-          is_active: boolean
-          is_featured: boolean
-          organizer_name: string | null
-          organizer_url: string | null
-          price_display: string | null
-          price_max: number | null
-          price_min: number | null
-          start_date: string
-          tags: string[] | null
-          ticket_url: string | null
-          title: string
-          twitter_url: string | null
-          updated_at: string
-          venue_address: string | null
-          venue_city: string | null
-          venue_name: string
-          venue_state: string | null
-          venue_zip: string | null
-          website_url: string | null
-          youtube_url: string | null
-        }
-        Insert: {
-          api_source: string
-          category: string
-          created_at?: string
-          description?: string | null
-          end_date?: string | null
-          external_id: string
-          facebook_url?: string | null
-          id?: string
-          image_url?: string | null
-          instagram_url?: string | null
-          is_active?: boolean
-          is_featured?: boolean
-          organizer_name?: string | null
-          organizer_url?: string | null
-          price_display?: string | null
-          price_max?: number | null
-          price_min?: number | null
-          start_date: string
-          tags?: string[] | null
-          ticket_url?: string | null
-          title: string
-          twitter_url?: string | null
-          updated_at?: string
-          venue_address?: string | null
-          venue_city?: string | null
-          venue_name: string
-          venue_state?: string | null
-          venue_zip?: string | null
-          website_url?: string | null
-          youtube_url?: string | null
-        }
-        Update: {
-          api_source?: string
-          category?: string
-          created_at?: string
-          description?: string | null
-          end_date?: string | null
-          external_id?: string
-          facebook_url?: string | null
-          id?: string
-          image_url?: string | null
-          instagram_url?: string | null
-          is_active?: boolean
-          is_featured?: boolean
-          organizer_name?: string | null
-          organizer_url?: string | null
-          price_display?: string | null
-          price_max?: number | null
-          price_min?: number | null
-          start_date?: string
-          tags?: string[] | null
-          ticket_url?: string | null
-          title?: string
-          twitter_url?: string | null
-          updated_at?: string
-          venue_address?: string | null
-          venue_city?: string | null
-          venue_name?: string
-          venue_state?: string | null
-          venue_zip?: string | null
-          website_url?: string | null
-          youtube_url?: string | null
-        }
-        Relationships: []
-      }
-      poreve_venues: {
-        Row: {
-          address: string | null
-          capacity: number | null
-          city: string | null
-          created_at: string
-          created_by: string | null
-          facebook_url: string | null
-          id: string
-          instagram_url: string | null
-          latitude: number | null
-          longitude: number | null
-          name: string
-          phone: string | null
-          state: string | null
-          twitter_url: string | null
-          updated_at: string
-          venue_type: string | null
-          website: string | null
-          youtube_url: string | null
-          zip_code: string | null
-        }
-        Insert: {
-          address?: string | null
-          capacity?: number | null
-          city?: string | null
-          created_at?: string
-          created_by?: string | null
-          facebook_url?: string | null
-          id?: string
-          instagram_url?: string | null
-          latitude?: number | null
-          longitude?: number | null
-          name: string
-          phone?: string | null
-          state?: string | null
-          twitter_url?: string | null
-          updated_at?: string
-          venue_type?: string | null
-          website?: string | null
-          youtube_url?: string | null
-          zip_code?: string | null
-        }
-        Update: {
-          address?: string | null
-          capacity?: number | null
-          city?: string | null
-          created_at?: string
-          created_by?: string | null
-          facebook_url?: string | null
-          id?: string
-          instagram_url?: string | null
-          latitude?: number | null
-          longitude?: number | null
-          name?: string
-          phone?: string | null
-          state?: string | null
-          twitter_url?: string | null
-          updated_at?: string
-          venue_type?: string | null
-          website?: string | null
-          youtube_url?: string | null
-          zip_code?: string | null
-        }
-        Relationships: []
-      }
       pormar_consultation_requests: {
         Row: {
           additional_guests: number | null
@@ -2080,11 +1915,13 @@ export type Database = {
       }
       user_events: {
         Row: {
+          api_source: string | null
           category: string
           created_at: string
           created_by: string | null
           description: string | null
           end_time: string | null
+          external_id: string | null
           facebook_url: string | null
           id: string
           image_url: string | null
@@ -2112,11 +1949,13 @@ export type Database = {
           youtube_url: string | null
         }
         Insert: {
+          api_source?: string | null
           category: string
           created_at?: string
           created_by?: string | null
           description?: string | null
           end_time?: string | null
+          external_id?: string | null
           facebook_url?: string | null
           id?: string
           image_url?: string | null
@@ -2144,11 +1983,13 @@ export type Database = {
           youtube_url?: string | null
         }
         Update: {
+          api_source?: string | null
           category?: string
           created_at?: string
           created_by?: string | null
           description?: string | null
           end_time?: string | null
+          external_id?: string | null
           facebook_url?: string | null
           id?: string
           image_url?: string | null
@@ -2213,6 +2054,7 @@ export type Database = {
         Row: {
           address: string | null
           ages: string | null
+          api_source: string | null
           approved_at: string | null
           approved_by: string | null
           city: string | null
@@ -2240,6 +2082,7 @@ export type Database = {
         Insert: {
           address?: string | null
           ages?: string | null
+          api_source?: string | null
           approved_at?: string | null
           approved_by?: string | null
           city?: string | null
@@ -2267,6 +2110,7 @@ export type Database = {
         Update: {
           address?: string | null
           ages?: string | null
+          api_source?: string | null
           approved_at?: string | null
           approved_by?: string | null
           city?: string | null

@@ -7,12 +7,13 @@ export const useFeaturedEvents = () => {
   return useQuery({
     queryKey: ['featured-events'],
     queryFn: async () => {
-      // Fetch featured API events
+      // Fetch featured API events  
       const { data: apiEvents, error: apiError } = await supabase
-        .from('poreve_events')
+        .from('user_events')
         .select('*')
         .eq('is_featured', true)
-        .eq('is_active', true)
+        .not('api_source', 'is', null)
+        .eq('status', 'approved')
         .gte('start_date', new Date().toISOString())
         .order('start_date', { ascending: true });
 
@@ -39,7 +40,14 @@ export const useFeaturedEvents = () => {
       const transformedUserEvents = transformUserEventsToEvents(userEvents as UserEvent[]);
       const transformedApiEvents = apiEvents?.map(event => ({
         ...event,
-        created_by: null // API events don't have user creators
+        created_by: null, // API events don't have user creators
+        end_date: event.end_time ? 
+          `${event.start_date.split('T')[0]}T${event.end_time}:00.000Z` : 
+          null,
+        organizer_url: event.website_url || null,
+        tags: null,
+        is_active: true,
+        website: event.website_url
       })) as Event[];
       const allFeaturedEvents = [...transformedApiEvents, ...transformedUserEvents];
 

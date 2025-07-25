@@ -11,8 +11,9 @@ export const EventSync: React.FC = () => {
       try {
         // Check if we have any events
         const { data: existingEvents, error: checkError } = await supabase
-          .from('poreve_events')
+          .from('user_events')
           .select('id')
+          .eq('api_source', 'sample')
           .limit(1);
 
         if (checkError) {

@@ -171,8 +171,11 @@ serve(async (req) => {
         console.log(`Processing event: ${eventData.title}`)
         
         const { error } = await supabaseClient
-          .from('poreve_events')
-          .upsert(eventData, { onConflict: 'external_id,api_source' })
+          .from('user_events')
+          .upsert({
+            ...eventData,
+            status: 'approved' // Auto-approve API events
+          }, { onConflict: 'external_id,api_source' })
 
         if (!error) {
           totalProcessed++
@@ -229,8 +232,11 @@ serve(async (req) => {
                 }
 
                 const { error } = await supabaseClient
-                  .from('poreve_events')
-                  .upsert(eventData, { onConflict: 'external_id,api_source' })
+                  .from('user_events')
+                  .upsert({
+                    ...eventData,
+                    status: 'approved' // Auto-approve API events
+                  }, { onConflict: 'external_id,api_source' })
 
                 if (!error) {
                   totalProcessed++
