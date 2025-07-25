@@ -104,7 +104,16 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
 
   // Reset form with event data when event changes
   useEffect(() => {
+    console.log('EditEventDialog: useEffect triggered', { event, isOpen });
     if (event && isOpen) {
+      console.log('EditEventDialog: Event data:', event);
+      console.log('EditEventDialog: About to reset form with data:', {
+        title: event.title,
+        category: event.category,
+        venue_name: event.venue_name,
+        start_date: event.start_date,
+      });
+      
       // Reset form with all event data
       reset({
         title: event.title || '',
@@ -146,6 +155,7 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
             : []
       );
       setImageFiles([]);
+      console.log('EditEventDialog: Form reset completed');
     }
   }, [event, isOpen, reset]);
 

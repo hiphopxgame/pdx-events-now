@@ -385,7 +385,10 @@ const ManageEvents = () => {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => setEditingEvent(event)}
+                          onClick={() => {
+                            console.log('ManageEvents: Edit button clicked, event data:', event);
+                            setEditingEvent(event);
+                          }}
                           className="text-blue-600 border-blue-200 hover:bg-blue-50"
                         >
                           <Edit className="h-4 w-4 mr-1" />
@@ -469,7 +472,7 @@ const ManageEvents = () => {
           onClose={() => setEditingEvent(null)}
           onSuccess={() => {
             setEditingEvent(null);
-            queryClient.invalidateQueries({ queryKey: ['user-events'] });
+            queryClient.invalidateQueries({ queryKey: ['all-events'] });
           }}
         />
       )}
