@@ -31,7 +31,7 @@ export const useUserEvents = () => {
 
 export const useApprovedUserEvents = () => {
   return useQuery({
-    queryKey: ['approved-user-events'],
+    queryKey: ['approved-user-events-v2'], // Updated cache key
     queryFn: async () => {
       const { data, error } = await supabase
         .from('user_events')
@@ -44,6 +44,7 @@ export const useApprovedUserEvents = () => {
         throw error;
       }
 
+      console.log('Approved events fetched:', data?.length || 0);
       return data as UserEvent[];
     },
     refetchOnWindowFocus: false,

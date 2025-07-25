@@ -11,7 +11,7 @@ export const useEvents = (options: UseEventsOptions = {}) => {
   const { data: userEvents = [], isLoading: userLoading, error: userError } = useApprovedUserEvents();
 
   return useQuery({
-    queryKey: ['events', options],
+    queryKey: ['events-v2', options], // Updated cache key
     queryFn: async () => {
       // Transform user events to match the Event interface
       const transformedUserEvents = transformUserEventsToEvents(userEvents);
@@ -19,8 +19,13 @@ export const useEvents = (options: UseEventsOptions = {}) => {
       // Combine all events
       const allEvents = [...apiEvents, ...transformedUserEvents];
 
+      console.log('Combined events:', allEvents.length, 'API events:', apiEvents.length, 'User events:', transformedUserEvents.length);
+
       // Apply filters
-      return applyEventFilters(allEvents, options);
+      const filteredEvents = applyEventFilters(allEvents, options);
+      console.log('Filtered events:', filteredEvents.length);
+      
+      return filteredEvents;
     },
     enabled: !apiLoading && !userLoading,
     refetchOnWindowFocus: false,
