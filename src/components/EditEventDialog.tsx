@@ -337,6 +337,7 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
                     <SelectItem value="Business">Business</SelectItem>
                     <SelectItem value="Family">Family</SelectItem>
                     <SelectItem value="Health & Wellness">Health & Wellness</SelectItem>
+                    <SelectItem value="Open Mic">Open Mic</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
