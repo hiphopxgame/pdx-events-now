@@ -76,13 +76,52 @@ const AdminVenues = () => {
   const fetchVenues = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      
+      // Get venues from the venues table
+      const { data: venuesData, error: venuesError } = await supabase
         .from('venues')
         .select('*')
         .order('created_at', { ascending: false });
+      
+      if (venuesError) throw venuesError;
 
-      if (error) throw error;
-      setVenues((data || []) as Venue[]);
+      // Get unique venues from approved events
+      const { data: eventsData, error: eventsError } = await supabase
+        .from('user_events')
+        .select('venue_name, venue_address, venue_city, venue_state, venue_zip')
+        .eq('status', 'approved')
+        .not('venue_name', 'is', null);
+      
+      if (eventsError) throw eventsError;
+
+      // Create a map to track unique venues
+      const venueMap = new Map();
+
+      // Add venues from venues table
+      (venuesData || []).forEach(venue => {
+        venueMap.set(venue.name, venue);
+      });
+
+      // Add venues from events (if not already in venues table)
+      (eventsData || []).forEach(event => {
+        if (!venueMap.has(event.venue_name)) {
+          venueMap.set(event.venue_name, {
+            id: `event-venue-${event.venue_name}`, // Generate a temporary ID
+            name: event.venue_name,
+            address: event.venue_address,
+            city: event.venue_city || 'Portland',
+            state: event.venue_state || 'Oregon',
+            zip_code: event.venue_zip,
+            status: 'approved', // These are from approved events
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          });
+        }
+      });
+
+      // Convert map to array and sort by name
+      const allVenues = Array.from(venueMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+      setVenues(allVenues as Venue[]);
     } catch (error) {
       console.error('Error fetching venues:', error);
       toast({
