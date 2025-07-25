@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -74,33 +74,79 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
     return options;
   };
   
-  const { register, handleSubmit, setValue, watch, formState: { isSubmitting } } = useForm({
+  const { register, handleSubmit, setValue, watch, reset, formState: { isSubmitting } } = useForm({
     defaultValues: {
-      title: event.title || '',
-      description: event.description || '',
-      category: event.category || '',
-      venue_name: event.venue_name || '',
-      venue_address: event.venue_address || '',
-      venue_city: event.venue_city || 'Portland',
-      venue_state: event.venue_state || 'Oregon',
-      venue_zip: event.venue_zip || '',
-      price_display: event.price_display || '',
-      price_min: event.price_min || '',
-      price_max: event.price_max || '',
-      organizer_name: event.organizer_name || '',
-      organizer_email: event.organizer_email || '',
-      organizer_phone: event.organizer_phone || '',
-      ticket_url: event.ticket_url || '',
-      website_url: event.website_url || '',
-      facebook_url: event.facebook_url || '',
-      instagram_url: event.instagram_url || '',
-      twitter_url: event.twitter_url || '',
-      youtube_url: event.youtube_url || '',
-      start_date: event.start_date || '',
-      start_time: event.start_time || '',
-      end_time: event.end_time || '',
+      title: '',
+      description: '',
+      category: '',
+      venue_name: '',
+      venue_address: '',
+      venue_city: 'Portland',
+      venue_state: 'Oregon',
+      venue_zip: '',
+      price_display: '',
+      price_min: '',
+      price_max: '',
+      organizer_name: '',
+      organizer_email: '',
+      organizer_phone: '',
+      ticket_url: '',
+      website_url: '',
+      facebook_url: '',
+      instagram_url: '',
+      twitter_url: '',
+      youtube_url: '',
+      start_date: '',
+      start_time: '',
+      end_time: '',
     }
   });
+
+  // Reset form with event data when event changes
+  useEffect(() => {
+    if (event && isOpen) {
+      reset({
+        title: event.title || '',
+        description: event.description || '',
+        category: event.category || '',
+        venue_name: event.venue_name || '',
+        venue_address: event.venue_address || '',
+        venue_city: event.venue_city || 'Portland',
+        venue_state: event.venue_state || 'Oregon',
+        venue_zip: event.venue_zip || '',
+        price_display: event.price_display || '',
+        price_min: event.price_min || '',
+        price_max: event.price_max || '',
+        organizer_name: event.organizer_name || '',
+        organizer_email: event.organizer_email || '',
+        organizer_phone: event.organizer_phone || '',
+        ticket_url: event.ticket_url || '',
+        website_url: event.website_url || '',
+        facebook_url: event.facebook_url || '',
+        instagram_url: event.instagram_url || '',
+        twitter_url: event.twitter_url || '',
+        youtube_url: event.youtube_url || '',
+        start_date: event.start_date || '',
+        start_time: event.start_time || '',
+        end_time: event.end_time || '',
+      });
+
+      // Reset other state variables
+      setIsRecurring(event.is_recurring || false);
+      setRecurringType(event.recurrence_pattern || '');
+      setEndDate(event.recurrence_end_date ? new Date(event.recurrence_end_date) : undefined);
+      setIsFeatured(event.is_featured || false);
+      setSelectedDate(new Date(event.start_date));
+      setPreviewUrls(
+        event.image_urls && event.image_urls.length > 0 
+          ? event.image_urls 
+          : event.image_url 
+            ? [event.image_url] 
+            : []
+      );
+      setImageFiles([]);
+    }
+  }, [event, isOpen, reset]);
 
   const handleImageUpload = async (file: File) => {
     if (!file) return null;
