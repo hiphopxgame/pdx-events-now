@@ -244,6 +244,8 @@ export const SubmitEventForm: React.FC = () => {
     return (
       <EventDateTimeStep
         register={register}
+        setValue={setValue}
+        watch={watch}
         startDate={startDate}
         setStartDate={setStartDate}
         isRecurring={isRecurring}

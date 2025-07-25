@@ -24,6 +24,8 @@ interface EventDateTimeStepProps {
   endDate: Date | undefined;
   setEndDate: (date: Date | undefined) => void;
   onNext: () => void;
+  setValue?: (name: keyof EventFormData, value: any) => void;
+  watch?: (name: keyof EventFormData) => any;
 }
 
 export const EventDateTimeStep: React.FC<EventDateTimeStepProps> = ({
@@ -37,6 +39,8 @@ export const EventDateTimeStep: React.FC<EventDateTimeStepProps> = ({
   endDate,
   setEndDate,
   onNext,
+  setValue,
+  watch,
 }) => {
   // Set default date to today if not set
   useEffect(() => {
@@ -217,11 +221,27 @@ export const EventDateTimeStep: React.FC<EventDateTimeStepProps> = ({
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="start_time" className="text-sm">Start Time</Label>
-                  <Input id="start_time" type="time" {...register('start_time')} defaultValue="12:00" className="h-12" />
+                  <Input 
+                    id="start_time" 
+                    type="time" 
+                    {...register('start_time')} 
+                    value={watch ? watch('start_time') || '' : ''}
+                    onChange={(e) => setValue && setValue('start_time', e.target.value)}
+                    placeholder="12:00"
+                    className="h-12" 
+                  />
                 </div>
                 <div>
                   <Label htmlFor="end_time" className="text-sm">End Time</Label>
-                  <Input id="end_time" type="time" {...register('end_time')} defaultValue="13:00" className="h-12" />
+                  <Input 
+                    id="end_time" 
+                    type="time" 
+                    {...register('end_time')} 
+                    value={watch ? watch('end_time') || '' : ''}
+                    onChange={(e) => setValue && setValue('end_time', e.target.value)}
+                    placeholder="13:00"
+                    className="h-12" 
+                  />
                 </div>
               </div>
             </div>
