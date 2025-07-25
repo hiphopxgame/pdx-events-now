@@ -58,21 +58,39 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
 
   useEffect(() => {
     const fetchUserInfo = async () => {
-      if (event.createdBy) {
-        const { data } = await supabase
-          .from('por_eve_profiles')
-          .select('display_name, username')
-          .eq('id', event.createdBy)
-          .single();
+      const userId = event.createdBy || event.submittedBy;
+      console.log('Fetching user info for:', userId, 'Event:', event.title);
+      
+      if (userId) {
+        try {
+          const { data, error } = await supabase
+            .from('por_eve_profiles')
+            .select('display_name, username')
+            .eq('id', userId)
+            .maybeSingle();
 
-        if (data) {
-          setSubmittedByUser(data.display_name || data.username || 'Unknown User');
+          if (error) {
+            console.error('Error fetching user info:', error);
+            setSubmittedByUser('Unknown User');
+            return;
+          }
+
+          if (data) {
+            setSubmittedByUser(data.display_name || data.username || 'Unknown User');
+          } else {
+            setSubmittedByUser('Unknown User');
+          }
+        } catch (err) {
+          console.error('Error fetching user info:', err);
+          setSubmittedByUser('Unknown User');
         }
+      } else {
+        setSubmittedByUser('Unknown User');
       }
     };
 
     fetchUserInfo();
-  }, [event.createdBy]);
+  }, [event.createdBy, event.submittedBy, event.title]);
 
   const handleVenueClick = (e: React.MouseEvent) => {
     console.log('Venue link clicked:', event.venue);
