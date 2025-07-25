@@ -41,17 +41,35 @@ const ManageContent = () => {
     try {
       setLoading(true);
       
-      // Get all content with user profiles
-      const { data, error } = await supabase
+      // Get all content first
+      const { data: contentData, error: contentError } = await supabase
         .from('artist_content')
-        .select(`
-          *,
-          por_eve_profiles(display_name, username, full_name)
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      setContent((data as any) || []);
+      if (contentError) throw contentError;
+
+      // Get profiles separately and merge
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('por_eve_profiles')
+        .select('id, display_name, username');
+
+      if (profilesError) throw profilesError;
+
+      // Create a map of profiles by user ID
+      const profilesMap = new Map();
+      (profilesData || []).forEach(profile => {
+        profilesMap.set(profile.id, profile);
+      });
+
+      // Merge content with profiles
+      const contentWithProfiles = (contentData || []).map(content => ({
+        ...content,
+        status: (content.status || 'pending') as 'pending' | 'approved' | 'rejected',
+        por_eve_profiles: profilesMap.get(content.user_id) || null
+      })) as ContentWithProfile[];
+
+      setContent(contentWithProfiles);
     } catch (error) {
       console.error('Error fetching content:', error);
       toast({
@@ -151,7 +169,7 @@ const ManageContent = () => {
             ) : (
               content.map((item) => {
                 const youtubeId = getYouTubeId(item.youtube_url);
-                const artistName = item.por_eve_profiles?.display_name || item.por_eve_profiles?.full_name || item.por_eve_profiles?.username || 'Unknown Artist';
+                const artistName = item.por_eve_profiles?.display_name || item.por_eve_profiles?.username || 'Unknown Artist';
 
                 return (
                   <Card key={item.id}>

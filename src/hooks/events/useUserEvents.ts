@@ -72,3 +72,24 @@ export const usePendingEvents = () => {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
+
+export const useAllEvents = () => {
+  return useQuery({
+    queryKey: ['all-events'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('user_events')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching all events:', error);
+        throw error;
+      }
+
+      return data as UserEvent[];
+    },
+    refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};

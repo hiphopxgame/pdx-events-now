@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { useUserEvents } from '@/hooks/events/useUserEvents';
+import { useAllEvents } from '@/hooks/events/useUserEvents';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,7 +18,7 @@ import { EditEventDialog } from '@/components/EditEventDialog';
 import { EventDetailsModal } from '@/components/EventDetailsModal';
 
 const ManageEvents = () => {
-  const { data: userEvents = [], isLoading: userEventsLoading } = useUserEvents();
+  const { data: userEvents = [], isLoading: userEventsLoading } = useAllEvents();
   const { isAdmin, loading: rolesLoading } = useUserRoles();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -43,7 +43,7 @@ const ManageEvents = () => {
         },
         () => {
           // Refresh the events data when any change occurs
-          queryClient.invalidateQueries({ queryKey: ['user-events'] });
+          queryClient.invalidateQueries({ queryKey: ['all-events'] });
         }
       )
       .subscribe();
@@ -94,7 +94,7 @@ const ManageEvents = () => {
       });
 
       // Refresh queries
-      queryClient.invalidateQueries({ queryKey: ['user-events'] });
+      queryClient.invalidateQueries({ queryKey: ['all-events'] });
       queryClient.invalidateQueries({ queryKey: ['approved-user-events'] });
     } catch (error) {
       console.error('Error approving event:', error);
@@ -120,7 +120,7 @@ const ManageEvents = () => {
         description: "The event has been rejected.",
       });
 
-      queryClient.invalidateQueries({ queryKey: ['user-events'] });
+      queryClient.invalidateQueries({ queryKey: ['all-events'] });
     } catch (error) {
       console.error('Error rejecting event:', error);
       toast({
@@ -145,7 +145,7 @@ const ManageEvents = () => {
         description: `Event ${!currentFeatured ? 'featured' : 'unfeatured'} successfully.`,
       });
 
-      queryClient.invalidateQueries({ queryKey: ['user-events'] });
+      queryClient.invalidateQueries({ queryKey: ['all-events'] });
     } catch (error) {
       console.error('Error updating featured status:', error);
       toast({
@@ -174,7 +174,7 @@ const ManageEvents = () => {
         description: "The event has been deleted successfully.",
       });
 
-      queryClient.invalidateQueries({ queryKey: ['user-events'] });
+      queryClient.invalidateQueries({ queryKey: ['all-events'] });
     } catch (error) {
       console.error('Error deleting event:', error);
       toast({
