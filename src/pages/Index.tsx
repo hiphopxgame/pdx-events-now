@@ -104,7 +104,7 @@ const Index = () => {
       venueCity: event.venue_city,
       venueState: event.venue_state,
       ticketUrl: event.ticket_url,
-      organizerName: event.organizer_name,
+      createdBy: (event as any).created_by,
     };
   });
 

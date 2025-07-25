@@ -19,7 +19,11 @@ export const useApiEvents = () => {
         throw error;
       }
 
-      return data as Event[];
+      // Transform the data to match the Event type and add required created_by field
+      return data?.map(event => ({
+        ...event,
+        created_by: null // API events don't have user creators
+      })) as Event[];
     },
     refetchOnWindowFocus: false,
     staleTime: 5 * 60 * 1000, // 5 minutes

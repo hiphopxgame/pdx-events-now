@@ -11,8 +11,6 @@ export interface Event {
   venue_state: string | null;
   venue_zip: string | null;
   category: string;
-  price_min: number | null;
-  price_max: number | null;
   price_display: string | null;
   image_url: string | null;
   ticket_url: string | null;
@@ -21,7 +19,6 @@ export interface Event {
   instagram_url: string | null;
   twitter_url: string | null;
   youtube_url: string | null;
-  organizer_name: string | null;
   organizer_url: string | null;
   tags: string[] | null;
   api_source: string;
@@ -45,11 +42,6 @@ export interface UserEvent {
   venue_state: string | null;
   venue_zip: string | null;
   price_display: string | null;
-  price_min: number | null;
-  price_max: number | null;
-  organizer_name: string | null;
-  organizer_email: string | null;
-  organizer_phone: string | null;
   ticket_url: string | null;
   website_url: string | null;
   facebook_url: string | null;

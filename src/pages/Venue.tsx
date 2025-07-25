@@ -109,7 +109,6 @@ const Venue = () => {
       venueCity: event.venue_city,
       venueState: event.venue_state,
       ticketUrl: event.ticket_url,
-      organizerName: event.organizer_name,
       endTime: event.end_time,
       createdBy: event.created_by,
     };

@@ -411,7 +411,6 @@ const ManageEvents = () => {
                             venueCity: event.venue_city,
                             venueState: event.venue_state,
                             ticketUrl: event.ticket_url,
-                            organizerName: event.organizer_name,
                           })}
                           className="text-blue-600 border-blue-200 hover:bg-blue-50"
                         >

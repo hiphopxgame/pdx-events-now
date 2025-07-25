@@ -2053,12 +2053,7 @@ export type Database = {
           instagram_url: string | null
           is_featured: boolean
           is_recurring: boolean | null
-          organizer_email: string | null
-          organizer_name: string | null
-          organizer_phone: string | null
           price_display: string | null
-          price_max: number | null
-          price_min: number | null
           recurrence_end_date: string | null
           recurrence_pattern: string | null
           recurrence_type: string | null
@@ -2090,12 +2085,7 @@ export type Database = {
           instagram_url?: string | null
           is_featured?: boolean
           is_recurring?: boolean | null
-          organizer_email?: string | null
-          organizer_name?: string | null
-          organizer_phone?: string | null
           price_display?: string | null
-          price_max?: number | null
-          price_min?: number | null
           recurrence_end_date?: string | null
           recurrence_pattern?: string | null
           recurrence_type?: string | null
@@ -2127,12 +2117,7 @@ export type Database = {
           instagram_url?: string | null
           is_featured?: boolean
           is_recurring?: boolean | null
-          organizer_email?: string | null
-          organizer_name?: string | null
-          organizer_phone?: string | null
           price_display?: string | null
-          price_max?: number | null
-          price_min?: number | null
           recurrence_end_date?: string | null
           recurrence_pattern?: string | null
           recurrence_type?: string | null

@@ -373,36 +373,7 @@ export const EventDetailsStep: React.FC<EventDetailsStepProps> = ({
               />
             </div>
 
-
-            <div>
-              <Label htmlFor="organizer_name" fieldValue={watch('organizer_name')}>Organizer Name</Label>
-              <Input 
-                id="organizer_name" 
-                {...register('organizer_name')}
-                placeholder="Your name or organization"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="organizer_email" fieldValue={watch('organizer_email')}>Contact Email</Label>
-                <Input 
-                  id="organizer_email" 
-                  type="email"
-                  {...register('organizer_email')}
-                  placeholder="contact@example.com"
-                />
-              </div>
-              <div>
-                <Label htmlFor="organizer_phone" fieldValue={watch('organizer_phone')}>Contact Phone</Label>
-                <Input 
-                  id="organizer_phone" 
-                  {...register('organizer_phone')}
-                  placeholder="(555) 123-4567"
-                />
-              </div>
-            </div>
-
+            {/* Removed organizer fields - Min Price, Max Price, Organizer Name, Contact Email, Contact Phone */}
             <div>
               <Label htmlFor="ticket_url" fieldValue={watch('ticket_url')}>Ticket/Registration URL</Label>
               <Input 

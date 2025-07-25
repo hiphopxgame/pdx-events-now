@@ -24,11 +24,6 @@ interface EventFormData {
   venue_state: string;
   venue_zip: string;
   price_display: string;
-  price_min: string;
-  price_max: string;
-  organizer_name: string;
-  organizer_email: string;
-  organizer_phone: string;
   ticket_url: string;
   website_url: string;
   facebook_url: string;
@@ -117,11 +112,6 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
       venue_state: 'Oregon',
       venue_zip: '',
       price_display: '',
-      price_min: '',
-      price_max: '',
-      organizer_name: '',
-      organizer_email: '',
-      organizer_phone: '',
       ticket_url: '',
       website_url: '',
       facebook_url: '',
@@ -157,11 +147,6 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
         venue_state: event.venue_state || 'Oregon',
         venue_zip: event.venue_zip || '',
         price_display: event.price_display || '',
-        price_min: event.price_min?.toString() || '',
-        price_max: event.price_max?.toString() || '',
-        organizer_name: event.organizer_name || '',
-        organizer_email: event.organizer_email || '',
-        organizer_phone: event.organizer_phone || '',
         ticket_url: event.ticket_url || '',
         website_url: event.website_url || '',
         facebook_url: event.facebook_url || '',
@@ -292,8 +277,6 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
         ...data,
         image_url: imageUrls.length > 0 ? imageUrls[0] : null, // Keep backward compatibility
         image_urls: imageUrls.length > 0 ? imageUrls : null,
-        price_min: data.price_min ? parseFloat(data.price_min) : null,
-        price_max: data.price_max ? parseFloat(data.price_max) : null,
         is_recurring: isRecurring,
         recurrence_type: isRecurring ? 'weekly' : null,
         recurrence_pattern: isRecurring ? recurringType : null,
@@ -540,57 +523,6 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
                   value={watch('price_display') || ''} 
                   onChange={(e) => setValue('price_display', e.target.value)}
                   placeholder="e.g., Free, $25, $20-$50" 
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="price_min">Min Price ($)</Label>
-                  <Input 
-                    type="number" 
-                    step="0.01" 
-                    {...register('price_min')} 
-                    value={watch('price_min') || ''} 
-                    onChange={(e) => setValue('price_min', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="price_max">Max Price ($)</Label>
-                  <Input 
-                    type="number" 
-                    step="0.01" 
-                    {...register('price_max')} 
-                    value={watch('price_max') || ''} 
-                    onChange={(e) => setValue('price_max', e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="organizer_name">Organizer Name</Label>
-                <Input 
-                  {...register('organizer_name')} 
-                  value={watch('organizer_name') || ''} 
-                  onChange={(e) => setValue('organizer_name', e.target.value)}
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="organizer_email">Contact Email</Label>
-                <Input 
-                  type="email" 
-                  {...register('organizer_email')} 
-                  value={watch('organizer_email') || ''} 
-                  onChange={(e) => setValue('organizer_email', e.target.value)}
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="organizer_phone">Contact Phone</Label>
-                <Input 
-                  {...register('organizer_phone')} 
-                  value={watch('organizer_phone') || ''} 
-                  onChange={(e) => setValue('organizer_phone', e.target.value)}
                 />
               </div>
 

@@ -37,7 +37,11 @@ export const useFeaturedEvents = () => {
 
       // Transform user events and combine with API events
       const transformedUserEvents = transformUserEventsToEvents(userEvents as UserEvent[]);
-      const allFeaturedEvents = [...(apiEvents as Event[]), ...transformedUserEvents];
+      const transformedApiEvents = apiEvents?.map(event => ({
+        ...event,
+        created_by: null // API events don't have user creators
+      })) as Event[];
+      const allFeaturedEvents = [...transformedApiEvents, ...transformedUserEvents];
 
       // Sort by start date
       return allFeaturedEvents.sort((a, b) => 

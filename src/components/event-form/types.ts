@@ -14,11 +14,6 @@ export interface EventFormData {
   venue_twitter_url: string;
   venue_youtube_url: string;
   price_display: string;
-  price_min: number;
-  price_max: number;
-  organizer_name: string;
-  organizer_email: string;
-  organizer_phone: string;
   ticket_url: string;
   website_url: string;
   facebook_url: string;

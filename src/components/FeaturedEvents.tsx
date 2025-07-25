@@ -106,7 +106,6 @@ export const FeaturedEvents: React.FC<FeaturedEventsProps> = ({ onEventClick }) 
       venueCity: event.venue_city,
       venueState: event.venue_state,
       ticketUrl: event.ticket_url,
-      organizerName: event.organizer_name,
       createdBy: event.created_by,
     };
   });

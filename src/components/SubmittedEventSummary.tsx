@@ -14,9 +14,6 @@ interface SubmittedEventData {
   venue_state?: string;
   venue_zip?: string;
   price_display?: string;
-  organizer_name?: string;
-  organizer_email?: string;
-  organizer_phone?: string;
   start_date: string;
   start_time?: string;
   end_time?: string;
@@ -221,19 +218,6 @@ export const SubmittedEventSummary: React.FC<SubmittedEventSummaryProps> = ({ on
                     <div>
                       <p className="font-medium text-gray-700">Price</p>
                       <p className="text-sm">{eventData.price_display}</p>
-                    </div>
-                  )}
-
-                  {eventData.organizer_name && (
-                    <div>
-                      <p className="font-medium text-gray-700">Organizer</p>
-                      <p className="text-sm">{eventData.organizer_name}</p>
-                      {eventData.organizer_email && (
-                        <p className="text-xs text-gray-500">{eventData.organizer_email}</p>
-                      )}
-                      {eventData.organizer_phone && (
-                        <p className="text-xs text-gray-500">{eventData.organizer_phone}</p>
-                      )}
                     </div>
                   )}
                 </div>
