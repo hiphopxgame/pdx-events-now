@@ -29,6 +29,42 @@ const ManageEvents = () => {
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [editingEvent, setEditingEvent] = useState<any>(null);
   const [viewingEvent, setViewingEvent] = useState<any>(null);
+  const [eventsWithUsers, setEventsWithUsers] = useState<any[]>([]);
+
+  // Fetch user information for events
+  useEffect(() => {
+    const fetchUsersForEvents = async () => {
+      if (userEvents.length === 0) return;
+
+      const eventsWithUserInfo = await Promise.all(
+        userEvents.map(async (event) => {
+          if (!event.created_by) {
+            return { ...event, submittedByUser: 'Unknown user' };
+          }
+
+          try {
+            const { data } = await supabase
+              .from('por_eve_profiles')
+              .select('display_name, username')
+              .eq('id', event.created_by)
+              .single();
+
+            return {
+              ...event,
+              submittedByUser: data?.display_name || data?.username || 'Unknown user'
+            };
+          } catch (error) {
+            console.error('Error fetching user for event:', event.id, error);
+            return { ...event, submittedByUser: 'Unknown user' };
+          }
+        })
+      );
+
+      setEventsWithUsers(eventsWithUserInfo);
+    };
+
+    fetchUsersForEvents();
+  }, [userEvents]);
 
   // Real-time updates for event changes
   useEffect(() => {
@@ -212,7 +248,7 @@ const ManageEvents = () => {
     }
   };
 
-  const filteredUserEvents = userEvents.filter(event => {
+  const filteredUserEvents = eventsWithUsers.filter(event => {
     const matchesSearch = !searchTerm || 
       event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       event.venue_name.toLowerCase().includes(searchTerm.toLowerCase());
@@ -350,6 +386,7 @@ const ManageEvents = () => {
                         
                         <div className="flex items-center gap-4 text-xs text-gray-500">
                           <span>Created: {new Date(event.created_at).toLocaleDateString()}</span>
+                          <span>Submitted by: {event.submittedByUser || 'Loading...'}</span>
                           <Badge variant="outline" className="text-xs">
                             {event.category}
                           </Badge>
