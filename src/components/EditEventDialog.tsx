@@ -105,6 +105,7 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
   // Reset form with event data when event changes
   useEffect(() => {
     if (event && isOpen) {
+      // Reset form with all event data
       reset({
         title: event.title || '',
         description: event.description || '',
@@ -115,8 +116,8 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
         venue_state: event.venue_state || 'Oregon',
         venue_zip: event.venue_zip || '',
         price_display: event.price_display || '',
-        price_min: event.price_min || '',
-        price_max: event.price_max || '',
+        price_min: event.price_min?.toString() || '',
+        price_max: event.price_max?.toString() || '',
         organizer_name: event.organizer_name || '',
         organizer_email: event.organizer_email || '',
         organizer_phone: event.organizer_phone || '',
@@ -136,7 +137,7 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
       setRecurringType(event.recurrence_pattern || '');
       setEndDate(event.recurrence_end_date ? new Date(event.recurrence_end_date) : undefined);
       setIsFeatured(event.is_featured || false);
-      setSelectedDate(new Date(event.start_date));
+      setSelectedDate(new Date(event.start_date || new Date()));
       setPreviewUrls(
         event.image_urls && event.image_urls.length > 0 
           ? event.image_urls 
@@ -336,7 +337,7 @@ export const EditEventDialog: React.FC<EditEventDialogProps> = ({
                 <Label htmlFor="category">Category *</Label>
                 <Select 
                   onValueChange={(value) => setValue('category', value)} 
-                  value={watch('category') || event.category || ''}
+                  value={watch('category')}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a category" />
