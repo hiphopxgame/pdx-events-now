@@ -14,6 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
+      appointments: {
+        Row: {
+          appointment_date: string
+          appointment_time: string
+          client_id: string
+          confirmation_sent: boolean | null
+          created_at: string
+          estimated_duration: number | null
+          id: string
+          price_quote: number | null
+          special_requests: string | null
+          status: string
+          style_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          appointment_date: string
+          appointment_time: string
+          client_id: string
+          confirmation_sent?: boolean | null
+          created_at?: string
+          estimated_duration?: number | null
+          id?: string
+          price_quote?: number | null
+          special_requests?: string | null
+          status?: string
+          style_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          appointment_date?: string
+          appointment_time?: string
+          client_id?: string
+          confirmation_sent?: boolean | null
+          created_at?: string
+          estimated_duration?: number | null
+          id?: string
+          price_quote?: number | null
+          special_requests?: string | null
+          status?: string
+          style_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "braiding_profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "appointments_style_id_fkey"
+            columns: ["style_id"]
+            isOneToOne: false
+            referencedRelation: "hair_styles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       artist_applications: {
         Row: {
           created_at: string
@@ -182,6 +242,57 @@ export type Database = {
           payment_status?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      braiding_profiles: {
+        Row: {
+          address: string | null
+          allergies: string | null
+          city: string | null
+          created_at: string
+          first_name: string
+          hair_type: string | null
+          id: string
+          last_name: string
+          phone: string | null
+          preferred_contact: string | null
+          state: string | null
+          updated_at: string
+          user_id: string
+          zip_code: string | null
+        }
+        Insert: {
+          address?: string | null
+          allergies?: string | null
+          city?: string | null
+          created_at?: string
+          first_name: string
+          hair_type?: string | null
+          id?: string
+          last_name: string
+          phone?: string | null
+          preferred_contact?: string | null
+          state?: string | null
+          updated_at?: string
+          user_id: string
+          zip_code?: string | null
+        }
+        Update: {
+          address?: string | null
+          allergies?: string | null
+          city?: string | null
+          created_at?: string
+          first_name?: string
+          hair_type?: string | null
+          id?: string
+          last_name?: string
+          phone?: string | null
+          preferred_contact?: string | null
+          state?: string | null
+          updated_at?: string
+          user_id?: string
+          zip_code?: string | null
         }
         Relationships: []
       }
@@ -567,6 +678,33 @@ export type Database = {
           id?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      hair_styles: {
+        Row: {
+          base_price: number | null
+          created_at: string
+          description: string | null
+          duration_hours: number | null
+          id: string
+          name: string
+        }
+        Insert: {
+          base_price?: number | null
+          created_at?: string
+          description?: string | null
+          duration_hours?: number | null
+          id?: string
+          name: string
+        }
+        Update: {
+          base_price?: number | null
+          created_at?: string
+          description?: string | null
+          duration_hours?: number | null
+          id?: string
+          name?: string
         }
         Relationships: []
       }
@@ -2177,6 +2315,56 @@ export type Database = {
           website_url?: string | null
         }
         Relationships: []
+      }
+      portfolio_images: {
+        Row: {
+          client_name: string | null
+          completion_date: string | null
+          created_at: string
+          description: string | null
+          display_order: number | null
+          id: string
+          image_url: string
+          is_featured: boolean | null
+          style_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          client_name?: string | null
+          completion_date?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_url: string
+          is_featured?: boolean | null
+          style_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          client_name?: string | null
+          completion_date?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_url?: string
+          is_featured?: boolean | null
+          style_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_images_style_id_fkey"
+            columns: ["style_id"]
+            isOneToOne: false
+            referencedRelation: "hair_styles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       staging_events: {
         Row: {
