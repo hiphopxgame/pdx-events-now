@@ -35,19 +35,32 @@ export const useVenues = () => {
       
       if (eventsError) throw eventsError;
 
-      // Create a map to track unique venues
+      // Create a map to track unique venues using a composite key
       const venueMap = new Map();
+
+      // Helper function to create a unique key for venue comparison
+      const createVenueKey = (name: string, city: string, state: string, zipCode: string) => {
+        return `${name.toLowerCase().trim()}_${(city || '').toLowerCase().trim()}_${(state || '').toLowerCase().trim()}_${(zipCode || '').toLowerCase().trim()}`;
+      };
 
       // Add venues from venues table
       venuesData.forEach(venue => {
-        venueMap.set(venue.name, venue);
+        const key = createVenueKey(venue.name, venue.city || '', venue.state || '', venue.zip_code || '');
+        venueMap.set(key, venue);
       });
 
-      // Add venues from events (if not already in venues table)
+      // Add venues from events (only if not already in venues table with same location details)
       eventsData.forEach(event => {
-        if (!venueMap.has(event.venue_name)) {
-          venueMap.set(event.venue_name, {
-            id: `event-venue-${event.venue_name}`, // Generate a temporary ID
+        const key = createVenueKey(
+          event.venue_name, 
+          event.venue_city || 'Portland', 
+          event.venue_state || 'Oregon', 
+          event.venue_zip || ''
+        );
+        
+        if (!venueMap.has(key)) {
+          venueMap.set(key, {
+            id: `event-venue-${event.venue_name}-${event.venue_city || 'Portland'}`, // Generate a more unique temporary ID
             name: event.venue_name,
             address: event.venue_address,
             city: event.venue_city || 'Portland',
