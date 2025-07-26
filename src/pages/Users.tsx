@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { Users as UsersIcon, Search, User, Globe, Facebook, Instagram, Twitter, Youtube, Loader2, ExternalLink, Calendar, MapPin, Video } from 'lucide-react';
 import { EnhancedPagination } from '@/components/EnhancedPagination';
+import { createUserSlug } from '@/utils/eventUtils';
 
 interface UserProfile {
   id: string;
@@ -195,7 +196,7 @@ const Users = () => {
                 <Card key={user.id} className="hover:shadow-lg transition-shadow">
                   <CardContent className="p-6">
                     <div className="flex items-start space-x-4 mb-4">
-                      <Link to={`/user/${user.id}`} className="h-16 w-16 bg-emerald-100 rounded-full flex items-center justify-center hover:bg-emerald-200 transition-colors flex-shrink-0">
+                      <Link to={`/community/${createUserSlug(user.username, user.display_name, user.id)}`} className="h-16 w-16 bg-emerald-100 rounded-full flex items-center justify-center hover:bg-emerald-200 transition-colors flex-shrink-0">
                         {user.avatar_url ? (
                           <img 
                             src={user.avatar_url} 
@@ -207,7 +208,7 @@ const Users = () => {
                         )}
                       </Link>
                       <div className="flex-1 min-w-0">
-                        <Link to={`/user/${user.id}`} className="block">
+                        <Link to={`/community/${createUserSlug(user.username, user.display_name, user.id)}`} className="block">
                           <h3 className={`font-semibold hover:text-primary transition-colors truncate ${
                             user.display_name 
                               ? 'text-foreground' 
@@ -237,7 +238,7 @@ const Users = () => {
 
                     {/* View Profile Button on its own line */}
                     <div className="mb-4">
-                      <Link to={`/user/${user.id}`} className="w-full">
+                      <Link to={`/community/${createUserSlug(user.username, user.display_name, user.id)}`} className="w-full">
                         <Button variant="outline" size="sm" className="w-full">
                           <ExternalLink className="h-4 w-4 mr-2" />
                           View Profile

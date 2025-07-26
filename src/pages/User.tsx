@@ -10,7 +10,7 @@ import { Twitter } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useEvents } from '@/hooks/useEvents';
-import { createEventSlug } from '@/utils/eventUtils';
+import { createEventSlug, getUserIdFromSlug } from '@/utils/eventUtils';
 
 interface UserProfile {
   id: string;
@@ -28,12 +28,15 @@ interface UserProfile {
 }
 
 const User = () => {
-  const { userId } = useParams<{ userId: string }>();
+  const { userSlug } = useParams<{ userSlug: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const { data: allEvents = [] } = useEvents();
+
+  // Extract user ID from slug
+  const userId = getUserIdFromSlug(userSlug || '');
 
   // Get user's events
   const userEvents = allEvents.filter(event => event.created_by === userId);
@@ -44,7 +47,7 @@ const User = () => {
 
   const fetchUserProfile = async () => {
     if (!userId) return;
-
+    
     try {
       const { data, error } = await supabase
         .from('por_eve_profiles')

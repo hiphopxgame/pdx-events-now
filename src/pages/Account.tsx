@@ -15,6 +15,7 @@ import { useUserRoles } from '@/hooks/useUserRoles';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Save, Globe, Facebook, Instagram, Twitter, Youtube, Loader2, Upload, X, Music, Video, MapPin } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import { createUserSlug } from '@/utils/eventUtils';
 
 interface UserProfile {
   id: string;
@@ -160,8 +161,9 @@ const Account = () => {
         description: 'Profile updated successfully',
       });
 
-      // Navigate to user's unique page
-      navigate(`/user/${user.id}`);
+      // Navigate to user's unique page with slug
+      const slug = createUserSlug(profile.username, profile.display_name, user.id);
+      navigate(`/community/${slug}`);
     } catch (error) {
       console.error('Error updating profile:', error);
       toast({
