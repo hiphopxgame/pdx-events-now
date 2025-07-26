@@ -102,26 +102,33 @@ const AdminUsers = () => {
   const fetchArtistApplications = async () => {
     try {
       setApplicationsLoading(true);
-      const { data, error } = await supabase
+      
+      // First get all artist applications
+      const { data: applications, error: appsError } = await supabase
         .from('artist_applications')
-        .select(`
-          *,
-          user:user_id (
-            display_name,
-            email
-          )
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (appsError) throw appsError;
+
+      // Then get user profiles for each application
+      const applicationsWithUsers = await Promise.all(
+        (applications || []).map(async (app) => {
+          const { data: profile } = await supabase
+            .from('por_eve_profiles')
+            .select('display_name, email')
+            .eq('id', app.user_id)
+            .single();
+
+          return {
+            ...app,
+            status: app.status as 'pending' | 'approved' | 'rejected',
+            user: profile || undefined
+          };
+        })
+      );
       
-      const applications = data.map(app => ({
-        ...app,
-        status: app.status as 'pending' | 'approved' | 'rejected',
-        user: app.user ? Array.isArray(app.user) ? app.user[0] : app.user : undefined
-      }));
-      
-      setArtistApplications(applications);
+      setArtistApplications(applicationsWithUsers);
     } catch (error) {
       console.error('Error fetching artist applications:', error);
       toast({
