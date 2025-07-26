@@ -6,6 +6,7 @@ import { DataField } from '@/components/DataField';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
+import { createEventSlug } from '@/utils/eventUtils';
 
 interface Event {
   id: string;
@@ -48,8 +49,9 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
       if (onEventClick) {
         onEventClick(event);
       } else {
-        console.log('Navigating to:', `/event/${event.id}`);
-        navigate(`/event/${event.id}`);
+        const slug = createEventSlug(event.title, event.id);
+        console.log('Navigating to:', `/events/${slug}`);
+        navigate(`/events/${slug}`);
       }
     } catch (error) {
       console.error('Navigation error:', error);
@@ -241,7 +243,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
               isLink={!!submittedByUser}
               onClick={() => {
                 if (event.createdBy) {
-                  navigate(`/user/${event.createdBy}`);
+                  navigate(`/community/${event.createdBy}`);
                 }
               }}
             />

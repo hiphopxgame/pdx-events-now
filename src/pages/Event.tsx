@@ -13,14 +13,19 @@ import { supabase } from '@/integrations/supabase/client';
 
 
 const Event = () => {
-  const { eventId } = useParams<{ eventId: string }>();
+  const { eventSlug } = useParams<{ eventSlug: string }>();
   const navigate = useNavigate();
   const [submittedByUser, setSubmittedByUser] = useState<string>('');
 
   const { data: allEvents = [], isLoading } = useEvents();
 
-  // Find the specific event
-  const event = allEvents.find(e => e.id === eventId);
+  // Find the specific event by slug (title_id format)
+  const event = allEvents.find(e => {
+    if (!eventSlug) return false;
+    const parts = eventSlug.split('_');
+    const eventId = parts[parts.length - 1]; // Get the ID from the end
+    return e.id === eventId || e.external_id === eventId;
+  });
 
   // Fetch user info for submitted by field
   useEffect(() => {
@@ -230,7 +235,7 @@ const Event = () => {
                   isLink={!!event.created_by}
                   onClick={() => {
                     if (event.created_by) {
-                      navigate(`/user/${event.created_by}`);
+                      navigate(`/community/${event.created_by}`);
                     }
                   }}
                 />

@@ -10,6 +10,7 @@ import { useEvents, useCategories } from '@/hooks/useEvents';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { EnhancedPagination } from '@/components/EnhancedPagination';
+import { createEventSlug } from '@/utils/eventUtils';
 
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -21,7 +22,8 @@ const Index = () => {
   const navigate = useNavigate();
 
   const handleEventClick = (event: any) => {
-    navigate(`/event/${event.id}`);
+    const slug = createEventSlug(event.title, event.id);
+    navigate(`/events/${slug}`);
   };
 
   const { data: events = [], isLoading: eventsLoading, error: eventsError } = useEvents({

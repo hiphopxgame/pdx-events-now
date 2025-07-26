@@ -10,6 +10,7 @@ import { Loader2, Plus } from 'lucide-react';
 import { EnhancedPagination } from '@/components/EnhancedPagination';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
+import { createEventSlug } from '@/utils/eventUtils';
 
 const Events = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -22,7 +23,8 @@ const Events = () => {
   const { user } = useAuth();
 
   const handleEventClick = (event: any) => {
-    navigate(`/event/${event.id}`);
+    const slug = createEventSlug(event.title, event.id);
+    navigate(`/events/${slug}`);
   };
 
   const { data: events = [], isLoading: eventsLoading, error: eventsError } = useEvents({

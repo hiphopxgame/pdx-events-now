@@ -39,11 +39,11 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/events" element={<Events />} />
-            <Route path="/event/:eventId" element={<Event />} />
+            <Route path="/events/:eventSlug" element={<Event />} />
             <Route path="/venues" element={<Venues />} />
             <Route path="/venue/:venueName" element={<Venue />} />
-            <Route path="/users" element={<Users />} />
-            <Route path="/user/:userId" element={<User />} />
+            <Route path="/community" element={<Users />} />
+            <Route path="/community/:userId" element={<User />} />
             <Route path="/account" element={<Account />} />
             <Route path="/submit-event" element={<SubmitEvent />} />
             <Route path="/my-events" element={<MyEvents />} />
@@ -56,7 +56,7 @@ const App = () => (
             <Route path="/admin/venues" element={<AdminProtectedRoute><AdminVenues /></AdminProtectedRoute>} />
             <Route path="/admin/venues/:venueId" element={<AdminProtectedRoute><EditVenue /></AdminProtectedRoute>} />
             <Route path="/manage-content" element={<AdminProtectedRoute><ManageContent /></AdminProtectedRoute>} />
-            <Route path="/content" element={<Content />} />
+            <Route path="/media" element={<Content />} />
             <Route path="/map-test" element={<MapTest />} />
             <Route path="/auth" element={<Auth />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

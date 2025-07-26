@@ -10,6 +10,7 @@ import { Twitter } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useEvents } from '@/hooks/useEvents';
+import { createEventSlug } from '@/utils/eventUtils';
 
 interface UserProfile {
   id: string;
@@ -188,7 +189,10 @@ const User = () => {
                   <Card 
                     key={event.id} 
                     className="cursor-pointer hover:shadow-md transition-shadow border border-gray-200"
-                    onClick={() => navigate(`/event/${event.id}`)}
+                    onClick={() => {
+                      const slug = createEventSlug(event.title, event.id);
+                      navigate(`/events/${slug}`);
+                    }}
                   >
                     <div className="aspect-video bg-gradient-to-br from-emerald-100 to-orange-100 relative rounded-t-lg">
                       <img 
