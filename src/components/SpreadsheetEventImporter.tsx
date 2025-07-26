@@ -8,7 +8,12 @@ import { Download, Upload, FileUp, CheckCircle } from 'lucide-react';
 import { getNextUpcomingDateForPattern } from '@/hooks/events/eventTransformers';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
-const SpreadsheetEventImporter = () => {
+interface SpreadsheetEventImporterProps {
+  onEventsImported?: (events: any[]) => void;
+  onImportSubmitted?: () => void;
+}
+
+const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: SpreadsheetEventImporterProps) => {
   const [spreadsheetData, setSpreadsheetData] = useState('');
   const [loading, setLoading] = useState(false);
   const [importResult, setImportResult] = useState<{
@@ -396,6 +401,7 @@ const SpreadsheetEventImporter = () => {
       });
 
       setSpreadsheetData('');
+      onImportSubmitted?.();
     } catch (error) {
       console.error('Import error:', error);
       toast({

@@ -26,6 +26,7 @@ import Content from "./pages/Content";
 import MapTest from "./pages/MapTest";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import NotFound from "./pages/NotFound";
+import ManageImports from "./pages/ManageImports";
 
 const queryClient = new QueryClient();
 
@@ -57,6 +58,7 @@ const App = () => (
             <Route path="/admin/users" element={<AdminProtectedRoute><AdminUsers /></AdminProtectedRoute>} />
             <Route path="/admin/venues" element={<AdminProtectedRoute><AdminVenues /></AdminProtectedRoute>} />
             <Route path="/admin/venues/:venueId" element={<AdminProtectedRoute><EditVenue /></AdminProtectedRoute>} />
+            <Route path="/admin/imports" element={<AdminProtectedRoute><ManageImports /></AdminProtectedRoute>} />
             <Route path="/manage-content" element={<AdminProtectedRoute><ManageContent /></AdminProtectedRoute>} />
             <Route path="/map-test" element={<MapTest />} />
             <Route path="/auth" element={<Auth />} />

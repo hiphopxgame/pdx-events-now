@@ -41,6 +41,11 @@ interface DashboardStats {
 }
 
 const AdminDashboard = () => {
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handleRefresh = () => {
+    setRefreshKey(prev => prev + 1);
+  };
   const { isAdmin, loading: rolesLoading } = useUserRoles();
   const [stats, setStats] = useState<DashboardStats>({
     totalEvents: 0,
@@ -306,12 +311,12 @@ const AdminDashboard = () => {
 
         {/* Import Management */}
         <div className="mb-8">
-          <ImportManager />
+          <ImportManager key={refreshKey} onRefresh={handleRefresh} />
         </div>
 
         {/* Events Importer */}
         <div className="mb-8">
-          <SpreadsheetEventImporter />
+          <SpreadsheetEventImporter onImportSubmitted={handleRefresh} />
         </div>
 
         {/* Recent Activity Overview */}

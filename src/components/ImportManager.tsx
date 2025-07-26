@@ -4,10 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { CheckCircle, XCircle, Clock, Eye, FileText, Users, Calendar } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Eye, FileText, Users, Calendar, ExternalLink } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
+import { useNavigate } from 'react-router-dom';
 
 interface ImportBatch {
   id: string;
@@ -50,7 +51,11 @@ interface StagingVenue {
   website?: string;
 }
 
-const ImportManager = () => {
+interface ImportManagerProps {
+  onRefresh?: () => void;
+}
+
+const ImportManager = ({ onRefresh }: ImportManagerProps) => {
   const [importBatches, setImportBatches] = useState<ImportBatch[]>([]);
   const [selectedBatch, setSelectedBatch] = useState<ImportBatch | null>(null);
   const [stagingEvents, setStagingEvents] = useState<StagingEvent[]>([]);
@@ -58,6 +63,7 @@ const ImportManager = () => {
   const [loading, setLoading] = useState(false);
   const [reviewNotes, setReviewNotes] = useState('');
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchImportBatches();
@@ -68,6 +74,7 @@ const ImportManager = () => {
       const { data, error } = await supabase
         .from('import_batches')
         .select('*')
+        .eq('status', 'pending')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -161,6 +168,7 @@ const ImportManager = () => {
       setReviewNotes('');
       setSelectedBatch(null);
       fetchImportBatches();
+      onRefresh?.();
     } catch (error) {
       console.error('Error reviewing batch:', error);
       toast({
@@ -203,16 +211,22 @@ const ImportManager = () => {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5 text-primary" />
-            Import Management
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <FileText className="h-5 w-5 text-primary" />
+              Pending Imports
+            </div>
+            <Button variant="outline" onClick={() => navigate('/admin/imports')}>
+              <ExternalLink className="h-4 w-4 mr-2" />
+              View All Imports
+            </Button>
           </CardTitle>
         </CardHeader>
         <CardContent>
           {importBatches.length === 0 ? (
             <Alert>
               <AlertDescription>
-                No import batches found. Users can submit imports using the Spreadsheet Events Importer.
+                No pending imports. All imports have been reviewed.
               </AlertDescription>
             </Alert>
           ) : (
