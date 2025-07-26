@@ -121,19 +121,30 @@ const findNthDayOfMonth = (year: number, month: number, occurrence: string, dayO
 };
 
 // Helper function to calculate the next upcoming date for a recurrence pattern
-export const getNextUpcomingDateForPattern = (recurrenceType: string, recurrencePattern: string): string => {
+export const getNextUpcomingDateForPattern = (recurrenceType: string, recurrencePattern: string, dayOfWeek?: string): string => {
   const today = new Date();
   
   if (recurrenceType === 'weekly') {
     // For weekly patterns like "every" or specific day patterns
     const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const dayAbbr = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
     let targetDay = -1;
     
-    // Check if the pattern includes a day name
-    for (let i = 0; i < dayNames.length; i++) {
-      if (recurrencePattern.toLowerCase().includes(dayNames[i])) {
-        targetDay = i;
-        break;
+    // First check if dayOfWeek parameter is provided (e.g., "sun", "mon", etc.)
+    if (dayOfWeek) {
+      const dayIndex = dayAbbr.findIndex(day => day.toLowerCase() === dayOfWeek.toLowerCase());
+      if (dayIndex !== -1) {
+        targetDay = dayIndex;
+      }
+    }
+    
+    // If no dayOfWeek provided, check if the pattern includes a day name
+    if (targetDay === -1) {
+      for (let i = 0; i < dayNames.length; i++) {
+        if (recurrencePattern.toLowerCase().includes(dayNames[i])) {
+          targetDay = i;
+          break;
+        }
       }
     }
     
@@ -160,7 +171,7 @@ export const getNextUpcomingDateForPattern = (recurrenceType: string, recurrence
     };
     
     let occurrence = '';
-    let dayOfWeek = -1;
+    let targetDay = -1;
     
     // Find occurrence and day
     for (const [key, value] of Object.entries(occurrenceMap)) {
@@ -170,24 +181,36 @@ export const getNextUpcomingDateForPattern = (recurrenceType: string, recurrence
       }
     }
     
-    const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-    for (let i = 0; i < dayNames.length; i++) {
-      if (recurrencePattern.toLowerCase().includes(dayNames[i])) {
-        dayOfWeek = i;
-        break;
+    // First check if dayOfWeek parameter is provided (e.g., "sun", "mon", etc.)
+    if (dayOfWeek) {
+      const dayAbbr = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+      const dayIndex = dayAbbr.findIndex(day => day.toLowerCase() === dayOfWeek.toLowerCase());
+      if (dayIndex !== -1) {
+        targetDay = dayIndex;
       }
     }
     
-    if (occurrence && dayOfWeek !== -1) {
+    // If no dayOfWeek provided, check if the pattern includes a day name
+    if (targetDay === -1) {
+      const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+      for (let i = 0; i < dayNames.length; i++) {
+        if (recurrencePattern.toLowerCase().includes(dayNames[i])) {
+          targetDay = i;
+          break;
+        }
+      }
+    }
+    
+    if (occurrence && targetDay !== -1) {
       // Try current month first
-      let nextDate = findNthDayOfMonth(today.getFullYear(), today.getMonth(), occurrence, dayOfWeek);
+      let nextDate = findNthDayOfMonth(today.getFullYear(), today.getMonth(), occurrence, targetDay);
       
       // If the date in current month has passed, try next month
       if (!nextDate || nextDate <= today) {
         const nextMonth = today.getMonth() + 1;
         const nextYear = nextMonth > 11 ? today.getFullYear() + 1 : today.getFullYear();
         const adjustedMonth = nextMonth > 11 ? 0 : nextMonth;
-        nextDate = findNthDayOfMonth(nextYear, adjustedMonth, occurrence, dayOfWeek);
+        nextDate = findNthDayOfMonth(nextYear, adjustedMonth, occurrence, targetDay);
       }
       
       if (nextDate) {

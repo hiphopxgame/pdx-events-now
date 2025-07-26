@@ -135,8 +135,16 @@ const SpreadsheetEventImporter = () => {
     
     // Calculate start date: use provided date, or for recurring events with empty date, calculate next upcoming date
     let startDate = providedStartDate;
-    if (!startDate && isRecurring && recurrenceType && recurrencePattern) {
-      startDate = getNextUpcomingDateForPattern(recurrenceType, recurrencePattern);
+    
+    // Check if providedStartDate is a day of week (sun,mon,tue,wed,thu,fri,sat)
+    const dayOfWeekPattern = /^(sun|mon|tue|wed|thu|fri|sat)$/i;
+    
+    if (isRecurring && recurrenceType && recurrencePattern) {
+      if (!startDate || dayOfWeekPattern.test(startDate)) {
+        // Either no date provided or a day of week provided
+        const dayOfWeek = dayOfWeekPattern.test(startDate || '') ? startDate : undefined;
+        startDate = getNextUpcomingDateForPattern(recurrenceType, recurrencePattern, dayOfWeek);
+      }
     } else if (!startDate) {
       startDate = new Date().toISOString().split('T')[0];
     }
