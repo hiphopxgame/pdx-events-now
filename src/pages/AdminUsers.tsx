@@ -30,8 +30,8 @@ interface ArtistApplication {
 
 const AdminUsers = () => {
   const { isAdmin, loading: rolesLoading, updateUserRole, fetchAllUsers } = useUserRoles();
-  const [users, setUsers] = useState<UserWithProfile[]>([]);
-  const [filteredUsers, setFilteredUsers] = useState<UserWithProfile[]>([]);
+  const [members, setMembers] = useState<UserWithProfile[]>([]);
+  const [filteredMembers, setFilteredMembers] = useState<UserWithProfile[]>([]);
   const [artistApplications, setArtistApplications] = useState<ArtistApplication[]>([]);
   const [loading, setLoading] = useState(true);
   const [applicationsLoading, setApplicationsLoading] = useState(true);
@@ -43,7 +43,7 @@ const AdminUsers = () => {
 
   useEffect(() => {
     if (isAdmin) {
-      fetchUsers();
+      fetchMembers();
       fetchArtistApplications();
       
       // Set up real-time subscription for live updates
@@ -52,15 +52,15 @@ const AdminUsers = () => {
         .on('postgres_changes', 
           { event: '*', schema: 'public', table: 'por_eve_profiles' },
           () => {
-            console.log('User profile changed, refreshing users...');
-            fetchUsers();
+            console.log('Member profile changed, refreshing members...');
+            fetchMembers();
           }
         )
         .on('postgres_changes',
           { event: '*', schema: 'public', table: 'user_roles' },
           () => {
-            console.log('User roles changed, refreshing users...');
-            fetchUsers();
+            console.log('Member roles changed, refreshing members...');
+            fetchMembers();
           }
         )
         .on('postgres_changes',
@@ -79,19 +79,19 @@ const AdminUsers = () => {
   }, [isAdmin]);
 
   useEffect(() => {
-    filterUsers();
-  }, [users, searchTerm, roleFilter]);
+    filterMembers();
+  }, [members, searchTerm, roleFilter]);
 
-  const fetchUsers = async () => {
+  const fetchMembers = async () => {
     try {
       setLoading(true);
-      const allUsers = await fetchAllUsers();
-      setUsers(allUsers);
+      const allMembers = await fetchAllUsers();
+      setMembers(allMembers);
     } catch (error) {
-      console.error('Error fetching users:', error);
+      console.error('Error fetching members:', error);
       toast({
         title: 'Error',
-        description: 'Failed to fetch users',
+        description: 'Failed to fetch members',
         variant: 'destructive'
       });
     } finally {
@@ -141,23 +141,23 @@ const AdminUsers = () => {
     }
   };
 
-  const filterUsers = () => {
-    let filtered = users;
+  const filterMembers = () => {
+    let filtered = members;
 
     if (searchTerm) {
-      filtered = filtered.filter(user => 
-        user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.display_name?.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(member => 
+        member.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        member.display_name?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     if (roleFilter !== 'all') {
-      filtered = filtered.filter(user => 
-        user.roles.some(role => role.role === roleFilter)
+      filtered = filtered.filter(member => 
+        member.roles.some(role => role.role === roleFilter)
       );
     }
 
-    setFilteredUsers(filtered);
+    setFilteredMembers(filtered);
   };
 
   const handleRoleChange = async (userId: string, role: 'admin' | 'moderator' | 'user', action: 'add' | 'remove') => {
@@ -168,7 +168,7 @@ const AdminUsers = () => {
         title: 'Success',
         description: `User role ${action === 'add' ? 'added' : 'removed'} successfully`,
       });
-      fetchUsers(); // Refresh the users list
+      fetchMembers(); // Refresh the members list
     } else {
       toast({
         title: 'Error',
@@ -198,7 +198,7 @@ const AdminUsers = () => {
   };
 
   const handleEditSuccess = () => {
-    fetchUsers();
+    fetchMembers();
   };
 
   const handleArtistApplication = async (applicationId: string, action: 'approve' | 'reject', reason?: string) => {
@@ -233,7 +233,7 @@ const AdminUsers = () => {
       });
 
       fetchArtistApplications();
-      fetchUsers();
+      fetchMembers();
     } catch (error) {
       console.error('Error processing artist application:', error);
       toast({
@@ -280,7 +280,7 @@ const AdminUsers = () => {
 
           <Tabs defaultValue="users" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="users">User Management</TabsTrigger>
+              <TabsTrigger value="users">Member Management</TabsTrigger>
               <TabsTrigger value="applications" className="flex items-center gap-2">
                 <Music className="h-4 w-4" />
                 Artist Applications
@@ -327,15 +327,15 @@ const AdminUsers = () => {
                 </CardContent>
               </Card>
 
-              {/* Users List */}
+              {/* Members List */}
               {loading ? (
                 <div className="flex justify-center items-center py-16">
                   <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {filteredUsers.map((user) => (
-                    <Card key={user.id} className="hover:shadow-lg transition-shadow">
+                  {filteredMembers.map((member) => (
+                    <Card key={member.id} className="hover:shadow-lg transition-shadow">
                       <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-4">
@@ -344,11 +344,11 @@ const AdminUsers = () => {
                             </div>
                             <div>
                               <h3 className="font-semibold text-gray-800">
-                                {user.display_name || 'No name provided'}
+                                {member.display_name || 'No name provided'}
                               </h3>
-                              <p className="text-gray-600">{user.email}</p>
+                              <p className="text-gray-600">{member.email}</p>
                               <p className="text-xs text-gray-500">
-                                Joined: {new Date(user.created_at).toLocaleDateString()}
+                                Joined: {new Date(member.created_at).toLocaleDateString()}
                               </p>
                             </div>
                           </div>
@@ -356,10 +356,10 @@ const AdminUsers = () => {
                           <div className="flex items-center space-x-4">
                             {/* Current Roles */}
                             <div className="flex flex-wrap gap-2">
-                              {user.roles.length === 0 ? (
+                              {member.roles.length === 0 ? (
                                 <Badge variant="outline">No roles</Badge>
                               ) : (
-                                user.roles.map((role) => (
+                                member.roles.map((role) => (
                                   <Badge 
                                     key={role.id} 
                                     variant={getRoleBadgeColor(role.role)}
@@ -378,7 +378,7 @@ const AdminUsers = () => {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => handleEditUser(user)}
+                                onClick={() => handleEditUser(member)}
                                 className="text-blue-600 border-blue-200 hover:bg-blue-50"
                               >
                                 <Edit className="h-4 w-4 mr-1" />
@@ -388,11 +388,11 @@ const AdminUsers = () => {
 
                             {/* Role Management Buttons */}
                             <div className="flex gap-2">
-                              {!hasRole(user, 'admin') && (
+                              {!hasRole(member, 'admin') && (
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  onClick={() => handleRoleChange(user.id, 'admin', 'add')}
+                                  onClick={() => handleRoleChange(member.id, 'admin', 'add')}
                                   className="text-red-600 border-red-200 hover:bg-red-50"
                                 >
                                   <UserCheck className="h-4 w-4 mr-1" />
@@ -400,11 +400,11 @@ const AdminUsers = () => {
                                 </Button>
                               )}
                               
-                              {hasRole(user, 'admin') && user.email !== 'tyronenorris@gmail.com' && (
+                              {hasRole(member, 'admin') && member.email !== 'tyronenorris@gmail.com' && (
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  onClick={() => handleRoleChange(user.id, 'admin', 'remove')}
+                                  onClick={() => handleRoleChange(member.id, 'admin', 'remove')}
                                   className="text-gray-600 border-gray-200 hover:bg-gray-50"
                                 >
                                   <UserMinus className="h-4 w-4 mr-1" />
@@ -412,21 +412,21 @@ const AdminUsers = () => {
                                 </Button>
                               )}
 
-                              {!hasRole(user, 'moderator') && (
+                              {!hasRole(member, 'moderator') && (
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  onClick={() => handleRoleChange(user.id, 'moderator', 'add')}
+                                  onClick={() => handleRoleChange(member.id, 'moderator', 'add')}
                                 >
                                   Make Moderator
                                 </Button>
                               )}
                               
-                              {hasRole(user, 'moderator') && (
+                              {hasRole(member, 'moderator') && (
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  onClick={() => handleRoleChange(user.id, 'moderator', 'remove')}
+                                  onClick={() => handleRoleChange(member.id, 'moderator', 'remove')}
                                 >
                                   Remove Moderator
                                 </Button>
@@ -438,11 +438,11 @@ const AdminUsers = () => {
                     </Card>
                   ))}
                   
-                  {filteredUsers.length === 0 && (
+                  {filteredMembers.length === 0 && (
                     <Card>
                       <CardContent className="text-center py-12">
                         <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-gray-700 mb-2">No users found</h3>
+                        <h3 className="text-lg font-medium text-gray-700 mb-2">No members found</h3>
                         <p className="text-gray-500">Try adjusting your search or filter criteria.</p>
                       </CardContent>
                     </Card>
@@ -539,7 +539,7 @@ const AdminUsers = () => {
                       <CardContent className="text-center py-12">
                         <Music className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                         <h3 className="text-lg font-medium text-gray-700 mb-2">No artist applications</h3>
-                        <p className="text-gray-500">Artist applications will appear here when users apply.</p>
+                        <p className="text-gray-500">Artist applications will appear here when members apply.</p>
                       </CardContent>
                     </Card>
                   )}
