@@ -80,8 +80,12 @@ const Users = () => {
           .eq('created_by', user.id)
           .eq('status', 'approved');
 
-        // Note: venues table doesn't have created_by field yet
-        const venueCount = 0;
+        // Get venue count (venues approved by this user)
+        const { count: venueCount } = await supabase
+          .from('venues')
+          .select('id', { count: 'exact', head: true })
+          .eq('approved_by', user.id)
+          .eq('status', 'approved');
 
         // Get video count from artist_content (only approved videos)
         const { count: videoCount } = await supabase
