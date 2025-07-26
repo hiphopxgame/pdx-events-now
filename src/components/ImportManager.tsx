@@ -313,135 +313,154 @@ const ImportManager = ({ onRefresh }: ImportManagerProps) => {
                           <DialogTitle>Import Batch Details: {batch.filename}</DialogTitle>
                         </DialogHeader>
                         
-                         <div className="space-y-6">
-                           {/* Comprehensive Data Review */}
-                           <div>
-                             <h4 className="font-medium mb-3">Complete Import Data Review ({stagingEvents.length} rows)</h4>
-                             <div className="max-h-[60vh] overflow-y-auto border rounded-md">
-                               {stagingEvents.map((event, index) => {
-                                 const associatedVenue = stagingVenues.find(v => 
-                                   v.name === event.venue_name && 
-                                   v.city === event.venue_city
-                                 );
-                                 
-                                 return (
-                                   <div key={event.id} className="p-6 border-b last:border-b-0 space-y-6">
-                                     <div className="flex items-center justify-between">
-                                       <h5 className="font-semibold text-base">Row {index + 1}</h5>
-                                       <div className="flex gap-2">
-                                         <Badge variant="outline">Event Data</Badge>
-                                         {associatedVenue && <Badge variant="outline">Venue Data</Badge>}
-                                       </div>
-                                     </div>
-                                     
-                                     {/* Event Information */}
-                                     <div className="bg-blue-50 p-4 rounded-lg">
-                                       <h6 className="font-semibold text-blue-800 mb-3 flex items-center gap-2">
-                                         <Calendar className="h-4 w-4" />
-                                         Event Information
-                                       </h6>
-                                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-sm">
-                                         <div><span className="font-medium text-blue-700">Title:</span> <span className="break-words">{event.title}</span></div>
-                                         <div><span className="font-medium text-blue-700">Category:</span> {event.category}</div>
-                                         <div><span className="font-medium text-blue-700">Start Date:</span> {event.start_date}</div>
-                                         {event.start_time && <div><span className="font-medium text-blue-700">Start Time:</span> {event.start_time}</div>}
-                                         {event.end_time && <div><span className="font-medium text-blue-700">End Time:</span> {event.end_time}</div>}
-                                         {event.price_display && <div><span className="font-medium text-blue-700">Price:</span> {event.price_display}</div>}
-                                         <div><span className="font-medium text-blue-700">Recurring:</span> {event.is_recurring ? 'Yes' : 'No'}</div>
-                                         {event.recurrence_type && <div><span className="font-medium text-blue-700">Recurrence Type:</span> {event.recurrence_type}</div>}
-                                         {event.recurrence_pattern && <div><span className="font-medium text-blue-700">Recurrence Pattern:</span> {event.recurrence_pattern}</div>}
-                                         {event.recurrence_end_date && <div><span className="font-medium text-blue-700">Recurrence End:</span> {event.recurrence_end_date}</div>}
-                                         {event.api_source && <div><span className="font-medium text-blue-700">Source:</span> {event.api_source}</div>}
-                                         {event.external_id && <div><span className="font-medium text-blue-700">External ID:</span> {event.external_id}</div>}
-                                       </div>
-                                       {event.description && (
-                                         <div className="mt-3">
-                                           <span className="font-medium text-blue-700">Description:</span>
-                                           <p className="mt-1 text-sm text-gray-700 bg-white p-2 rounded border">{event.description}</p>
-                                         </div>
-                                       )}
-                                     </div>
+                          <div className="space-y-6">
+                            {/* Event-by-Event Review */}
+                            <div>
+                              <h4 className="font-medium mb-3">Import Review ({stagingEvents.length} events)</h4>
+                              <div className="max-h-[60vh] overflow-y-auto border rounded-md">
+                                {stagingEvents.map((event, index) => {
+                                  const associatedVenue = stagingVenues.find(v => 
+                                    v.name === event.venue_name && 
+                                    v.city === event.venue_city
+                                  );
+                                  
+                                  return (
+                                    <Dialog key={event.id}>
+                                      <DialogTrigger asChild>
+                                        <div className="p-4 border-b last:border-b-0 hover:bg-gray-50 cursor-pointer transition-colors">
+                                          <div className="flex items-center justify-between">
+                                            <div className="space-y-1">
+                                              <h5 className="font-semibold text-base text-blue-600 hover:text-blue-800">
+                                                {event.title}
+                                              </h5>
+                                              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                                <span>📅 {event.start_date}</span>
+                                                <span>📍 {event.venue_name}</span>
+                                                <span>🏷️ {event.category}</span>
+                                              </div>
+                                            </div>
+                                            <div className="flex gap-2">
+                                              <Badge variant="outline">Click to Review</Badge>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </DialogTrigger>
+                                      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                                        <DialogHeader>
+                                          <DialogTitle>Event #{index + 1}: {event.title}</DialogTitle>
+                                        </DialogHeader>
+                                        
+                                        <div className="space-y-6">
+                                          {/* Event Information */}
+                                          <div className="bg-blue-50 p-4 rounded-lg">
+                                            <h6 className="font-semibold text-blue-800 mb-3 flex items-center gap-2">
+                                              <Calendar className="h-4 w-4" />
+                                              Event Information
+                                            </h6>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-sm">
+                                              <div><span className="font-medium text-blue-700">Title:</span> <span className="break-words">{event.title}</span></div>
+                                              <div><span className="font-medium text-blue-700">Category:</span> {event.category}</div>
+                                              <div><span className="font-medium text-blue-700">Start Date:</span> {event.start_date}</div>
+                                              {event.start_time && <div><span className="font-medium text-blue-700">Start Time:</span> {event.start_time}</div>}
+                                              {event.end_time && <div><span className="font-medium text-blue-700">End Time:</span> {event.end_time}</div>}
+                                              {event.price_display && <div><span className="font-medium text-blue-700">Price:</span> {event.price_display}</div>}
+                                              <div><span className="font-medium text-blue-700">Recurring:</span> {event.is_recurring ? 'Yes' : 'No'}</div>
+                                              {event.recurrence_type && <div><span className="font-medium text-blue-700">Recurrence Type:</span> {event.recurrence_type}</div>}
+                                              {event.recurrence_pattern && <div><span className="font-medium text-blue-700">Recurrence Pattern:</span> {event.recurrence_pattern}</div>}
+                                              {event.recurrence_end_date && <div><span className="font-medium text-blue-700">Recurrence End:</span> {event.recurrence_end_date}</div>}
+                                              {event.api_source && <div><span className="font-medium text-blue-700">Source:</span> {event.api_source}</div>}
+                                              {event.external_id && <div><span className="font-medium text-blue-700">External ID:</span> {event.external_id}</div>}
+                                            </div>
+                                            {event.description && (
+                                              <div className="mt-3">
+                                                <span className="font-medium text-blue-700">Description:</span>
+                                                <p className="mt-1 text-sm text-gray-700 bg-white p-2 rounded border">{event.description}</p>
+                                              </div>
+                                            )}
+                                          </div>
 
-                                     {/* Venue Information */}
-                                     <div className="bg-green-50 p-4 rounded-lg">
-                                       <h6 className="font-semibold text-green-800 mb-3 flex items-center gap-2">
-                                         <Users className="h-4 w-4" />
-                                         Venue Information
-                                       </h6>
-                                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-sm">
-                                         <div><span className="font-medium text-green-700">Name:</span> <span className="break-words">{event.venue_name}</span></div>
-                                         {event.venue_city && <div><span className="font-medium text-green-700">City:</span> {event.venue_city}</div>}
-                                         {event.venue_address && <div><span className="font-medium text-green-700">Address:</span> <span className="break-words">{event.venue_address}</span></div>}
-                                         {event.venue_state && <div><span className="font-medium text-green-700">State:</span> {event.venue_state}</div>}
-                                         {event.venue_zip && <div><span className="font-medium text-green-700">ZIP:</span> {event.venue_zip}</div>}
-                                         {associatedVenue?.phone && <div><span className="font-medium text-green-700">Phone:</span> {associatedVenue.phone}</div>}
-                                         {associatedVenue?.ages && <div><span className="font-medium text-green-700">Age Restriction:</span> {associatedVenue.ages}</div>}
-                                         {associatedVenue?.api_source && <div><span className="font-medium text-green-700">Source:</span> {associatedVenue.api_source}</div>}
-                                       </div>
-                                     </div>
+                                          {/* Venue Information */}
+                                          <div className="bg-green-50 p-4 rounded-lg">
+                                            <h6 className="font-semibold text-green-800 mb-3 flex items-center gap-2">
+                                              <Users className="h-4 w-4" />
+                                              Venue Information
+                                            </h6>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-sm">
+                                              <div><span className="font-medium text-green-700">Name:</span> <span className="break-words">{event.venue_name}</span></div>
+                                              {event.venue_city && <div><span className="font-medium text-green-700">City:</span> {event.venue_city}</div>}
+                                              {event.venue_address && <div><span className="font-medium text-green-700">Address:</span> <span className="break-words">{event.venue_address}</span></div>}
+                                              {event.venue_state && <div><span className="font-medium text-green-700">State:</span> {event.venue_state}</div>}
+                                              {event.venue_zip && <div><span className="font-medium text-green-700">ZIP:</span> {event.venue_zip}</div>}
+                                              {associatedVenue?.phone && <div><span className="font-medium text-green-700">Phone:</span> {associatedVenue.phone}</div>}
+                                              {associatedVenue?.ages && <div><span className="font-medium text-green-700">Age Restriction:</span> {associatedVenue.ages}</div>}
+                                              {associatedVenue?.api_source && <div><span className="font-medium text-green-700">Source:</span> {associatedVenue.api_source}</div>}
+                                            </div>
+                                          </div>
 
-                                     {/* URLs and Social Media */}
-                                     {(event.website_url || event.ticket_url || event.facebook_url || event.instagram_url || event.twitter_url || event.youtube_url || event.image_url || associatedVenue?.website || associatedVenue?.facebook_url || associatedVenue?.instagram_url || associatedVenue?.twitter_url || associatedVenue?.youtube_url) && (
-                                       <div className="bg-purple-50 p-4 rounded-lg">
-                                         <h6 className="font-semibold text-purple-800 mb-3 flex items-center gap-2">
-                                           <ExternalLink className="h-4 w-4" />
-                                           URLs & Social Media
-                                         </h6>
-                                         <div className="space-y-2">
-                                           {/* Event URLs */}
-                                           {(event.website_url || event.ticket_url || event.facebook_url || event.instagram_url || event.twitter_url || event.youtube_url || event.image_url) && (
-                                             <div>
-                                               <span className="font-medium text-purple-700 text-sm">Event Links:</span>
-                                               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-1 text-sm">
-                                                 {event.website_url && <div><span className="font-medium">Website:</span> <a href={event.website_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{event.website_url}</a></div>}
-                                                 {event.ticket_url && <div><span className="font-medium">Tickets:</span> <a href={event.ticket_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{event.ticket_url}</a></div>}
-                                                 {event.facebook_url && <div><span className="font-medium">Facebook:</span> <a href={event.facebook_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{event.facebook_url}</a></div>}
-                                                 {event.instagram_url && <div><span className="font-medium">Instagram:</span> <a href={event.instagram_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{event.instagram_url}</a></div>}
-                                                 {event.twitter_url && <div><span className="font-medium">Twitter:</span> <a href={event.twitter_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{event.twitter_url}</a></div>}
-                                                 {event.youtube_url && <div><span className="font-medium">YouTube:</span> <a href={event.youtube_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{event.youtube_url}</a></div>}
-                                                 {event.image_url && <div><span className="font-medium">Image:</span> <a href={event.image_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{event.image_url}</a></div>}
-                                               </div>
-                                             </div>
-                                           )}
-                                           
-                                           {/* Venue URLs */}
-                                           {associatedVenue && (associatedVenue.website || associatedVenue.facebook_url || associatedVenue.instagram_url || associatedVenue.twitter_url || associatedVenue.youtube_url) && (
-                                             <div className="mt-3">
-                                               <span className="font-medium text-purple-700 text-sm">Venue Links:</span>
-                                               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-1 text-sm">
-                                                 {associatedVenue.website && <div><span className="font-medium">Website:</span> <a href={associatedVenue.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{associatedVenue.website}</a></div>}
-                                                 {associatedVenue.facebook_url && <div><span className="font-medium">Facebook:</span> <a href={associatedVenue.facebook_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{associatedVenue.facebook_url}</a></div>}
-                                                 {associatedVenue.instagram_url && <div><span className="font-medium">Instagram:</span> <a href={associatedVenue.instagram_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{associatedVenue.instagram_url}</a></div>}
-                                                 {associatedVenue.twitter_url && <div><span className="font-medium">Twitter:</span> <a href={associatedVenue.twitter_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{associatedVenue.twitter_url}</a></div>}
-                                                 {associatedVenue.youtube_url && <div><span className="font-medium">YouTube:</span> <a href={associatedVenue.youtube_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{associatedVenue.youtube_url}</a></div>}
-                                               </div>
-                                             </div>
-                                           )}
-                                           
-                                           {/* Venue Images */}
-                                           {associatedVenue?.image_urls && associatedVenue.image_urls.length > 0 && (
-                                             <div className="mt-3">
-                                               <span className="font-medium text-purple-700 text-sm">Venue Images ({associatedVenue.image_urls.length}):</span>
-                                               <div className="flex flex-wrap gap-2 mt-1">
-                                                 {associatedVenue.image_urls.slice(0, 3).map((url, i) => (
-                                                   <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline bg-white px-2 py-1 rounded border">
-                                                     Image {i + 1}
-                                                   </a>
-                                                 ))}
-                                                 {associatedVenue.image_urls.length > 3 && (
-                                                   <span className="text-xs text-gray-500 px-2 py-1">
-                                                     +{associatedVenue.image_urls.length - 3} more
-                                                   </span>
-                                                 )}
-                                               </div>
-                                             </div>
-                                           )}
-                                         </div>
-                                       </div>
-                                     )}
-                                   </div>
-                                 );
-                               })}
+                                          {/* URLs and Social Media */}
+                                          {(event.website_url || event.ticket_url || event.facebook_url || event.instagram_url || event.twitter_url || event.youtube_url || event.image_url || associatedVenue?.website || associatedVenue?.facebook_url || associatedVenue?.instagram_url || associatedVenue?.twitter_url || associatedVenue?.youtube_url) && (
+                                            <div className="bg-purple-50 p-4 rounded-lg">
+                                              <h6 className="font-semibold text-purple-800 mb-3 flex items-center gap-2">
+                                                <ExternalLink className="h-4 w-4" />
+                                                URLs & Social Media
+                                              </h6>
+                                              <div className="space-y-2">
+                                                {/* Event URLs */}
+                                                {(event.website_url || event.ticket_url || event.facebook_url || event.instagram_url || event.twitter_url || event.youtube_url || event.image_url) && (
+                                                  <div>
+                                                    <span className="font-medium text-purple-700 text-sm">Event Links:</span>
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-1 text-sm">
+                                                      {event.website_url && <div><span className="font-medium">Website:</span> <a href={event.website_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{event.website_url}</a></div>}
+                                                      {event.ticket_url && <div><span className="font-medium">Tickets:</span> <a href={event.ticket_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{event.ticket_url}</a></div>}
+                                                      {event.facebook_url && <div><span className="font-medium">Facebook:</span> <a href={event.facebook_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{event.facebook_url}</a></div>}
+                                                      {event.instagram_url && <div><span className="font-medium">Instagram:</span> <a href={event.instagram_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{event.instagram_url}</a></div>}
+                                                      {event.twitter_url && <div><span className="font-medium">Twitter:</span> <a href={event.twitter_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{event.twitter_url}</a></div>}
+                                                      {event.youtube_url && <div><span className="font-medium">YouTube:</span> <a href={event.youtube_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{event.youtube_url}</a></div>}
+                                                      {event.image_url && <div><span className="font-medium">Image:</span> <a href={event.image_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{event.image_url}</a></div>}
+                                                    </div>
+                                                  </div>
+                                                )}
+                                                
+                                                {/* Venue URLs */}
+                                                {associatedVenue && (associatedVenue.website || associatedVenue.facebook_url || associatedVenue.instagram_url || associatedVenue.twitter_url || associatedVenue.youtube_url) && (
+                                                  <div className="mt-3">
+                                                    <span className="font-medium text-purple-700 text-sm">Venue Links:</span>
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-1 text-sm">
+                                                      {associatedVenue.website && <div><span className="font-medium">Website:</span> <a href={associatedVenue.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{associatedVenue.website}</a></div>}
+                                                      {associatedVenue.facebook_url && <div><span className="font-medium">Facebook:</span> <a href={associatedVenue.facebook_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{associatedVenue.facebook_url}</a></div>}
+                                                      {associatedVenue.instagram_url && <div><span className="font-medium">Instagram:</span> <a href={associatedVenue.instagram_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{associatedVenue.instagram_url}</a></div>}
+                                                      {associatedVenue.twitter_url && <div><span className="font-medium">Twitter:</span> <a href={associatedVenue.twitter_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{associatedVenue.twitter_url}</a></div>}
+                                                      {associatedVenue.youtube_url && <div><span className="font-medium">YouTube:</span> <a href={associatedVenue.youtube_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{associatedVenue.youtube_url}</a></div>}
+                                                    </div>
+                                                  </div>
+                                                )}
+                                                
+                                                {/* Venue Images */}
+                                                {associatedVenue?.image_urls && associatedVenue.image_urls.length > 0 && (
+                                                  <div className="mt-3">
+                                                    <span className="font-medium text-purple-700 text-sm">Venue Images ({associatedVenue.image_urls.length}):</span>
+                                                    <div className="flex flex-wrap gap-2 mt-1">
+                                                      {associatedVenue.image_urls.slice(0, 3).map((url, i) => (
+                                                        <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline bg-white px-2 py-1 rounded border">
+                                                          Image {i + 1}
+                                                        </a>
+                                                      ))}
+                                                      {associatedVenue.image_urls.length > 3 && (
+                                                        <span className="text-xs text-gray-500 px-2 py-1">
+                                                          +{associatedVenue.image_urls.length - 3} more
+                                                        </span>
+                                                      )}
+                                                    </div>
+                                                  </div>
+                                                )}
+                                              </div>
+                                            </div>
+                                          )}
+                                        </div>
+                                      </DialogContent>
+                                    </Dialog>
+                                  );
+                                })}
                              </div>
                            </div>
 

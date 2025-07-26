@@ -352,13 +352,15 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
       const commaCount = (firstLine.match(/,/g) || []).length;
       const fileType = tabCount > commaCount ? 'tsv' : 'csv';
       
-      // Create import batch
+      // Create import batch (exclude header row from count if present)
+      const actualEventsCount = parsedEvents.length;
+      
       const { data: batchData, error: batchError } = await supabase
         .from('import_batches')
         .insert({
           filename: `manual_import_${Date.now()}.${fileType}`,
           file_type: fileType,
-          total_events: parsedEvents.length,
+          total_events: actualEventsCount,
           total_venues: 0, // Will be calculated
           created_by: (await supabase.auth.getUser()).data.user?.id
         })
