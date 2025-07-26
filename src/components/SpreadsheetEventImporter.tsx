@@ -15,6 +15,7 @@ interface SpreadsheetEventImporterProps {
 
 const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: SpreadsheetEventImporterProps) => {
   const [spreadsheetData, setSpreadsheetData] = useState('');
+  const [hasHeaderRow, setHasHeaderRow] = useState(true);
   const [loading, setLoading] = useState(false);
   const [importResult, setImportResult] = useState<{
     batchId: string;
@@ -171,8 +172,13 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
 
   const parseSpreadsheetData = (data: string) => {
     const lines = data.trim().split('\n').filter(line => line.trim().length > 0);
-    if (lines.length < 2) {
-      throw new Error('Data must have at least a header row and one data row');
+    if (lines.length < 1) {
+      throw new Error('No data found');
+    }
+    
+    const minimumRequiredLines = hasHeaderRow ? 2 : 1;
+    if (lines.length < minimumRequiredLines) {
+      throw new Error(`Data must have ${hasHeaderRow ? 'at least a header row and one data row' : 'at least one data row'}`);
     }
 
     // Detect delimiter by checking the first line
@@ -183,13 +189,35 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
 
     console.log('Detected delimiter:', delimiter === '\t' ? 'TAB' : 'COMMA');
     console.log('First line:', firstLine);
+    console.log('Has header row:', hasHeaderRow);
 
-    const headers = parseCSVLine(lines[0], delimiter).map(h => h.replace(/^"|"$/g, '').trim());
+    let headers: string[] = [];
+    let startIndex = 0;
+
+    if (hasHeaderRow) {
+      headers = parseCSVLine(lines[0], delimiter).map(h => h.replace(/^"|"$/g, '').trim());
+      startIndex = 1;
+    } else {
+      // Use template headers if no header row
+      headers = [
+        'Event Title', 'Event Description', 'Event Category', 'Event Start Date (YYYY-MM-DD)',
+        'Event Start Time (HH:MM)', 'Event End Time (HH:MM)', 'Event Is Recurring (TRUE/FALSE)',
+        'Event Recurrence Type (weekly/monthly)', 'Event Recurrence Pattern (every/1st/2nd/3rd/4th/last)',
+        'Event Recurrence End Date (YYYY-MM-DD)', 'Event Price Display', 'Event Ticket URL',
+        'Event Website URL', 'Event Facebook URL', 'Event Instagram URL', 'Event Twitter URL',
+        'Event YouTube URL', 'Event Image URL', 'Venue Name', 'Venue Address', 'Venue City',
+        'Venue State', 'Venue Zip', 'Venue Phone', 'Venue Website', 'Venue Facebook URL',
+        'Venue Instagram URL', 'Venue Twitter URL', 'Venue YouTube URL', 'Venue Image URL',
+        'Venue Ages (21+/18+/All Ages)'
+      ];
+      startIndex = 0;
+    }
+    
     console.log('Parsed headers:', headers);
 
     const events = [];
 
-    for (let i = 1; i < lines.length; i++) {
+    for (let i = startIndex; i < lines.length; i++) {
       const values = parseCSVLine(lines[i], delimiter).map(v => v.replace(/^"|"$/g, '').trim());
       
       console.log(`Row ${i + 1} values:`, values);
@@ -475,6 +503,22 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
               Supported formats: .csv, .tsv, .txt
             </p>
           </div>
+        </div>
+
+        {/* Header Row Option */}
+        <div className="space-y-2">
+          <label className="flex items-center gap-2 text-sm font-medium">
+            <input
+              type="checkbox"
+              checked={hasHeaderRow}
+              onChange={(e) => setHasHeaderRow(e.target.checked)}
+              className="rounded border-gray-300"
+            />
+            Data includes header row
+          </label>
+          <p className="text-xs text-gray-500">
+            Uncheck if your data starts with actual event data (no column headers)
+          </p>
         </div>
 
         {/* Manual Input Section */}
