@@ -196,11 +196,11 @@ const Account = () => {
       if (error) throw error;
 
       toast({
-        title: 'Success',
-        description: 'You have been granted artist status! You can now submit content.',
+        title: 'Application Submitted',
+        description: 'Your artist application has been submitted for review. You will be notified once it has been processed.',
       });
       
-      // Refresh the page to update role status
+      // Refresh the page to update application status
       window.location.reload();
     } catch (error) {
       console.error('Error applying for artist:', error);
