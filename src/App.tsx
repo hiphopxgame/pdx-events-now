@@ -19,6 +19,7 @@ import User from "./pages/User";
 import Account from "./pages/Account";
 import AdminUsers from "./pages/AdminUsers";
 import AdminVenues from "./pages/AdminVenues";
+import AdminDashboard from "./pages/AdminDashboard";
 import EditVenue from "./pages/EditVenue";
 import ManageContent from "./pages/ManageContent";
 import Content from "./pages/Content";
@@ -48,6 +49,8 @@ const App = () => (
             <Route path="/my-events" element={<MyEvents />} />
             <Route path="/approve-events" element={<ManageEvents />} />
             <Route path="/manage-events" element={<ManageEvents />} />
+            <Route path="/admin" element={<AdminProtectedRoute><AdminDashboard /></AdminProtectedRoute>} />
+            <Route path="/admin/dashboard" element={<AdminProtectedRoute><AdminDashboard /></AdminProtectedRoute>} />
             <Route path="/admin/events" element={<AdminProtectedRoute><ManageEvents /></AdminProtectedRoute>} />
             <Route path="/admin/users" element={<AdminProtectedRoute><AdminUsers /></AdminProtectedRoute>} />
             <Route path="/admin/venues" element={<AdminProtectedRoute><AdminVenues /></AdminProtectedRoute>} />

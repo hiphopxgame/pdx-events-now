@@ -104,32 +104,12 @@ export const Header = () => {
                       </Link>
                     </DropdownMenuItem>
                     {isAdmin && (
-                      <>
-                        <DropdownMenuItem asChild>
-                          <Link to="/manage-events" className="flex items-center">
-                            <Settings className="mr-2 h-4 w-4" />
-                            Manage Events
-                          </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link to="/admin/venues" className="flex items-center">
-                            <Building2 className="mr-2 h-4 w-4" />
-                            Manage Venues
-                          </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link to="/admin/users" className="flex items-center">
-                            <Users className="mr-2 h-4 w-4" />
-                            Manage Community
-                          </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link to="/manage-content" className="flex items-center">
-                            <Video className="mr-2 h-4 w-4" />
-                            Manage Media
-                          </Link>
-                        </DropdownMenuItem>
-                      </>
+                      <DropdownMenuItem asChild>
+                        <Link to="/admin/dashboard" className="flex items-center">
+                          <Shield className="mr-2 h-4 w-4" />
+                          Admin Dashboard
+                        </Link>
+                      </DropdownMenuItem>
                     )}
                     <DropdownMenuItem onClick={handleSignOut}>
                       <LogOut className="mr-2 h-4 w-4" />
