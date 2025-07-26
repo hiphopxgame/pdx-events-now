@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Download, Upload } from 'lucide-react';
+import { getNextUpcomingDateForPattern } from '@/hooks/events/eventTransformers';
 
 const SpreadsheetEventImporter = () => {
   const [spreadsheetData, setSpreadsheetData] = useState('');
@@ -127,16 +128,29 @@ const SpreadsheetEventImporter = () => {
   };
 
   const transformEventData = (eventData: any) => {
+    const isRecurring = eventData['Event Is Recurring (TRUE/FALSE)']?.toLowerCase() === 'true';
+    const recurrenceType = eventData['Event Recurrence Type (weekly/monthly)'];
+    const recurrencePattern = eventData['Event Recurrence Pattern (every/1st/2nd/3rd/4th/last)'];
+    const providedStartDate = eventData['Event Start Date (YYYY-MM-DD)'];
+    
+    // Calculate start date: use provided date, or for recurring events with empty date, calculate next upcoming date
+    let startDate = providedStartDate;
+    if (!startDate && isRecurring && recurrenceType && recurrencePattern) {
+      startDate = getNextUpcomingDateForPattern(recurrenceType, recurrencePattern);
+    } else if (!startDate) {
+      startDate = new Date().toISOString().split('T')[0];
+    }
+    
     return {
       title: eventData['Event Title'] || 'Untitled Event',
       description: eventData['Event Description'] || null,
       category: eventData['Event Category'] || 'other',
-      start_date: eventData['Event Start Date (YYYY-MM-DD)'] || new Date().toISOString().split('T')[0],
+      start_date: startDate,
       start_time: eventData['Event Start Time (HH:MM)'] || null,
       end_time: eventData['Event End Time (HH:MM)'] || null,
-      is_recurring: eventData['Event Is Recurring (TRUE/FALSE)']?.toLowerCase() === 'true',
-      recurrence_type: eventData['Event Recurrence Type (weekly/monthly)'] || null,
-      recurrence_pattern: eventData['Event Recurrence Pattern (every/1st/2nd/3rd/4th/last)'] || null,
+      is_recurring: isRecurring,
+      recurrence_type: recurrenceType || null,
+      recurrence_pattern: recurrencePattern || null,
       recurrence_end_date: eventData['Event Recurrence End Date (YYYY-MM-DD)'] || null,
       price_display: eventData['Event Price Display'] || null,
       ticket_url: eventData['Event Ticket URL'] || null,

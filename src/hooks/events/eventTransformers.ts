@@ -120,6 +120,86 @@ const findNthDayOfMonth = (year: number, month: number, occurrence: string, dayO
   return null;
 };
 
+// Helper function to calculate the next upcoming date for a recurrence pattern
+export const getNextUpcomingDateForPattern = (recurrenceType: string, recurrencePattern: string): string => {
+  const today = new Date();
+  
+  if (recurrenceType === 'weekly') {
+    // For weekly patterns like "every" or specific day patterns
+    const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    let targetDay = -1;
+    
+    // Check if the pattern includes a day name
+    for (let i = 0; i < dayNames.length; i++) {
+      if (recurrencePattern.toLowerCase().includes(dayNames[i])) {
+        targetDay = i;
+        break;
+      }
+    }
+    
+    if (targetDay !== -1) {
+      // Find the next occurrence of this day
+      const currentDay = today.getDay();
+      let daysUntilTarget = targetDay - currentDay;
+      if (daysUntilTarget <= 0) {
+        daysUntilTarget += 7; // Next week
+      }
+      
+      const nextDate = new Date(today);
+      nextDate.setDate(today.getDate() + daysUntilTarget);
+      return nextDate.toISOString().split('T')[0];
+    }
+  } else if (recurrenceType === 'monthly') {
+    // For monthly patterns like "first", "second", "third", "fourth", "last"
+    const occurrenceMap: { [key: string]: string } = {
+      'first': 'first',
+      'second': 'second', 
+      'third': 'third',
+      'fourth': 'fourth',
+      'last': 'last'
+    };
+    
+    let occurrence = '';
+    let dayOfWeek = -1;
+    
+    // Find occurrence and day
+    for (const [key, value] of Object.entries(occurrenceMap)) {
+      if (recurrencePattern.toLowerCase().includes(key)) {
+        occurrence = value;
+        break;
+      }
+    }
+    
+    const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    for (let i = 0; i < dayNames.length; i++) {
+      if (recurrencePattern.toLowerCase().includes(dayNames[i])) {
+        dayOfWeek = i;
+        break;
+      }
+    }
+    
+    if (occurrence && dayOfWeek !== -1) {
+      // Try current month first
+      let nextDate = findNthDayOfMonth(today.getFullYear(), today.getMonth(), occurrence, dayOfWeek);
+      
+      // If the date in current month has passed, try next month
+      if (!nextDate || nextDate <= today) {
+        const nextMonth = today.getMonth() + 1;
+        const nextYear = nextMonth > 11 ? today.getFullYear() + 1 : today.getFullYear();
+        const adjustedMonth = nextMonth > 11 ? 0 : nextMonth;
+        nextDate = findNthDayOfMonth(nextYear, adjustedMonth, occurrence, dayOfWeek);
+      }
+      
+      if (nextDate) {
+        return nextDate.toISOString().split('T')[0];
+      }
+    }
+  }
+  
+  // Fallback to today if pattern couldn't be parsed
+  return today.toISOString().split('T')[0];
+};
+
 export const transformUserEventsToEvents = (userEvents: UserEvent[]): Event[] => {
   const events: Event[] = [];
   
