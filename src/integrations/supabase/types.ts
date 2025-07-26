@@ -1085,6 +1085,51 @@ export type Database = {
         }
         Relationships: []
       }
+      import_batches: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          file_type: string
+          filename: string
+          id: string
+          notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          total_events: number
+          total_venues: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          file_type: string
+          filename: string
+          id?: string
+          notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          total_events?: number
+          total_venues?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          file_type?: string
+          filename?: string
+          id?: string
+          notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          total_events?: number
+          total_venues?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       music_videos: {
         Row: {
           approved_at: string | null
@@ -1649,18 +1694,21 @@ export type Database = {
           created_at: string
           id: string
           is_admin: boolean
+          project_id: string
           updated_at: string
         }
         Insert: {
           created_at?: string
           id: string
           is_admin?: boolean
+          project_id?: string
           updated_at?: string
         }
         Update: {
           created_at?: string
           id?: string
           is_admin?: boolean
+          project_id?: string
           updated_at?: string
         }
         Relationships: []
@@ -2130,6 +2178,175 @@ export type Database = {
         }
         Relationships: []
       }
+      staging_events: {
+        Row: {
+          api_source: string | null
+          category: string
+          created_at: string
+          description: string | null
+          end_time: string | null
+          external_id: string | null
+          facebook_url: string | null
+          id: string
+          image_url: string | null
+          import_batch_id: string
+          instagram_url: string | null
+          is_recurring: boolean | null
+          price_display: string | null
+          recurrence_end_date: string | null
+          recurrence_pattern: string | null
+          recurrence_type: string | null
+          start_date: string
+          start_time: string | null
+          ticket_url: string | null
+          title: string
+          twitter_url: string | null
+          venue_address: string | null
+          venue_city: string | null
+          venue_name: string
+          venue_state: string | null
+          venue_zip: string | null
+          website_url: string | null
+          youtube_url: string | null
+        }
+        Insert: {
+          api_source?: string | null
+          category: string
+          created_at?: string
+          description?: string | null
+          end_time?: string | null
+          external_id?: string | null
+          facebook_url?: string | null
+          id?: string
+          image_url?: string | null
+          import_batch_id: string
+          instagram_url?: string | null
+          is_recurring?: boolean | null
+          price_display?: string | null
+          recurrence_end_date?: string | null
+          recurrence_pattern?: string | null
+          recurrence_type?: string | null
+          start_date: string
+          start_time?: string | null
+          ticket_url?: string | null
+          title: string
+          twitter_url?: string | null
+          venue_address?: string | null
+          venue_city?: string | null
+          venue_name: string
+          venue_state?: string | null
+          venue_zip?: string | null
+          website_url?: string | null
+          youtube_url?: string | null
+        }
+        Update: {
+          api_source?: string | null
+          category?: string
+          created_at?: string
+          description?: string | null
+          end_time?: string | null
+          external_id?: string | null
+          facebook_url?: string | null
+          id?: string
+          image_url?: string | null
+          import_batch_id?: string
+          instagram_url?: string | null
+          is_recurring?: boolean | null
+          price_display?: string | null
+          recurrence_end_date?: string | null
+          recurrence_pattern?: string | null
+          recurrence_type?: string | null
+          start_date?: string
+          start_time?: string | null
+          ticket_url?: string | null
+          title?: string
+          twitter_url?: string | null
+          venue_address?: string | null
+          venue_city?: string | null
+          venue_name?: string
+          venue_state?: string | null
+          venue_zip?: string | null
+          website_url?: string | null
+          youtube_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staging_events_import_batch_id_fkey"
+            columns: ["import_batch_id"]
+            isOneToOne: false
+            referencedRelation: "import_batches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      staging_venues: {
+        Row: {
+          address: string | null
+          ages: string | null
+          api_source: string | null
+          city: string | null
+          created_at: string
+          facebook_url: string | null
+          id: string
+          image_urls: string[] | null
+          import_batch_id: string
+          instagram_url: string | null
+          name: string
+          phone: string | null
+          state: string | null
+          twitter_url: string | null
+          website: string | null
+          youtube_url: string | null
+          zip_code: string | null
+        }
+        Insert: {
+          address?: string | null
+          ages?: string | null
+          api_source?: string | null
+          city?: string | null
+          created_at?: string
+          facebook_url?: string | null
+          id?: string
+          image_urls?: string[] | null
+          import_batch_id: string
+          instagram_url?: string | null
+          name: string
+          phone?: string | null
+          state?: string | null
+          twitter_url?: string | null
+          website?: string | null
+          youtube_url?: string | null
+          zip_code?: string | null
+        }
+        Update: {
+          address?: string | null
+          ages?: string | null
+          api_source?: string | null
+          city?: string | null
+          created_at?: string
+          facebook_url?: string | null
+          id?: string
+          image_urls?: string[] | null
+          import_batch_id?: string
+          instagram_url?: string | null
+          name?: string
+          phone?: string | null
+          state?: string | null
+          twitter_url?: string | null
+          website?: string | null
+          youtube_url?: string | null
+          zip_code?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staging_venues_import_batch_id_fkey"
+            columns: ["import_batch_id"]
+            isOneToOne: false
+            referencedRelation: "import_batches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_events: {
         Row: {
           api_source: string | null
@@ -2359,6 +2576,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_import_batch: {
+        Args: { batch_id: string }
+        Returns: undefined
+      }
       create_admin_user: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -2378,6 +2599,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       is_current_user_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
@@ -2390,9 +2615,20 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      is_super_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       set_admin_by_email: {
-        Args: { user_email: string }
-        Returns: undefined
+        Args:
+          | { user_email: string }
+          | { user_email: string; admin_status?: boolean }
+          | {
+              user_email: string
+              admin_status?: boolean
+              target_project_id?: string
+            }
+        Returns: boolean
       }
       setup_admin_user: {
         Args: Record<PropertyKey, never>
