@@ -24,6 +24,7 @@ import {
 import AdminProtectedRoute from '@/components/AdminProtectedRoute';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
+import SpreadsheetEventImporter from '@/components/SpreadsheetEventImporter';
 
 interface DashboardStats {
   totalEvents: number;
@@ -300,6 +301,11 @@ const AdminDashboard = () => {
               </Card>
             ))}
           </div>
+        </div>
+
+        {/* Events Importer */}
+        <div className="mb-8">
+          <SpreadsheetEventImporter />
         </div>
 
         {/* Recent Activity Overview */}
