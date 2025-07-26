@@ -37,7 +37,17 @@ interface StagingEvent {
   start_time?: string;
   venue_name: string;
   venue_city: string;
+  venue_address?: string;
+  venue_state?: string;
+  venue_zip?: string;
   is_recurring: boolean;
+  price_display?: string;
+  ticket_url?: string;
+  website_url?: string;
+  facebook_url?: string;
+  instagram_url?: string;
+  twitter_url?: string;
+  youtube_url?: string;
 }
 
 interface StagingVenue {
@@ -289,50 +299,73 @@ const ImportManager = ({ onRefresh }: ImportManagerProps) => {
                           <DialogTitle>Import Batch Details: {batch.filename}</DialogTitle>
                         </DialogHeader>
                         
-                        <div className="space-y-6">
-                          {/* Events Preview */}
-                          <div>
-                            <h4 className="font-medium mb-3">Events ({stagingEvents.length})</h4>
-                            <div className="max-h-60 overflow-y-auto border rounded-md">
-                              {stagingEvents.map((event) => (
-                                <div key={event.id} className="p-3 border-b last:border-b-0">
-                                  <div className="flex justify-between items-start">
-                                    <div>
-                                      <p className="font-medium">{event.title}</p>
-                                      <p className="text-sm text-muted-foreground">
-                                        {event.venue_name} • {event.start_date} 
-                                        {event.start_time && ` at ${event.start_time}`}
-                                      </p>
-                                      <Badge variant="outline" className="mt-1">
-                                        {event.category}
-                                      </Badge>
-                                    </div>
-                                    {event.is_recurring && (
-                                      <Badge variant="secondary">Recurring</Badge>
-                                    )}
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-
-                          {/* Venues Preview */}
-                          {stagingVenues.length > 0 && (
-                            <div>
-                              <h4 className="font-medium mb-3">Venues ({stagingVenues.length})</h4>
-                              <div className="max-h-40 overflow-y-auto border rounded-md">
-                                {stagingVenues.map((venue) => (
-                                  <div key={venue.id} className="p-3 border-b last:border-b-0">
-                                    <p className="font-medium">{venue.name}</p>
-                                    <p className="text-sm text-muted-foreground">
-                                      {venue.address && `${venue.address}, `}
-                                      {venue.city}, {venue.state} {venue.zip_code}
-                                    </p>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
+                         <div className="space-y-6">
+                           {/* Event/Venue Pairs Review */}
+                           <div>
+                             <h4 className="font-medium mb-3">Event & Venue Data Review ({stagingEvents.length} rows)</h4>
+                             <div className="max-h-96 overflow-y-auto border rounded-md">
+                               {stagingEvents.map((event, index) => {
+                                 const associatedVenue = stagingVenues.find(v => 
+                                   v.name === event.venue_name && 
+                                   v.city === event.venue_city
+                                 );
+                                 
+                                 return (
+                                   <div key={event.id} className="p-4 border-b last:border-b-0 space-y-4">
+                                     <div className="flex items-center justify-between">
+                                       <h5 className="font-medium text-sm text-muted-foreground">Row {index + 1}</h5>
+                                       <div className="flex gap-2">
+                                         <Badge variant="outline">Event</Badge>
+                                         {associatedVenue && <Badge variant="outline">Venue</Badge>}
+                                       </div>
+                                     </div>
+                                     
+                                     {/* Event Details */}
+                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-3 bg-blue-50 rounded-md">
+                                       <div className="space-y-2">
+                                         <h6 className="font-medium text-sm text-blue-800">Event Information</h6>
+                                         <div className="space-y-1 text-sm">
+                                           <div><span className="font-medium">Title:</span> {event.title}</div>
+                                           <div><span className="font-medium">Category:</span> {event.category}</div>
+                                           <div><span className="font-medium">Date:</span> {event.start_date}</div>
+                                           {event.start_time && <div><span className="font-medium">Time:</span> {event.start_time}</div>}
+                                           {event.description && <div><span className="font-medium">Description:</span> {event.description.substring(0, 100)}...</div>}
+                                           {event.price_display && <div><span className="font-medium">Price:</span> {event.price_display}</div>}
+                                         </div>
+                                       </div>
+                                       
+                                       {/* Venue Details */}
+                                       <div className="space-y-2">
+                                         <h6 className="font-medium text-sm text-green-800">Venue Information</h6>
+                                         <div className="space-y-1 text-sm">
+                                           <div><span className="font-medium">Name:</span> {event.venue_name}</div>
+                                           <div><span className="font-medium">City:</span> {event.venue_city}</div>
+                                           {event.venue_address && <div><span className="font-medium">Address:</span> {event.venue_address}</div>}
+                                           {event.venue_state && <div><span className="font-medium">State:</span> {event.venue_state}</div>}
+                                           {event.venue_zip && <div><span className="font-medium">ZIP:</span> {event.venue_zip}</div>}
+                                           {associatedVenue?.phone && <div><span className="font-medium">Phone:</span> {associatedVenue.phone}</div>}
+                                           {associatedVenue?.website && <div><span className="font-medium">Website:</span> {associatedVenue.website}</div>}
+                                         </div>
+                                       </div>
+                                     </div>
+                                     
+                                     {/* Social Links & Additional Info */}
+                                     {(event.website_url || event.facebook_url || event.instagram_url || event.ticket_url) && (
+                                       <div className="p-3 bg-gray-50 rounded-md">
+                                         <h6 className="font-medium text-sm text-gray-800 mb-2">Links & Additional Info</h6>
+                                         <div className="grid grid-cols-2 gap-2 text-sm">
+                                           {event.website_url && <div><span className="font-medium">Website:</span> <span className="text-blue-600">{event.website_url}</span></div>}
+                                           {event.ticket_url && <div><span className="font-medium">Tickets:</span> <span className="text-blue-600">{event.ticket_url}</span></div>}
+                                           {event.facebook_url && <div><span className="font-medium">Facebook:</span> <span className="text-blue-600">{event.facebook_url}</span></div>}
+                                           {event.instagram_url && <div><span className="font-medium">Instagram:</span> <span className="text-blue-600">{event.instagram_url}</span></div>}
+                                         </div>
+                                       </div>
+                                     )}
+                                   </div>
+                                 );
+                               })}
+                             </div>
+                           </div>
 
                           {/* Review Actions */}
                           {batch.status === 'pending' && (
