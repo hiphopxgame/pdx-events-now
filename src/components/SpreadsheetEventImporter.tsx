@@ -58,8 +58,8 @@ const SpreadsheetEventImporter = () => {
     ];
 
     const sampleData = [
-      'Live Music Night',
-      'Weekly live music featuring local artists',
+      '"Live Music Night"',
+      '"Weekly live music featuring local artists, acoustic performances, and open mic"',
       'Music',
       '2024-02-01',
       '19:00',
@@ -77,8 +77,8 @@ const SpreadsheetEventImporter = () => {
       '',
       'https://images.unsplash.com/photo-1461749280684-dccba630e2f6',
       
-      'The Music Venue',
-      '123 Main St',
+      '"The Music Venue"',
+      '"123 Main St, Suite 100"',
       'Portland',
       'Oregon',
       '97201',
@@ -92,8 +92,16 @@ const SpreadsheetEventImporter = () => {
       '21+'
     ];
 
+    // Properly escape and quote CSV fields
+    const escapeCSVField = (field: string): string => {
+      if (field.includes(',') || field.includes('"') || field.includes('\n')) {
+        return `"${field.replace(/"/g, '""')}"`;
+      }
+      return field;
+    };
+
     const csvContent = [
-      templateHeaders.join(','),
+      templateHeaders.map(escapeCSVField).join(','),
       sampleData.join(',')
     ].join('\n');
 
@@ -120,8 +128,44 @@ const SpreadsheetEventImporter = () => {
     reader.readAsText(file);
   };
 
+  const parseCSVLine = (line: string, delimiter: string): string[] => {
+    const result: string[] = [];
+    let current = '';
+    let inQuotes = false;
+    let i = 0;
+
+    while (i < line.length) {
+      const char = line[i];
+      const nextChar = line[i + 1];
+
+      if (char === '"') {
+        if (inQuotes && nextChar === '"') {
+          // Escaped quote
+          current += '"';
+          i += 2;
+        } else {
+          // Toggle quote state
+          inQuotes = !inQuotes;
+          i++;
+        }
+      } else if (char === delimiter && !inQuotes) {
+        // End of field
+        result.push(current.trim());
+        current = '';
+        i++;
+      } else {
+        current += char;
+        i++;
+      }
+    }
+
+    // Add the last field
+    result.push(current.trim());
+    return result;
+  };
+
   const parseSpreadsheetData = (data: string) => {
-    const lines = data.trim().split('\n');
+    const lines = data.trim().split('\n').filter(line => line.trim().length > 0);
     if (lines.length < 2) {
       throw new Error('Data must have at least a header row and one data row');
     }
@@ -132,20 +176,37 @@ const SpreadsheetEventImporter = () => {
     const commaCount = (firstLine.match(/,/g) || []).length;
     const delimiter = tabCount > commaCount ? '\t' : ',';
 
-    const headers = lines[0].split(delimiter).map(h => h.trim());
+    console.log('Detected delimiter:', delimiter === '\t' ? 'TAB' : 'COMMA');
+    console.log('First line:', firstLine);
+
+    const headers = parseCSVLine(lines[0], delimiter).map(h => h.replace(/^"|"$/g, '').trim());
+    console.log('Parsed headers:', headers);
+
     const events = [];
 
     for (let i = 1; i < lines.length; i++) {
-      const values = lines[i].split(delimiter).map(v => v.trim());
+      const values = parseCSVLine(lines[i], delimiter).map(v => v.replace(/^"|"$/g, '').trim());
+      
+      console.log(`Row ${i + 1} values:`, values);
+      
       if (values.length !== headers.length) {
-        throw new Error(`Row ${i + 1} has ${values.length} columns but expected ${headers.length}`);
+        console.warn(`Row ${i + 1} has ${values.length} columns but expected ${headers.length}`);
+        // Pad with empty strings if fewer columns, or truncate if more
+        while (values.length < headers.length) {
+          values.push('');
+        }
+        if (values.length > headers.length) {
+          values.splice(headers.length);
+        }
       }
 
       const eventData: any = {};
       headers.forEach((header, index) => {
-        eventData[header] = values[index] || null;
+        const value = values[index] || '';
+        eventData[header] = value === '' ? null : value;
       });
 
+      console.log('Parsed event data:', eventData);
       events.push(eventData);
     }
 
@@ -205,24 +266,35 @@ const SpreadsheetEventImporter = () => {
 
   const transformVenueForStaging = (eventData: any) => {
     const venueName = eventData['Venue Name'];
-    if (!venueName || venueName === 'TBA') return null;
+    console.log('Transforming venue data:', {
+      venueName,
+      allEventData: eventData
+    });
+    
+    if (!venueName || venueName === 'TBA' || venueName.trim() === '') {
+      console.log('Skipping venue - no valid name');
+      return null;
+    }
 
-    return {
-      name: venueName,
-      address: eventData['Venue Address'] || null,
-      city: eventData['Venue City'] || 'Portland',
-      state: eventData['Venue State'] || 'Oregon',
-      zip_code: eventData['Venue Zip'] || null,
-      phone: eventData['Venue Phone'] || null,
-      website: eventData['Venue Website'] || null,
-      facebook_url: eventData['Venue Facebook URL'] || null,
-      instagram_url: eventData['Venue Instagram URL'] || null,
-      twitter_url: eventData['Venue Twitter URL'] || null,
-      youtube_url: eventData['Venue YouTube URL'] || null,
-      image_urls: eventData['Venue Image URL'] ? [eventData['Venue Image URL']] : null,
-      ages: eventData['Venue Ages (21+/18+/All Ages)'] || '21+',
+    const venueData = {
+      name: venueName.trim(),
+      address: eventData['Venue Address']?.trim() || null,
+      city: eventData['Venue City']?.trim() || 'Portland',
+      state: eventData['Venue State']?.trim() || 'Oregon', 
+      zip_code: eventData['Venue Zip']?.trim() || null,
+      phone: eventData['Venue Phone']?.trim() || null,
+      website: eventData['Venue Website']?.trim() || null,
+      facebook_url: eventData['Venue Facebook URL']?.trim() || null,
+      instagram_url: eventData['Venue Instagram URL']?.trim() || null,
+      twitter_url: eventData['Venue Twitter URL']?.trim() || null,
+      youtube_url: eventData['Venue YouTube URL']?.trim() || null,
+      image_urls: eventData['Venue Image URL']?.trim() ? [eventData['Venue Image URL'].trim()] : null,
+      ages: eventData['Venue Ages (21+/18+/All Ages)']?.trim() || '21+',
       api_source: 'import'
     };
+    
+    console.log('Transformed venue data:', venueData);
+    return venueData;
   };
 
   const handleImport = async () => {
@@ -237,7 +309,9 @@ const SpreadsheetEventImporter = () => {
 
     setLoading(true);
     try {
+      console.log('Starting import process with data:', spreadsheetData.substring(0, 200) + '...');
       const parsedEvents = parseSpreadsheetData(spreadsheetData);
+      console.log('Parsed events:', parsedEvents);
       
       // Determine file type
       const firstLine = spreadsheetData.trim().split('\n')[0];
