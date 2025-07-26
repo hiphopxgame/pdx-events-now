@@ -86,15 +86,15 @@ const SpreadsheetEventImporter = () => {
     ];
 
     const csvContent = [
-      templateHeaders.join('\t'),
-      sampleData.join('\t')
+      templateHeaders.join(','),
+      sampleData.join(',')
     ].join('\n');
 
-    const blob = new Blob([csvContent], { type: 'text/tab-separated-values' });
+    const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'events_import_template.tsv';
+    a.download = 'events_import_template.csv';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -107,11 +107,17 @@ const SpreadsheetEventImporter = () => {
       throw new Error('Data must have at least a header row and one data row');
     }
 
-    const headers = lines[0].split('\t').map(h => h.trim());
+    // Detect delimiter by checking the first line
+    const firstLine = lines[0];
+    const tabCount = (firstLine.match(/\t/g) || []).length;
+    const commaCount = (firstLine.match(/,/g) || []).length;
+    const delimiter = tabCount > commaCount ? '\t' : ',';
+
+    const headers = lines[0].split(delimiter).map(h => h.trim());
     const events = [];
 
     for (let i = 1; i < lines.length; i++) {
-      const values = lines[i].split('\t').map(v => v.trim());
+      const values = lines[i].split(delimiter).map(v => v.trim());
       if (values.length !== headers.length) {
         throw new Error(`Row ${i + 1} has ${values.length} columns but expected ${headers.length}`);
       }
@@ -273,7 +279,7 @@ const SpreadsheetEventImporter = () => {
       <CardContent className="space-y-4">
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label className="text-sm font-medium">Spreadsheet Data (Tab-separated)</label>
+            <label className="text-sm font-medium">Spreadsheet Data (CSV or Tab-separated)</label>
             <Button
               variant="outline"
               size="sm"
