@@ -307,24 +307,48 @@ const AdminCreateEvent = () => {
               {/* Field List */}
               <div className="bg-gray-50 p-4 rounded-lg">
                 <h4 className="font-medium text-sm text-gray-700 mb-3">Expected Fields (in order):</h4>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
                   {TEMPLATE_FIELDS.map((field, index) => {
                     const currentValue = watch(field as keyof AdminEventFormData);
-                    const hasValue = field === 'is_recurring' 
-                      ? currentValue === true 
-                      : currentValue && currentValue !== '';
+                    
+                    // Check if field has been populated (excluding default values)
+                    let hasValue = false;
+                    let displayValue = '';
+                    
+                    if (field === 'is_recurring') {
+                      // Only show as populated if explicitly set to true (not default false)
+                      hasValue = currentValue === true;
+                      displayValue = hasValue ? 'true' : '';
+                    } else if (field === 'venue_city' || field === 'venue_state' || field === 'venue_ages') {
+                      // Check if value is different from defaults
+                      const defaults = { venue_city: 'Portland', venue_state: 'Oregon', venue_ages: '21+' };
+                      hasValue = currentValue && currentValue !== defaults[field as keyof typeof defaults];
+                      displayValue = hasValue ? String(currentValue) : '';
+                    } else {
+                      hasValue = currentValue && String(currentValue).trim() !== '';
+                      displayValue = hasValue ? String(currentValue) : '';
+                    }
                     
                     return (
                       <div 
                         key={field} 
-                        className={`p-2 rounded border ${
+                        className={`p-3 rounded border transition-colors ${
                           hasValue 
-                            ? 'bg-green-100 border-green-300 text-green-800' 
-                            : 'bg-white border-gray-200 text-gray-600'
+                            ? 'bg-green-100 border-green-300' 
+                            : 'bg-white border-gray-200'
                         }`}
                       >
-                        <span className="font-mono text-xs text-gray-500">#{index + 1}</span>{' '}
-                        <span className={hasValue ? 'font-medium' : ''}>{field}</span>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-mono text-xs text-gray-500">#{index + 1}</span>
+                          <span className={`text-sm ${hasValue ? 'font-semibold text-green-800' : 'text-gray-600'}`}>
+                            {field}
+                          </span>
+                        </div>
+                        {hasValue && (
+                          <div className="text-xs text-green-700 bg-green-50 p-1 rounded mt-1 break-words">
+                            {displayValue.length > 50 ? `${displayValue.slice(0, 50)}...` : displayValue}
+                          </div>
+                        )}
                       </div>
                     );
                   })}
