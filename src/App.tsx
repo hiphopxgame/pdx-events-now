@@ -50,6 +50,8 @@ const App = () => (
             <Route path="/media/:mediaSlug" element={<Content />} />
             <Route path="/account" element={<Account />} />
             <Route path="/submit-event" element={<SubmitEvent />} />
+            <Route path="/create-event" element={<SubmitEvent />} />
+            <Route path="/dashboard" element={<AdminProtectedRoute><AdminDashboard /></AdminProtectedRoute>} />
             <Route path="/my-events" element={<MyEvents />} />
             <Route path="/approve-events" element={<ManageEvents />} />
             <Route path="/manage-events" element={<ManageEvents />} />
