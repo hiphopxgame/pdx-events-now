@@ -164,6 +164,14 @@ const AdminDashboard = () => {
 
   const quickActions = [
     {
+      title: "Create Event",
+      description: "Create events with auto-import functionality",
+      icon: Calendar,
+      path: "/admin/create-event",
+      badge: null,
+      badgeVariant: "secondary" as const
+    },
+    {
       title: "Manage Events",
       description: "Review and approve submitted events",
       icon: Calendar,

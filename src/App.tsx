@@ -27,6 +27,7 @@ import MapTest from "./pages/MapTest";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import NotFound from "./pages/NotFound";
 import ManageImports from "./pages/ManageImports";
+import AdminCreateEvent from "./pages/AdminCreateEvent";
 
 const queryClient = new QueryClient();
 
@@ -54,6 +55,7 @@ const App = () => (
             <Route path="/manage-events" element={<ManageEvents />} />
             <Route path="/admin" element={<AdminProtectedRoute><AdminDashboard /></AdminProtectedRoute>} />
             <Route path="/admin/dashboard" element={<AdminProtectedRoute><AdminDashboard /></AdminProtectedRoute>} />
+            <Route path="/admin/create-event" element={<AdminProtectedRoute><AdminCreateEvent /></AdminProtectedRoute>} />
             <Route path="/admin/events" element={<AdminProtectedRoute><ManageEvents /></AdminProtectedRoute>} />
             <Route path="/admin/users" element={<AdminProtectedRoute><AdminUsers /></AdminProtectedRoute>} />
             <Route path="/admin/venues" element={<AdminProtectedRoute><AdminVenues /></AdminProtectedRoute>} />

@@ -13,6 +13,7 @@ export interface EventFormData {
   venue_instagram_url: string;
   venue_twitter_url: string;
   venue_youtube_url: string;
+  venue_ages: string;
   price_display: string;
   ticket_url: string;
   website_url: string;
