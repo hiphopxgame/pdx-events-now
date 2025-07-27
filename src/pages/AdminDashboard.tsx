@@ -168,7 +168,7 @@ const AdminDashboard = () => {
       description: "Create events with auto-import functionality",
       icon: Calendar,
       path: "/admin/create-event",
-      badge: null,
+      badge: "NEW",
       badgeVariant: "secondary" as const
     },
     {
