@@ -269,6 +269,12 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
       startDate = new Date().toISOString().split('T')[0];
     }
     
+    console.log('Debug venue parsing:', {
+      'Venue Name': eventData['Venue Name'],
+      'Venue City': eventData['Venue City'],
+      'Venue State': eventData['Venue State'],
+      allKeys: Object.keys(eventData)
+    });
     return {
       title: eventData['Event Title'] || 'Untitled Event',
       description: eventData['Event Description'] || null,
