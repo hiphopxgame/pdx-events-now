@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       appointments: {
         Row: {
+          admin_comments: string | null
           appointment_date: string
           appointment_time: string
           client_id: string
@@ -30,6 +31,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          admin_comments?: string | null
           appointment_date: string
           appointment_time: string
           client_id: string
@@ -44,6 +46,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          admin_comments?: string | null
           appointment_date?: string
           appointment_time?: string
           client_id?: string
@@ -251,12 +254,14 @@ export type Database = {
           allergies: string | null
           city: string | null
           created_at: string
+          email: string | null
           first_name: string
           hair_type: string | null
           id: string
           last_name: string
           phone: string | null
           preferred_contact: string | null
+          project_id: string
           state: string | null
           updated_at: string
           user_id: string
@@ -267,12 +272,14 @@ export type Database = {
           allergies?: string | null
           city?: string | null
           created_at?: string
+          email?: string | null
           first_name: string
           hair_type?: string | null
           id?: string
           last_name: string
           phone?: string | null
           preferred_contact?: string | null
+          project_id?: string
           state?: string | null
           updated_at?: string
           user_id: string
@@ -283,12 +290,14 @@ export type Database = {
           allergies?: string | null
           city?: string | null
           created_at?: string
+          email?: string | null
           first_name?: string
           hair_type?: string | null
           id?: string
           last_name?: string
           phone?: string | null
           preferred_contact?: string | null
+          project_id?: string
           state?: string | null
           updated_at?: string
           user_id?: string
@@ -689,6 +698,7 @@ export type Database = {
           duration_hours: number | null
           id: string
           name: string
+          project_id: string
         }
         Insert: {
           base_price?: number | null
@@ -697,6 +707,7 @@ export type Database = {
           duration_hours?: number | null
           id?: string
           name: string
+          project_id?: string
         }
         Update: {
           base_price?: number | null
@@ -705,6 +716,7 @@ export type Database = {
           duration_hours?: number | null
           id?: string
           name?: string
+          project_id?: string
         }
         Relationships: []
       }
@@ -1509,6 +1521,7 @@ export type Database = {
         Row: {
           actual_duration_minutes: number | null
           actual_duration_seconds: number | null
+          admin_notes: string | null
           assigned_employee_id: string | null
           completed_at: string | null
           created_at: string
@@ -1539,6 +1552,7 @@ export type Database = {
         Insert: {
           actual_duration_minutes?: number | null
           actual_duration_seconds?: number | null
+          admin_notes?: string | null
           assigned_employee_id?: string | null
           completed_at?: string | null
           created_at?: string
@@ -1569,6 +1583,7 @@ export type Database = {
         Update: {
           actual_duration_minutes?: number | null
           actual_duration_seconds?: number | null
+          admin_notes?: string | null
           assigned_employee_id?: string | null
           completed_at?: string | null
           created_at?: string
@@ -2326,6 +2341,7 @@ export type Database = {
           id: string
           image_url: string
           is_featured: boolean | null
+          project_id: string
           style_id: string | null
           title: string
           updated_at: string
@@ -2339,6 +2355,7 @@ export type Database = {
           id?: string
           image_url: string
           is_featured?: boolean | null
+          project_id?: string
           style_id?: string | null
           title: string
           updated_at?: string
@@ -2352,6 +2369,7 @@ export type Database = {
           id?: string
           image_url?: string
           is_featured?: boolean | null
+          project_id?: string
           style_id?: string | null
           title?: string
           updated_at?: string
