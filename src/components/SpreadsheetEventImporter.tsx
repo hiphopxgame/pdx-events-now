@@ -85,8 +85,8 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
       
       '"The Music Venue"',
       '"123 Main St, Suite 100"',
-      'Portland',
-      'Oregon',
+      '"Portland"',
+      '"Oregon"',
       '97201',
       '(503) 555-0123',
       'https://themusicvenue.com',
@@ -219,24 +219,28 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
     const events = [];
 
     for (let i = startIndex; i < lines.length; i++) {
-      const values = parseCSVLine(lines[i], delimiter).map(v => v.replace(/^"|"$/g, '').trim());
+      const values = parseCSVLine(lines[i], delimiter);
       
-      console.log(`Row ${i + 1} values:`, values);
+      console.log(`Row ${i + 1} raw line:`, lines[i]);
+      console.log(`Row ${i + 1} parsed values:`, values);
+      console.log(`Row ${i + 1} values after quote removal:`, values.map(v => v.replace(/^"|"$/g, '').trim()));
       
-      if (values.length !== headers.length) {
-        console.warn(`Row ${i + 1} has ${values.length} columns but expected ${headers.length}`);
+      const cleanedValues = values.map(v => v.replace(/^"|"$/g, '').trim());
+      
+      if (cleanedValues.length !== headers.length) {
+        console.warn(`Row ${i + 1} has ${cleanedValues.length} columns but expected ${headers.length}`);
         // Pad with empty strings if fewer columns, or truncate if more
-        while (values.length < headers.length) {
-          values.push('');
+        while (cleanedValues.length < headers.length) {
+          cleanedValues.push('');
         }
-        if (values.length > headers.length) {
-          values.splice(headers.length);
+        if (cleanedValues.length > headers.length) {
+          cleanedValues.splice(headers.length);
         }
       }
 
       const eventData: any = {};
       headers.forEach((header, index) => {
-        const value = values[index] || '';
+        const value = cleanedValues[index] || '';
         eventData[header] = value === '' ? null : value;
       });
 
