@@ -510,9 +510,8 @@ const AdminCreateEvent = () => {
                     <Controller
                       name="venue_ages"
                       control={control}
-                      defaultValue="21+"
                       render={({ field }) => (
-                        <Select onValueChange={field.onChange} value={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value || "21+"}>
                           <SelectTrigger>
                             <SelectValue placeholder="Select age restriction" />
                           </SelectTrigger>
@@ -533,7 +532,17 @@ const AdminCreateEvent = () => {
                   
                   <div>
                     <Label htmlFor="venue_city">City</Label>
-                    <Input {...register('venue_city')} />
+                    <Controller
+                      name="venue_city"
+                      control={control}
+                      render={({ field }) => (
+                        <Input 
+                          {...field}
+                          value={field.value || "Portland"}
+                          placeholder="Enter city"
+                        />
+                      )}
+                    />
                   </div>
                   
                   <div>
