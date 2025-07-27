@@ -146,27 +146,28 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
 
       if (char === '"') {
         if (inQuotes && nextChar === '"') {
-          // Escaped quote
+          // Escaped quote - add literal quote to current field
           current += '"';
           i += 2;
         } else {
-          // Toggle quote state
+          // Toggle quote state - don't add the quote character itself
           inQuotes = !inQuotes;
           i++;
         }
       } else if (char === delimiter && !inQuotes) {
-        // End of field
-        result.push(current.trim());
+        // End of field - only split on delimiter when not inside quotes
+        result.push(current);
         current = '';
         i++;
       } else {
+        // Regular character - add to current field
         current += char;
         i++;
       }
     }
 
     // Add the last field
-    result.push(current.trim());
+    result.push(current);
     return result;
   };
 
