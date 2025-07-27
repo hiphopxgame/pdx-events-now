@@ -15,6 +15,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import AdminProtectedRoute from '@/components/AdminProtectedRoute';
 import { Calendar, Copy, Wand2 } from 'lucide-react';
+import { getRecurrenceTypeFromPattern } from '@/utils/recurrenceUtils';
 
 interface AdminEventFormData {
   title: string;
@@ -97,6 +98,13 @@ const AdminCreateEvent = () => {
       // Handle boolean fields
       if (field === 'is_recurring') {
         setValue(field as keyof AdminEventFormData, value.toLowerCase() === 'true');
+      } else if (field === 'recurrence_pattern') {
+        // Auto-detect recurrence type from pattern
+        const autoType = getRecurrenceTypeFromPattern(value);
+        setValue('recurrence_pattern', value);
+        if (autoType) {
+          setValue('recurrence_type', autoType);
+        }
       } else {
         setValue(field as keyof AdminEventFormData, value);
       }
@@ -408,7 +416,19 @@ const AdminCreateEvent = () => {
                       
                       <div>
                         <Label htmlFor="recurrence_pattern">Recurrence Pattern</Label>
-                        <Input {...register('recurrence_pattern')} placeholder="every/1st/2nd/3rd/4th/last" />
+                        <Input 
+                          {...register('recurrence_pattern')} 
+                          placeholder="every-monday, first-tuesday, last-friday"
+                          onChange={(e) => {
+                            const pattern = e.target.value;
+                            setValue('recurrence_pattern', pattern);
+                            // Auto-detect type from pattern
+                            const autoType = getRecurrenceTypeFromPattern(pattern);
+                            if (autoType) {
+                              setValue('recurrence_type', autoType);
+                            }
+                          }}
+                        />
                       </div>
                       
                       <div>

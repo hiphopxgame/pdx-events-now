@@ -12,6 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { UseFormRegister } from 'react-hook-form';
 import { RecurrenceSelector } from './RecurrenceSelector';
 import { EventFormData } from './types';
+import { getRecurrenceTypeFromPattern } from '@/utils/recurrenceUtils';
 
 interface EventDateTimeStepProps {
   register: UseFormRegister<EventFormData>;
@@ -26,6 +27,8 @@ interface EventDateTimeStepProps {
   onNext: () => void;
   setValue?: (name: keyof EventFormData, value: any) => void;
   watch?: (name: keyof EventFormData) => any;
+  recurrenceType?: string;
+  setRecurrenceType?: (value: string) => void;
 }
 
 export const EventDateTimeStep: React.FC<EventDateTimeStepProps> = ({
@@ -41,7 +44,18 @@ export const EventDateTimeStep: React.FC<EventDateTimeStepProps> = ({
   onNext,
   setValue,
   watch,
+  recurrenceType,
+  setRecurrenceType,
 }) => {
+  // Automatically determine recurrence type from pattern
+  useEffect(() => {
+    if (recurringType && setRecurrenceType) {
+      const autoType = getRecurrenceTypeFromPattern(recurringType);
+      if (autoType && autoType !== recurrenceType) {
+        setRecurrenceType(autoType);
+      }
+    }
+  }, [recurringType, recurrenceType, setRecurrenceType]);
   // Set default date to today if not set
   useEffect(() => {
     if (!startDate) {
