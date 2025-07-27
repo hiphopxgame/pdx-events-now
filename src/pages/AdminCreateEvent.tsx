@@ -509,10 +509,10 @@ const AdminCreateEvent = () => {
                     <Label htmlFor="venue_ages">Age Restriction</Label>
                     <Select 
                       onValueChange={(value) => setValue('venue_ages', value)}
-                      value={watch('venue_ages')}
+                      value={watch('venue_ages') || '21+'}
                     >
                       <SelectTrigger>
-                        <SelectValue />
+                        <SelectValue placeholder="Select age restriction" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="All Ages">All Ages</SelectItem>
