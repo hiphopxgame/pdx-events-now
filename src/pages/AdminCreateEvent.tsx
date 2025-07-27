@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -67,7 +67,7 @@ const AdminCreateEvent = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   
-  const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<AdminEventFormData>({
+  const { register, handleSubmit, setValue, watch, reset, control, formState: { errors } } = useForm<AdminEventFormData>({
     defaultValues: {
       venue_city: 'Portland',
       venue_state: 'Oregon',
@@ -507,19 +507,23 @@ const AdminCreateEvent = () => {
                   
                   <div>
                     <Label htmlFor="venue_ages">Age Restriction</Label>
-                    <Select 
-                      onValueChange={(value) => setValue('venue_ages', value)}
-                      value={watch('venue_ages') || '21+'}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select age restriction" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="All Ages">All Ages</SelectItem>
-                        <SelectItem value="18+">18+</SelectItem>
-                        <SelectItem value="21+">21+</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Controller
+                      name="venue_ages"
+                      control={control}
+                      defaultValue="21+"
+                      render={({ field }) => (
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select age restriction" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="All Ages">All Ages</SelectItem>
+                            <SelectItem value="18+">18+</SelectItem>
+                            <SelectItem value="21+">21+</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
                   </div>
                   
                   <div className="md:col-span-2">
