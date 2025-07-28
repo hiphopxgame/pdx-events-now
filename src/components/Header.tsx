@@ -5,6 +5,7 @@ import { Calendar, Plus, User, LogOut, CheckCircle, MapPin, Shield, Users, Build
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserRoles } from '@/hooks/useUserRoles';
+import { getCurrentDomainConfig } from '@/utils/domainConfig';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,6 +17,7 @@ export const Header = () => {
   const { user, signOut } = useAuth();
   const { isAdmin } = useUserRoles();
   const navigate = useNavigate();
+  const domainConfig = getCurrentDomainConfig();
 
   const handleNavClick = (path: string, event?: React.MouseEvent) => {
     console.log('Navigation clicked:', path);
@@ -44,7 +46,7 @@ export const Header = () => {
             className="flex items-center space-x-2 text-2xl font-bold text-primary hover:text-primary/80 transition-colors"
           >
             <Calendar className="h-8 w-8" />
-            <span>Portland.Events</span>
+            <span>{domainConfig.branding.primary}</span>
           </Link>
           
           <nav className="hidden md:flex space-x-1">

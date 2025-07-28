@@ -1,8 +1,55 @@
 
 import { Event, UseEventsOptions } from './types';
+import { getLocationFilter } from '@/utils/domainConfig';
 
 export const applyEventFilters = (events: Event[], options: UseEventsOptions): Event[] => {
-  let filteredEvents = events;
+  let filteredEvents = [...events];
+
+  // Location filter based on domain
+  const locationFilter = getLocationFilter();
+  if (locationFilter) {
+    filteredEvents = filteredEvents.filter(event => {
+      // If no location filter is set, show all events (Public.Events)
+      if (!locationFilter.cities && !locationFilter.states && !locationFilter.regions) {
+        return true;
+      }
+
+      const eventCity = event.venue_city?.toLowerCase() || '';
+      const eventState = event.venue_state?.toLowerCase() || '';
+
+      // Check cities
+      if (locationFilter.cities) {
+        const matchesCity = locationFilter.cities.some(city => 
+          eventCity.includes(city.toLowerCase())
+        );
+        if (matchesCity) return true;
+      }
+
+      // Check states
+      if (locationFilter.states) {
+        const matchesState = locationFilter.states.some(state => 
+          eventState.includes(state.toLowerCase()) || 
+          eventState === state.toLowerCase()
+        );
+        if (matchesState) return true;
+      }
+
+      // Check regions (for venue names or descriptions that might mention regions)
+      if (locationFilter.regions) {
+        const venueName = event.venue_name?.toLowerCase() || '';
+        const description = event.description?.toLowerCase() || '';
+        const matchesRegion = locationFilter.regions.some(region => 
+          venueName.includes(region.toLowerCase()) ||
+          description.includes(region.toLowerCase()) ||
+          eventCity.includes(region.toLowerCase())
+        );
+        if (matchesRegion) return true;
+      }
+
+      // If location filter is set but no matches found, exclude the event
+      return false;
+    });
+  }
 
   if (options.searchTerm) {
     filteredEvents = filteredEvents.filter(event =>

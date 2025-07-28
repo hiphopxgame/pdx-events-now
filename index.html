@@ -4,20 +4,65 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Portland.Events</title>
-    <meta name="description" content="Discover the events and venues while exploring the local community of Portland, Oregon." />
-    <meta name="author" content="Portland.Events" />
+    <title id="dynamic-title">Events</title>
+    <meta id="dynamic-description" name="description" content="Discover events and venues." />
+    <meta id="dynamic-author" name="author" content="Events" />
 
-    <meta property="og:title" content="Portland.Events" />
+    <meta id="dynamic-og-title" property="og:title" content="Events" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://portland.events" />
-    <meta property="og:image" content="https://portland.events/assets/logo_bridge.png" />
-    <meta property="og:description" content="Discover the events and venues while exploring the local community of Portland, Oregon." />
-    <meta property="og:site_name" content="Portland.Events" />
+    <meta id="dynamic-og-url" property="og:url" content="" />
+    <meta id="dynamic-og-image" property="og:image" content="/assets/logo_bridge.png" />
+    <meta id="dynamic-og-description" property="og:description" content="Discover events and venues." />
+    <meta id="dynamic-og-site-name" property="og:site_name" content="Events" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@PortlandEvents" />
-    <meta name="twitter:image" content="https://portland.events/assets/logo_bridge.png" />
+    <meta id="dynamic-twitter-site" name="twitter:site" content="@Events" />
+    <meta id="dynamic-twitter-image" name="twitter:image" content="/assets/logo_bridge.png" />
+    
+    <script>
+      // Dynamic meta tag updates based on domain
+      (function() {
+        const hostname = window.location.hostname.toLowerCase();
+        const configs = {
+          'public.events': {
+            title: 'Public.Events - Discover Events Worldwide',
+            description: 'Discover events and venues from around the world.',
+            author: 'Public.Events',
+            siteName: 'Public.Events'
+          },
+          'dmv.events': {
+            title: 'DMV.Events - Discover DC Metro Area Events',
+            description: 'Discover events and venues in the Washington DC Metro Area.',
+            author: 'DMV.Events',
+            siteName: 'DMV.Events'
+          },
+          'portland.events': {
+            title: 'Portland.Events - Discover Portland, Oregon Events',
+            description: 'Discover the events and venues while exploring the local community of Portland, Oregon.',
+            author: 'Portland.Events',
+            siteName: 'Portland.Events'
+          }
+        };
+        
+        let config = configs['portland.events']; // default
+        for (const domain in configs) {
+          if (hostname.endsWith(domain)) {
+            config = configs[domain];
+            break;
+          }
+        }
+        
+        document.getElementById('dynamic-title').textContent = config.title;
+        document.getElementById('dynamic-description').setAttribute('content', config.description);
+        document.getElementById('dynamic-author').setAttribute('content', config.author);
+        document.getElementById('dynamic-og-title').setAttribute('content', config.title);
+        document.getElementById('dynamic-og-url').setAttribute('content', window.location.origin);
+        document.getElementById('dynamic-og-description').setAttribute('content', config.description);
+        document.getElementById('dynamic-og-site-name').setAttribute('content', config.siteName);
+        document.getElementById('dynamic-twitter-site').setAttribute('content', '@' + config.siteName.replace('.', ''));
+        document.title = config.title;
+      })();
+    </script>
   </head>
 
   <body>

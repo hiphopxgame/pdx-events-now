@@ -1,9 +1,11 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getCurrentDomainConfig } from '@/utils/domainConfig';
 
 export const Hero = () => {
   const navigate = useNavigate();
+  const domainConfig = getCurrentDomainConfig();
 
   const handleBrowseEvents = (e?: React.MouseEvent) => {
     console.log('Browse Events clicked');
@@ -36,12 +38,10 @@ export const Hero = () => {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Discover Portland's
-            <span className="block text-brand-yellow">Best Events</span>
+            {domainConfig.branding.heroTitle}
           </h1>
           <p className="text-xl md:text-2xl mb-8 text-white/90 max-w-3xl mx-auto">
-            From food festivals to indie concerts, tech meetups to outdoor adventures - 
-            find your next Portland experience here.
+            {domainConfig.branding.heroSubtitle}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button 
