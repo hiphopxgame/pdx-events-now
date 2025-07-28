@@ -179,6 +179,12 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
     const cleanedResult = result.map((field, index) => {
       let cleaned = field;
       
+      // Special debug for Portland issue
+      if (field.toLowerCase().includes('portland')) {
+        console.log(`🚨 PORTLAND DETECTED - Raw field: "${field}" (length: ${field.length})`);
+        console.log(`🚨 Character codes:`, field.split('').map(c => c.charCodeAt(0)));
+      }
+      
       // Handle quoted fields: remove outer quotes only if field starts AND ends with quotes
       if (cleaned.length >= 2 && cleaned.startsWith('"') && cleaned.endsWith('"')) {
         cleaned = cleaned.slice(1, -1);
@@ -191,6 +197,12 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
       
       // Always trim whitespace
       cleaned = cleaned.trim();
+      
+      // Special debug for Portland issue after cleaning
+      if (cleaned.toLowerCase().includes('portland')) {
+        console.log(`🚨 PORTLAND AFTER CLEANING: "${cleaned}" (length: ${cleaned.length})`);
+        console.log(`🚨 Character codes after cleaning:`, cleaned.split('').map(c => c.charCodeAt(0)));
+      }
       
       console.log(`Field ${index}: Final value "${cleaned}"`);
       return cleaned;
