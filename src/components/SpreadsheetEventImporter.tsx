@@ -215,6 +215,7 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
     }
     
     console.log('Parsed headers:', headers);
+    console.log('Header count:', headers.length);
 
     const events = [];
 
@@ -273,12 +274,25 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
       startDate = new Date().toISOString().split('T')[0];
     }
     
-    console.log('Debug venue parsing:', {
-      'Venue Name': eventData['Venue Name'],
-      'Venue City': eventData['Venue City'],
-      'Venue State': eventData['Venue State'],
-      allKeys: Object.keys(eventData)
+    // Extract and validate venue data
+    const venueName = eventData['Venue Name'];
+    const venueCity = eventData['Venue City'];
+    const venueState = eventData['Venue State'];
+    const venueZip = eventData['Venue Zip'];
+    
+    console.log('DEBUG Event transformation - venue fields:', {
+      'venueName': venueName,
+      'venueCity': venueCity,
+      'venueState': venueState,
+      'venueZip': venueZip,
+      'venueName_type': typeof venueName,
+      'venueCity_type': typeof venueCity,
+      'venueState_type': typeof venueState,
+      'venueZip_type': typeof venueZip,
+      'allEventDataKeys': Object.keys(eventData),
+      'allEventDataValues': Object.values(eventData)
     });
+    
     return {
       title: eventData['Event Title'] || 'Untitled Event',
       description: eventData['Event Description'] || null,
@@ -298,11 +312,11 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
       twitter_url: eventData['Event Twitter URL'] || null,
       youtube_url: eventData['Event YouTube URL'] || null,
       image_url: eventData['Event Image URL'] || null,
-      venue_name: eventData['Venue Name'] || 'TBA',
+      venue_name: venueName || 'TBA',
       venue_address: eventData['Venue Address'] || null,
-      venue_city: eventData['Venue City'] || 'Portland',
-      venue_state: eventData['Venue State'] || 'Oregon',
-      venue_zip: eventData['Venue Zip'] || null,
+      venue_city: venueCity && typeof venueCity === 'string' && venueCity.trim() !== '' ? venueCity.trim() : 'Portland',
+      venue_state: venueState && typeof venueState === 'string' && venueState.trim() !== '' ? venueState.trim() : 'Oregon',
+      venue_zip: venueZip && typeof venueZip === 'string' && venueZip.trim() !== '' ? venueZip.trim() : null,
       api_source: 'import',
       external_id: `import-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
     };
@@ -310,34 +324,61 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
 
   const transformVenueForStaging = (eventData: any) => {
     const venueName = eventData['Venue Name'];
-    console.log('Transforming venue data:', {
-      venueName,
-      allEventData: eventData
+    const venueCity = eventData['Venue City'];
+    const venueAges = eventData['Venue Ages (21+/18+/All Ages)'];
+    
+    console.log('DEBUG Venue transformation:', {
+      'venueName': venueName,
+      'venueCity': venueCity,
+      'venueAges': venueAges,
+      'venueName_type': typeof venueName,
+      'venueCity_type': typeof venueCity,
+      'venueAges_type': typeof venueAges,
+      'allEventDataKeys': Object.keys(eventData),
+      'allEventDataValues': Object.values(eventData)
     });
     
-    if (!venueName || venueName === 'TBA' || venueName.trim() === '') {
+    if (!venueName || venueName === 'TBA' || (typeof venueName === 'string' && venueName.trim() === '')) {
       console.log('Skipping venue - no valid name');
       return null;
     }
 
+    // Ensure proper string handling for venue_city
+    let processedVenueCity = 'Portland'; // default
+    if (venueCity && typeof venueCity === 'string' && venueCity.trim() !== '') {
+      processedVenueCity = venueCity.trim();
+    } else if (venueCity) {
+      // Handle case where it might not be a string
+      processedVenueCity = String(venueCity).trim() || 'Portland';
+    }
+
+    // Ensure proper string handling for venue_ages
+    let processedVenueAges = '21+'; // default
+    if (venueAges && typeof venueAges === 'string' && venueAges.trim() !== '') {
+      processedVenueAges = venueAges.trim();
+    } else if (venueAges) {
+      // Handle case where it might not be a string
+      processedVenueAges = String(venueAges).trim() || '21+';
+    }
+
     const venueData = {
-      name: venueName.trim(),
-      address: eventData['Venue Address']?.trim() || null,
-      city: eventData['Venue City']?.trim() || 'Portland',
-      state: eventData['Venue State']?.trim() || 'Oregon', 
-      zip_code: eventData['Venue Zip']?.trim() || null,
-      phone: eventData['Venue Phone']?.trim() || null,
-      website: eventData['Venue Website']?.trim() || null,
-      facebook_url: eventData['Venue Facebook URL']?.trim() || null,
-      instagram_url: eventData['Venue Instagram URL']?.trim() || null,
-      twitter_url: eventData['Venue Twitter URL']?.trim() || null,
-      youtube_url: eventData['Venue YouTube URL']?.trim() || null,
-      image_urls: eventData['Venue Image URL']?.trim() ? [eventData['Venue Image URL'].trim()] : null,
-      ages: eventData['Venue Ages (21+/18+/All Ages)']?.trim() || '21+',
+      name: typeof venueName === 'string' ? venueName.trim() : String(venueName).trim(),
+      address: eventData['Venue Address'] && typeof eventData['Venue Address'] === 'string' ? eventData['Venue Address'].trim() || null : null,
+      city: processedVenueCity,
+      state: eventData['Venue State'] && typeof eventData['Venue State'] === 'string' ? eventData['Venue State'].trim() || 'Oregon' : 'Oregon',
+      zip_code: eventData['Venue Zip'] && typeof eventData['Venue Zip'] === 'string' ? eventData['Venue Zip'].trim() || null : null,
+      phone: eventData['Venue Phone'] && typeof eventData['Venue Phone'] === 'string' ? eventData['Venue Phone'].trim() || null : null,
+      website: eventData['Venue Website'] && typeof eventData['Venue Website'] === 'string' ? eventData['Venue Website'].trim() || null : null,
+      facebook_url: eventData['Venue Facebook URL'] && typeof eventData['Venue Facebook URL'] === 'string' ? eventData['Venue Facebook URL'].trim() || null : null,
+      instagram_url: eventData['Venue Instagram URL'] && typeof eventData['Venue Instagram URL'] === 'string' ? eventData['Venue Instagram URL'].trim() || null : null,
+      twitter_url: eventData['Venue Twitter URL'] && typeof eventData['Venue Twitter URL'] === 'string' ? eventData['Venue Twitter URL'].trim() || null : null,
+      youtube_url: eventData['Venue YouTube URL'] && typeof eventData['Venue YouTube URL'] === 'string' ? eventData['Venue YouTube URL'].trim() || null : null,
+      image_urls: eventData['Venue Image URL'] && typeof eventData['Venue Image URL'] === 'string' && eventData['Venue Image URL'].trim() ? [eventData['Venue Image URL'].trim()] : null,
+      ages: processedVenueAges,
       api_source: 'import'
     };
     
-    console.log('Transformed venue data:', venueData);
+    console.log('DEBUG Transformed venue data:', venueData);
     return venueData;
   };
 
