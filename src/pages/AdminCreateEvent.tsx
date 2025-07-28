@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import AdminProtectedRoute from '@/components/AdminProtectedRoute';
+import SpreadsheetEventImporter from '@/components/SpreadsheetEventImporter';
 import { Calendar, Copy, Wand2 } from 'lucide-react';
 import { getRecurrenceTypeFromPattern } from '@/utils/recurrenceUtils';
 
@@ -75,6 +76,53 @@ const AdminCreateEvent = () => {
       is_recurring: false
     }
   });
+
+  const handleImportedEvents = (events: any[]) => {
+    if (events.length === 0) return;
+    
+    // Use the first event to populate the manual form
+    const firstEvent = events[0];
+    setIsProcessing(true);
+    
+    // Map the imported event data to form fields
+    setValue('title', firstEvent.title || '');
+    setValue('description', firstEvent.description || '');
+    setValue('category', firstEvent.category || '');
+    setValue('start_date', firstEvent.start_date || '');
+    setValue('start_time', firstEvent.start_time || '');
+    setValue('end_time', firstEvent.end_time || '');
+    setValue('is_recurring', firstEvent.is_recurring || false);
+    setValue('recurrence_type', firstEvent.recurrence_type || '');
+    setValue('recurrence_pattern', firstEvent.recurrence_pattern || '');
+    setValue('recurrence_end_date', firstEvent.recurrence_end_date || '');
+    setValue('price_display', firstEvent.price_display || '');
+    setValue('ticket_url', firstEvent.ticket_url || '');
+    setValue('website_url', firstEvent.website_url || '');
+    setValue('facebook_url', firstEvent.facebook_url || '');
+    setValue('instagram_url', firstEvent.instagram_url || '');
+    setValue('twitter_url', firstEvent.twitter_url || '');
+    setValue('youtube_url', firstEvent.youtube_url || '');
+    setValue('image_url', firstEvent.image_url || '');
+    setValue('venue_name', firstEvent.venue_name || '');
+    setValue('venue_address', firstEvent.venue_address || '');
+    setValue('venue_city', firstEvent.venue_city || 'Portland');
+    setValue('venue_state', firstEvent.venue_state || 'Oregon');
+    setValue('venue_zip', firstEvent.venue_zip || '');
+    setValue('venue_phone', firstEvent.venue_phone || '');
+    setValue('venue_website', firstEvent.venue_website || '');
+    setValue('venue_facebook_url', firstEvent.venue_facebook_url || '');
+    setValue('venue_instagram_url', firstEvent.venue_instagram_url || '');
+    setValue('venue_twitter_url', firstEvent.venue_twitter_url || '');
+    setValue('venue_youtube_url', firstEvent.venue_youtube_url || '');
+    setValue('venue_image_url', firstEvent.venue_image_url || '');
+    setValue('venue_ages', firstEvent.venue_ages || '21+');
+
+    setIsProcessing(false);
+    toast({
+      title: "Data Imported",
+      description: "Event data has been populated from the spreadsheet import.",
+    });
+  };
 
   const parseRowData = (rowData: string) => {
     // Split by tabs first (Excel/Google Sheets format), then by commas as fallback
@@ -280,12 +328,17 @@ const AdminCreateEvent = () => {
             </p>
           </div>
 
-          {/* Auto Import Section */}
+          {/* Spreadsheet Import Section */}
+          <SpreadsheetEventImporter 
+            onEventsImported={handleImportedEvents}
+          />
+
+          {/* Quick Import Section */}
           <Card className="mb-8">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Wand2 className="h-5 w-5" />
-                Auto Import from Template Data
+                Quick Import from Template Data
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">

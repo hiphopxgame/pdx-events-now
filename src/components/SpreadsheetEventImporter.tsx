@@ -364,6 +364,14 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
       venue_city: venueCity && typeof venueCity === 'string' && venueCity.trim() !== '' ? venueCity.trim() : 'Portland',
       venue_state: venueState && typeof venueState === 'string' && venueState.trim() !== '' ? venueState.trim() : 'Oregon',
       venue_zip: venueZip && typeof venueZip === 'string' && venueZip.trim() !== '' ? venueZip.trim() : null,
+      venue_phone: eventData['Venue Phone'] || null,
+      venue_website: eventData['Venue Website'] || null,
+      venue_facebook_url: eventData['Venue Facebook URL'] || null,
+      venue_instagram_url: eventData['Venue Instagram URL'] || null,
+      venue_twitter_url: eventData['Venue Twitter URL'] || null,
+      venue_youtube_url: eventData['Venue YouTube URL'] || null,
+      venue_image_url: eventData['Venue Image URL'] || null,
+      venue_ages: eventData['Venue Ages (21+/18+/All Ages)'] || '21+',
       api_source: 'import',
       external_id: `import-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
     };
