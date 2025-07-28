@@ -228,14 +228,22 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
       
       const cleanedValues = values.map(v => v.replace(/^"|"$/g, '').trim());
       
+      // CRITICAL FIX: Ensure we have enough columns - pad with empty strings if needed
       if (cleanedValues.length !== headers.length) {
         console.warn(`Row ${i + 1} has ${cleanedValues.length} columns but expected ${headers.length}`);
-        // Pad with empty strings if fewer columns, or truncate if more
+        console.warn(`Missing fields will be defaulted. Headers:`, headers);
+        console.warn(`Values received:`, cleanedValues);
+        
+        // Pad with empty strings if fewer columns
         while (cleanedValues.length < headers.length) {
           cleanedValues.push('');
+          console.log(`Padded column ${cleanedValues.length - 1} with empty string`);
         }
+        
+        // Truncate if more columns
         if (cleanedValues.length > headers.length) {
-          cleanedValues.splice(headers.length);
+          const extraValues = cleanedValues.splice(headers.length);
+          console.warn(`Truncated extra values:`, extraValues);
         }
       }
 
@@ -243,9 +251,19 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
       headers.forEach((header, index) => {
         const value = cleanedValues[index] || '';
         eventData[header] = value === '' ? null : value;
+        
+        // Special logging for venue_ages field
+        if (header === 'Venue Ages (21+/18+/All Ages)') {
+          console.log(`VENUE_AGES DEBUG - Header: "${header}", Index: ${index}, Raw Value: "${cleanedValues[index]}", Final Value: "${eventData[header]}"`);
+        }
       });
 
       console.log('Parsed event data:', eventData);
+      
+      // Extra verification for venue_ages
+      const venueAgesValue = eventData['Venue Ages (21+/18+/All Ages)'];
+      console.log(`FINAL VENUE_AGES CHECK: "${venueAgesValue}" (type: ${typeof venueAgesValue})`);
+      
       events.push(eventData);
     }
 
