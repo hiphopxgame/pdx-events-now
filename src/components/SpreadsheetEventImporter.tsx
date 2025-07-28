@@ -135,83 +135,60 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
   };
 
   const parseCSVLine = (line: string, delimiter: string): string[] => {
-    const result: string[] = [];
-    let current = '';
+    // Simple, robust CSV parser that handles the Portland issue
+    const fields: string[] = [];
+    let currentField = '';
     let inQuotes = false;
-    let i = 0;
-
-    console.log('=== CSV PARSING DEBUG ===');
-    console.log('Raw line:', JSON.stringify(line));
-    console.log('Delimiter:', delimiter === '\t' ? 'TAB' : 'COMMA');
-
-    while (i < line.length) {
+    
+    console.log('🔍 PARSING LINE:', JSON.stringify(line));
+    
+    for (let i = 0; i < line.length; i++) {
       const char = line[i];
-      const nextChar = line[i + 1];
-
+      
       if (char === '"') {
-        if (inQuotes && nextChar === '"') {
-          // Escaped quote - add literal quote to current field
-          current += '"';
-          i += 2;
-        } else {
-          // Toggle quote state - don't add the quote character itself
-          inQuotes = !inQuotes;
+        if (inQuotes && line[i + 1] === '"') {
+          // Escaped quote: add one quote and skip next
+          currentField += '"';
           i++;
+        } else {
+          // Toggle quote mode
+          inQuotes = !inQuotes;
         }
       } else if (char === delimiter && !inQuotes) {
-        // End of field - add current field and reset
-        result.push(current);
-        current = '';
-        i++;
+        // Field separator outside quotes
+        fields.push(currentField.trim());
+        currentField = '';
       } else {
-        // Regular character - add to current field
-        current += char;
-        i++;
+        // Regular character
+        currentField += char;
       }
     }
-
-    // Add the last field
-    result.push(current);
     
-    console.log('Raw parsed fields:', result.map((field, i) => `${i}: "${field}"`));
+    // Add the final field
+    fields.push(currentField.trim());
     
-    // Clean each field properly
-    const cleanedResult = result.map((field, index) => {
+    // Clean each field: remove surrounding quotes if present
+    const cleanedFields = fields.map((field, index) => {
       let cleaned = field;
       
-      // Special debug for Portland issue
-      if (field.toLowerCase().includes('portland')) {
-        console.log(`🚨 PORTLAND DETECTED - Raw field: "${field}" (length: ${field.length})`);
-        console.log(`🚨 Character codes:`, field.split('').map(c => c.charCodeAt(0)));
-      }
-      
-      // Handle quoted fields: remove outer quotes only if field starts AND ends with quotes
-      if (cleaned.length >= 2 && cleaned.startsWith('"') && cleaned.endsWith('"')) {
+      // Remove surrounding quotes if both present
+      if (cleaned.startsWith('"') && cleaned.endsWith('"') && cleaned.length >= 2) {
         cleaned = cleaned.slice(1, -1);
-        console.log(`Field ${index}: Removed quotes from "${field}" -> "${cleaned}"`);
-      } else if (cleaned.startsWith('"') && !cleaned.endsWith('"')) {
-        // Handle malformed quotes like "Portland (missing closing quote)
-        cleaned = cleaned.slice(1);
-        console.log(`Field ${index}: Removed leading quote from "${field}" -> "${cleaned}"`);
       }
       
-      // Always trim whitespace
-      cleaned = cleaned.trim();
-      
-      // Special debug for Portland issue after cleaning
-      if (cleaned.toLowerCase().includes('portland')) {
-        console.log(`🚨 PORTLAND AFTER CLEANING: "${cleaned}" (length: ${cleaned.length})`);
-        console.log(`🚨 Character codes after cleaning:`, cleaned.split('').map(c => c.charCodeAt(0)));
+      // Debug Portland specifically
+      if (cleaned.toLowerCase().includes('portland') || field.toLowerCase().includes('portland')) {
+        console.log(`🚨 PORTLAND FIELD ${index}:`);
+        console.log(`  Raw: "${field}"`);
+        console.log(`  Cleaned: "${cleaned}"`);
+        console.log(`  Length: ${cleaned.length}`);
       }
       
-      console.log(`Field ${index}: Final value "${cleaned}"`);
       return cleaned;
     });
     
-    console.log('Final cleaned fields:', cleanedResult.map((field, i) => `${i}: "${field}"`));
-    console.log('=== END CSV PARSING DEBUG ===');
-    
-    return cleanedResult;
+    console.log('📋 PARSED FIELDS:', cleanedFields.map((f, i) => `${i}:"${f}"`));
+    return cleanedFields;
   };
 
   const parseSpreadsheetData = (data: string) => {
