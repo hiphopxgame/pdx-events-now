@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_accounts: {
+        Row: {
+          created_at: string | null
+          email: string
+          full_name: string
+          id: string
+          is_active: boolean | null
+          project_id: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          full_name: string
+          id?: string
+          is_active?: boolean | null
+          project_id?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          full_name?: string
+          id?: string
+          is_active?: boolean | null
+          project_id?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       appointments: {
         Row: {
           admin_comments: string | null
@@ -1280,6 +1313,260 @@ export type Database = {
         }
         Relationships: []
       }
+      iwitty_admin_accounts: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          is_active: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      iwitty_appointments: {
+        Row: {
+          admin_comments: string | null
+          appointment_date: string
+          appointment_time: string
+          client_id: string
+          confirmation_sent: boolean | null
+          created_at: string
+          estimated_duration: number | null
+          id: string
+          price_quote: number | null
+          special_requests: string | null
+          status: string
+          style_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          admin_comments?: string | null
+          appointment_date: string
+          appointment_time: string
+          client_id: string
+          confirmation_sent?: boolean | null
+          created_at?: string
+          estimated_duration?: number | null
+          id?: string
+          price_quote?: number | null
+          special_requests?: string | null
+          status?: string
+          style_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          admin_comments?: string | null
+          appointment_date?: string
+          appointment_time?: string
+          client_id?: string
+          confirmation_sent?: boolean | null
+          created_at?: string
+          estimated_duration?: number | null
+          id?: string
+          price_quote?: number | null
+          special_requests?: string | null
+          status?: string
+          style_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_iwitty_appointments_client_profile"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "iwitty_profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "iwitty_appointments_style_id_fkey"
+            columns: ["style_id"]
+            isOneToOne: false
+            referencedRelation: "iwitty_hair_styles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      iwitty_hair_styles: {
+        Row: {
+          base_price: number | null
+          created_at: string
+          description: string | null
+          duration_hours: number | null
+          id: string
+          name: string
+        }
+        Insert: {
+          base_price?: number | null
+          created_at?: string
+          description?: string | null
+          duration_hours?: number | null
+          id?: string
+          name: string
+        }
+        Update: {
+          base_price?: number | null
+          created_at?: string
+          description?: string | null
+          duration_hours?: number | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      iwitty_portfolio_images: {
+        Row: {
+          client_name: string | null
+          completion_date: string | null
+          created_at: string
+          description: string | null
+          display_order: number | null
+          id: string
+          image_url: string
+          is_featured: boolean | null
+          style_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          client_name?: string | null
+          completion_date?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_url: string
+          is_featured?: boolean | null
+          style_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          client_name?: string | null
+          completion_date?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_url?: string
+          is_featured?: boolean | null
+          style_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "iwitty_portfolio_images_style_id_fkey"
+            columns: ["style_id"]
+            isOneToOne: false
+            referencedRelation: "iwitty_hair_styles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      iwitty_profiles: {
+        Row: {
+          address: string | null
+          allergies: string | null
+          city: string | null
+          created_at: string
+          email: string | null
+          first_name: string
+          hair_type: string | null
+          id: string
+          last_name: string
+          phone: string | null
+          preferred_contact: string | null
+          state: string | null
+          updated_at: string
+          user_id: string
+          zip_code: string | null
+        }
+        Insert: {
+          address?: string | null
+          allergies?: string | null
+          city?: string | null
+          created_at?: string
+          email?: string | null
+          first_name: string
+          hair_type?: string | null
+          id?: string
+          last_name: string
+          phone?: string | null
+          preferred_contact?: string | null
+          state?: string | null
+          updated_at?: string
+          user_id: string
+          zip_code?: string | null
+        }
+        Update: {
+          address?: string | null
+          allergies?: string | null
+          city?: string | null
+          created_at?: string
+          email?: string | null
+          first_name?: string
+          hair_type?: string | null
+          id?: string
+          last_name?: string
+          phone?: string | null
+          preferred_contact?: string | null
+          state?: string | null
+          updated_at?: string
+          user_id?: string
+          zip_code?: string | null
+        }
+        Relationships: []
+      }
+      multichain_profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
       music_videos: {
         Row: {
           approved_at: string | null
@@ -2136,6 +2423,7 @@ export type Database = {
           id: string
           instagram_url: string | null
           is_email_public: boolean | null
+          project_id: string
           soundcloud_url: string | null
           spotify_url: string | null
           state: string | null
@@ -2157,6 +2445,7 @@ export type Database = {
           id: string
           instagram_url?: string | null
           is_email_public?: boolean | null
+          project_id?: string
           soundcloud_url?: string | null
           spotify_url?: string | null
           state?: string | null
@@ -2178,6 +2467,7 @@ export type Database = {
           id?: string
           instagram_url?: string | null
           is_email_public?: boolean | null
+          project_id?: string
           soundcloud_url?: string | null
           spotify_url?: string | null
           state?: string | null
@@ -2790,9 +3080,25 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      create_employee_auth_account: {
+        Args: { employee_email: string; temporary_password?: string }
+        Returns: string
+      }
       format_service_name: {
         Args: { service_slug: string }
         Returns: string
+      }
+      get_admin_users: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          email: string
+          name: string
+          is_admin: boolean
+          created_at: string
+          updated_at: string
+          last_sign_in_at: string
+        }[]
       }
       handle_community_purchase: {
         Args: { p_user_id: string; p_cash_amount: number }
@@ -2814,6 +3120,10 @@ export type Database = {
         Returns: boolean
       }
       is_hiphop_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_iwitty_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
