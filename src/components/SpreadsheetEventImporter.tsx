@@ -140,6 +140,10 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
     let inQuotes = false;
     let i = 0;
 
+    // Debug: Log the line being parsed
+    console.log('Parsing CSV line:', line);
+    console.log('Using delimiter:', delimiter === '\t' ? 'TAB' : 'COMMA');
+
     while (i < line.length) {
       const char = line[i];
       const nextChar = line[i + 1];
@@ -156,7 +160,8 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
         }
       } else if (char === delimiter && !inQuotes) {
         // End of field - only split on delimiter when not inside quotes
-        result.push(current);
+        // Trim whitespace from unquoted fields
+        result.push(inQuotes ? current : current.trim());
         current = '';
         i++;
       } else {
@@ -166,8 +171,10 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
       }
     }
 
-    // Add the last field
-    result.push(current);
+    // Add the last field and trim if it wasn't quoted
+    result.push(inQuotes ? current : current.trim());
+    
+    console.log('Parsed result:', result);
     return result;
   };
 
@@ -224,9 +231,28 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
       
       console.log(`Row ${i + 1} raw line:`, lines[i]);
       console.log(`Row ${i + 1} parsed values:`, values);
-      console.log(`Row ${i + 1} values after quote removal:`, values.map(v => v.replace(/^"|"$/g, '').trim()));
       
-      const cleanedValues = values.map(v => v.replace(/^"|"$/g, '').trim());
+      // Enhanced cleaning: Handle both quoted and unquoted values properly
+      const cleanedValues = values.map((v, index) => {
+        let cleaned = v;
+        
+        // Remove surrounding quotes if they exist
+        if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
+          cleaned = cleaned.slice(1, -1);
+        }
+        
+        // Trim whitespace
+        cleaned = cleaned.trim();
+        
+        // Log specific fields for debugging
+        if (index === headers.findIndex(h => h === 'Venue City')) {
+          console.log(`VENUE_CITY DEBUG - Raw: "${v}", Cleaned: "${cleaned}"`);
+        }
+        
+        return cleaned;
+      });
+      
+      console.log(`Row ${i + 1} values after enhanced cleaning:`, cleanedValues);
       
       // CRITICAL FIX: Ensure we have enough columns - pad with empty strings if needed
       if (cleanedValues.length !== headers.length) {
