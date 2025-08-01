@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Download, Upload, FileUp, CheckCircle } from 'lucide-react';
 import { getNextUpcomingDateForPattern } from '@/hooks/events/eventTransformers';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { uploadImageFromUrl } from '@/utils/imageUpload';
 
 interface SpreadsheetEventImporterProps {
   onEventsImported?: (events: any[]) => void;
@@ -98,7 +99,6 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
       '21+'
     ];
 
-    // Properly escape and quote CSV fields
     const escapeCSVField = (field: string): string => {
       if (field.includes(',') || field.includes('"') || field.includes('\n')) {
         return `"${field.replace(/"/g, '""')}"`;
@@ -135,7 +135,6 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
   };
 
   const parseCSVLine = (line: string, delimiter: string): string[] => {
-    // Simple, robust CSV parser that handles the Portland issue
     const fields: string[] = [];
     let currentField = '';
     let inQuotes = false;
@@ -147,36 +146,28 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
       
       if (char === '"') {
         if (inQuotes && line[i + 1] === '"') {
-          // Escaped quote: add one quote and skip next
           currentField += '"';
           i++;
         } else {
-          // Toggle quote mode
           inQuotes = !inQuotes;
         }
       } else if (char === delimiter && !inQuotes) {
-        // Field separator outside quotes
         fields.push(currentField.trim());
         currentField = '';
       } else {
-        // Regular character
         currentField += char;
       }
     }
     
-    // Add the final field
     fields.push(currentField.trim());
     
-    // Clean each field: remove surrounding quotes if present
     const cleanedFields = fields.map((field, index) => {
       let cleaned = field;
       
-      // Remove surrounding quotes if both present
       if (cleaned.startsWith('"') && cleaned.endsWith('"') && cleaned.length >= 2) {
         cleaned = cleaned.slice(1, -1);
       }
       
-      // Debug Portland specifically
       if (cleaned.toLowerCase().includes('portland') || field.toLowerCase().includes('portland')) {
         console.log(`🚨 PORTLAND FIELD ${index}:`);
         console.log(`  Raw: "${field}"`);
@@ -202,7 +193,6 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
       throw new Error(`Data must have ${hasHeaderRow ? 'at least a header row and one data row' : 'at least one data row'}`);
     }
 
-    // Detect delimiter by checking the first line
     const firstLine = lines[0];
     const tabCount = (firstLine.match(/\t/g) || []).length;
     const commaCount = (firstLine.match(/,/g) || []).length;
@@ -219,7 +209,6 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
       headers = parseCSVLine(lines[0], delimiter);
       startIndex = 1;
     } else {
-      // Use template headers if no header row
       headers = [
         'Event Title', 'Event Description', 'Event Category', 'Event Start Date (YYYY-MM-DD)',
         'Event Start Time (HH:MM)', 'Event End Time (HH:MM)', 'Event Is Recurring (TRUE/FALSE)',
@@ -242,11 +231,8 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
     for (let i = startIndex; i < lines.length; i++) {
       console.log(`Row ${i + 1} raw line:`, lines[i]);
       
-      // Parse the CSV line (this now includes cleaning)
       const cleanedValues = parseCSVLine(lines[i], delimiter);
       
-      
-      // Debug specific fields
       const venueCityIndex = headers.findIndex(h => h === 'Venue City');
       const venueAgesIndex = headers.findIndex(h => h === 'Venue Ages (21+/18+/All Ages)');
       
@@ -257,19 +243,16 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
         console.log(`🎂 VENUE_AGES (index ${venueAgesIndex}): "${cleanedValues[venueAgesIndex]}"`);
       }
       
-      // CRITICAL FIX: Ensure we have enough columns - pad with empty strings if needed
       if (cleanedValues.length !== headers.length) {
         console.warn(`Row ${i + 1} has ${cleanedValues.length} columns but expected ${headers.length}`);
         console.warn(`Missing fields will be defaulted. Headers:`, headers);
         console.warn(`Values received:`, cleanedValues);
         
-        // Pad with empty strings if fewer columns
         while (cleanedValues.length < headers.length) {
           cleanedValues.push('');
           console.log(`Padded column ${cleanedValues.length - 1} with empty string`);
         }
         
-        // Truncate if more columns
         if (cleanedValues.length > headers.length) {
           const extraValues = cleanedValues.splice(headers.length);
           console.warn(`Truncated extra values:`, extraValues);
@@ -281,7 +264,6 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
         const value = cleanedValues[index] || '';
         eventData[header] = value === '' ? null : value;
         
-        // Special logging for venue_ages field
         if (header === 'Venue Ages (21+/18+/All Ages)') {
           console.log(`VENUE_AGES DEBUG - Header: "${header}", Index: ${index}, Raw Value: "${cleanedValues[index]}", Final Value: "${eventData[header]}"`);
         }
@@ -289,7 +271,6 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
 
       console.log('Parsed event data:', eventData);
       
-      // Extra verification for venue_ages
       const venueAgesValue = eventData['Venue Ages (21+/18+/All Ages)'];
       console.log(`FINAL VENUE_AGES CHECK: "${venueAgesValue}" (type: ${typeof venueAgesValue})`);
       
@@ -299,21 +280,18 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
     return events;
   };
 
-  const transformEventForStaging = (eventData: any) => {
+  const transformEventForStaging = async (eventData: any) => {
     const isRecurring = eventData['Event Is Recurring (TRUE/FALSE)']?.toLowerCase() === 'true';
     const recurrenceType = eventData['Event Recurrence Type (weekly/monthly)'];
     const recurrencePattern = eventData['Event Recurrence Pattern (every/1st/2nd/3rd/4th/last)'];
     const providedStartDate = eventData['Event Start Date (YYYY-MM-DD)'];
     
-    // Calculate start date: use provided date, or for recurring events with empty date, calculate next upcoming date
     let startDate = providedStartDate;
     
-    // Check if providedStartDate is a day of week (sun,mon,tue,wed,thu,fri,sat)
     const dayOfWeekPattern = /^(sun|mon|tue|wed|thu|fri|sat)$/i;
     
     if (isRecurring && recurrenceType && recurrencePattern) {
       if (!startDate || dayOfWeekPattern.test(startDate)) {
-        // Either no date provided or a day of week provided
         const dayOfWeek = dayOfWeekPattern.test(startDate || '') ? startDate : undefined;
         startDate = getNextUpcomingDateForPattern(recurrenceType, recurrencePattern, dayOfWeek);
       }
@@ -321,7 +299,18 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
       startDate = new Date().toISOString().split('T')[0];
     }
     
-    // Extract and validate venue data
+    let uploadedEventImageUrl = null;
+    const eventImageUrl = eventData['Event Image URL'];
+    if (eventImageUrl && eventImageUrl.trim() !== '') {
+      console.log('Uploading event image:', eventImageUrl);
+      uploadedEventImageUrl = await uploadImageFromUrl(eventImageUrl, 'event-images', 'events');
+      if (uploadedEventImageUrl) {
+        console.log('Event image uploaded successfully:', uploadedEventImageUrl);
+      } else {
+        console.warn('Failed to upload event image:', eventImageUrl);
+      }
+    }
+    
     const venueName = eventData['Venue Name'];
     const venueCity = eventData['Venue City'];
     const venueState = eventData['Venue State'];
@@ -358,7 +347,7 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
       instagram_url: eventData['Event Instagram URL'] || null,
       twitter_url: eventData['Event Twitter URL'] || null,
       youtube_url: eventData['Event YouTube URL'] || null,
-      image_url: eventData['Event Image URL'] || null,
+      image_url: uploadedEventImageUrl || null,
       venue_name: venueName || 'TBA',
       venue_address: eventData['Venue Address'] || null,
       venue_city: venueCity && typeof venueCity === 'string' && venueCity.trim() !== '' ? venueCity.trim() : 'Portland',
@@ -377,7 +366,7 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
     };
   };
 
-  const transformVenueForStaging = (eventData: any) => {
+  const transformVenueForStaging = async (eventData: any) => {
     const venueName = eventData['Venue Name'];
     const venueCity = eventData['Venue City'];
     const venueAges = eventData['Venue Ages (21+/18+/All Ages)'];
@@ -398,21 +387,30 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
       return null;
     }
 
-    // Ensure proper string handling for venue_city
-    let processedVenueCity = 'Portland'; // default
+    let uploadedVenueImages = null;
+    const venueImageUrl = eventData['Venue Image URL'];
+    if (venueImageUrl && venueImageUrl.trim() !== '') {
+      console.log('Uploading venue image:', venueImageUrl);
+      const uploadedVenueImageUrl = await uploadImageFromUrl(venueImageUrl, 'venue-images', 'venues');
+      if (uploadedVenueImageUrl) {
+        uploadedVenueImages = [uploadedVenueImageUrl];
+        console.log('Venue image uploaded successfully:', uploadedVenueImageUrl);
+      } else {
+        console.warn('Failed to upload venue image:', venueImageUrl);
+      }
+    }
+
+    let processedVenueCity = 'Portland';
     if (venueCity && typeof venueCity === 'string' && venueCity.trim() !== '') {
       processedVenueCity = venueCity.trim();
     } else if (venueCity) {
-      // Handle case where it might not be a string
       processedVenueCity = String(venueCity).trim() || 'Portland';
     }
 
-    // Ensure proper string handling for venue_ages
-    let processedVenueAges = '21+'; // default
+    let processedVenueAges = '21+';
     if (venueAges && typeof venueAges === 'string' && venueAges.trim() !== '') {
       processedVenueAges = venueAges.trim();
     } else if (venueAges) {
-      // Handle case where it might not be a string
       processedVenueAges = String(venueAges).trim() || '21+';
     }
 
@@ -428,7 +426,7 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
       instagram_url: eventData['Venue Instagram URL'] && typeof eventData['Venue Instagram URL'] === 'string' ? eventData['Venue Instagram URL'].trim() || null : null,
       twitter_url: eventData['Venue Twitter URL'] && typeof eventData['Venue Twitter URL'] === 'string' ? eventData['Venue Twitter URL'].trim() || null : null,
       youtube_url: eventData['Venue YouTube URL'] && typeof eventData['Venue YouTube URL'] === 'string' ? eventData['Venue YouTube URL'].trim() || null : null,
-      image_urls: eventData['Venue Image URL'] && typeof eventData['Venue Image URL'] === 'string' && eventData['Venue Image URL'].trim() ? [eventData['Venue Image URL'].trim()] : null,
+      image_urls: uploadedVenueImages,
       ages: processedVenueAges,
       api_source: 'import'
     };
@@ -453,13 +451,11 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
       const parsedEvents = parseSpreadsheetData(spreadsheetData);
       console.log('Parsed events:', parsedEvents);
       
-      // Determine file type
       const firstLine = spreadsheetData.trim().split('\n')[0];
       const tabCount = (firstLine.match(/\t/g) || []).length;
       const commaCount = (firstLine.match(/,/g) || []).length;
       const fileType = tabCount > commaCount ? 'tsv' : 'csv';
       
-      // Create import batch (exclude header row from count if present)
       const actualEventsCount = parsedEvents.length;
       
       const { data: batchData, error: batchError } = await supabase
@@ -468,7 +464,7 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
           filename: `manual_import_${Date.now()}.${fileType}`,
           file_type: fileType,
           total_events: actualEventsCount,
-          total_venues: 0, // Will be calculated
+          total_venues: 0,
           created_by: (await supabase.auth.getUser()).data.user?.id
         })
         .select()
@@ -479,11 +475,10 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
       const batchId = batchData.id;
       let eventsCreated = 0;
       let venuesCreated = 0;
-      const venueMap = new Map(); // Track unique venues
+      const venueMap = new Map();
 
-      // Process venues first
       for (const eventData of parsedEvents) {
-        const venueData = transformVenueForStaging(eventData);
+        const venueData = await transformVenueForStaging(eventData);
         if (venueData) {
           const venueKey = `${venueData.name}_${venueData.city}_${venueData.state}_${venueData.zip_code}`;
           if (!venueMap.has(venueKey)) {
@@ -502,9 +497,8 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
         }
       }
 
-      // Process events
       for (const eventData of parsedEvents) {
-        const transformedEvent = transformEventForStaging(eventData);
+        const transformedEvent = await transformEventForStaging(eventData);
         const { error: eventError } = await supabase
           .from('staging_events')
           .insert({
@@ -517,7 +511,6 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
         }
       }
 
-      // Update batch with final counts
       await supabase
         .from('import_batches')
         .update({
@@ -534,7 +527,7 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
 
       toast({
         title: "Import Staged Successfully!",
-        description: `${eventsCreated} events and ${venuesCreated} venues are now pending admin approval`,
+        description: `${eventsCreated} events and ${venuesCreated} venues with images are now pending admin approval`,
       });
 
       setSpreadsheetData('');
@@ -566,14 +559,13 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
             <AlertDescription className="text-green-800">
               <strong>Import Staged Successfully!</strong>
               <br />
-              {importResult.eventsCount} events and {importResult.venuesCount} venues are now pending admin approval.
+              {importResult.eventsCount} events and {importResult.venuesCount} venues with images are now pending admin approval.
               <br />
               <span className="text-sm">Batch ID: {importResult.batchId}</span>
             </AlertDescription>
           </Alert>
         )}
 
-        {/* File Upload Section */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <label className="text-sm font-medium">Upload CSV/TSV File</label>
@@ -614,7 +606,6 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
           </div>
         </div>
 
-        {/* Header Row Option */}
         <div className="space-y-2">
           <label className="flex items-center gap-2 text-sm font-medium">
             <input
@@ -630,7 +621,6 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
           </p>
         </div>
 
-        {/* Manual Input Section */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <label className="text-sm font-medium">Or Paste Spreadsheet Data</label>
@@ -647,8 +637,9 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
           <h4 className="font-medium text-blue-900 mb-2">How it works:</h4>
           <ol className="list-decimal list-inside space-y-1 text-sm text-blue-800">
             <li>Download the template and fill it with your data</li>
+            <li>Include image URLs in the Event Image URL and Venue Image URL columns</li>
             <li>Upload the file or copy/paste the data</li>
-            <li>Click Import to stage your data for review</li>
+            <li>Click Import to stage your data for review (images will be automatically uploaded)</li>
             <li>Admin will review and approve the import</li>
             <li>Approved events will go live on the site</li>
           </ol>
@@ -658,6 +649,7 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
           <h4 className="font-medium text-amber-900 mb-2">Important Notes:</h4>
           <ul className="list-disc list-inside space-y-1 text-sm text-amber-800">
             <li><strong>All imports require admin approval</strong> - nothing goes live immediately</li>
+            <li><strong>Images are automatically uploaded</strong> - provide URLs and they'll be downloaded and stored</li>
             <li>Venues with same name, city, state, and zip will be merged</li>
             <li>Use TRUE/FALSE for recurring events</li>
             <li>Dates must be in YYYY-MM-DD format</li>
@@ -671,7 +663,7 @@ const SpreadsheetEventImporter = ({ onEventsImported, onImportSubmitted }: Sprea
           disabled={loading || !spreadsheetData.trim()}
           className="w-full"
         >
-          {loading ? "Staging Import..." : "Stage Import for Review"}
+          {loading ? "Staging Import with Images..." : "Stage Import for Review"}
         </Button>
       </CardContent>
     </Card>
