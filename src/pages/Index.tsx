@@ -6,15 +6,13 @@ import { SearchFilters } from '@/components/SearchFilters';
 import { Hero } from '@/components/Hero';
 import { Footer } from '@/components/Footer';
 import { FeaturedEvents } from '@/components/FeaturedEvents';
+import { BetaBanner } from '@/components/BetaBanner';
+import { DonationSection } from '@/components/DonationSection';
 import { useEvents, useCategories } from '@/hooks/useEvents';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { EnhancedPagination } from '@/components/EnhancedPagination';
 import { createEventSlug } from '@/utils/eventUtils';
-        
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <DonationSection />
-        </div>
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -115,6 +113,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 to-secondary/10">
+      <BetaBanner />
       <Header />
       <Hero />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -162,6 +161,12 @@ const Index = () => {
           </>
         )}
       </div>
+      
+      {/* Donation Section */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <DonationSection />
+      </div>
+      
       <Footer />
     </div>
   );
