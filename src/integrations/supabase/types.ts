@@ -765,6 +765,69 @@ export type Database = {
         }
         Relationships: []
       }
+      featured_artists: {
+        Row: {
+          apple_music_url: string | null
+          bandcamp_url: string | null
+          bio: string | null
+          created_at: string
+          created_by: string | null
+          display_order: number | null
+          facebook_url: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          name: string
+          soundcloud_url: string | null
+          spotify_url: string | null
+          tiktok_url: string | null
+          twitter_url: string | null
+          updated_at: string
+          website_url: string | null
+          youtube_url: string | null
+        }
+        Insert: {
+          apple_music_url?: string | null
+          bandcamp_url?: string | null
+          bio?: string | null
+          created_at?: string
+          created_by?: string | null
+          display_order?: number | null
+          facebook_url?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          name: string
+          soundcloud_url?: string | null
+          spotify_url?: string | null
+          tiktok_url?: string | null
+          twitter_url?: string | null
+          updated_at?: string
+          website_url?: string | null
+          youtube_url?: string | null
+        }
+        Update: {
+          apple_music_url?: string | null
+          bandcamp_url?: string | null
+          bio?: string | null
+          created_at?: string
+          created_by?: string | null
+          display_order?: number | null
+          facebook_url?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          name?: string
+          soundcloud_url?: string | null
+          spotify_url?: string | null
+          tiktok_url?: string | null
+          twitter_url?: string | null
+          updated_at?: string
+          website_url?: string | null
+          youtube_url?: string | null
+        }
+        Relationships: []
+      }
       hair_styles: {
         Row: {
           base_price: number | null

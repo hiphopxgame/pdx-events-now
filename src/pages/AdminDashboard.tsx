@@ -202,6 +202,14 @@ const AdminDashboard = () => {
       path: "/manage-content",
       badge: stats.pendingContent > 0 ? stats.pendingContent : null,
       badgeVariant: "destructive" as const
+    },
+    {
+      title: "Featured Artists",
+      description: "Manage featured artists showcase",
+      icon: Music,
+      path: "/admin/artists",
+      badge: null,
+      badgeVariant: "secondary" as const
     }
   ];
 

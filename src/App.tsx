@@ -28,6 +28,8 @@ import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import NotFound from "./pages/NotFound";
 import ManageImports from "./pages/ManageImports";
 import AdminCreateEvent from "./pages/AdminCreateEvent";
+import Artists from "./pages/Artists";
+import AdminArtists from "./pages/AdminArtists";
 
 const queryClient = new QueryClient();
 
@@ -44,10 +46,11 @@ const App = () => (
             <Route path="/events/:eventSlug" element={<Event />} />
             <Route path="/venues" element={<Venues />} />
             <Route path="/venue/:venueName" element={<Venue />} />
-            <Route path="/community" element={<Users />} />
-            <Route path="/community/:userSlug" element={<User />} />
-            <Route path="/media" element={<Content />} />
-            <Route path="/media/:mediaSlug" element={<Content />} />
+            <Route path="/artists" element={<Artists />} />
+            <Route path="/community" element={<AdminProtectedRoute><Users /></AdminProtectedRoute>} />
+            <Route path="/community/:userSlug" element={<AdminProtectedRoute><User /></AdminProtectedRoute>} />
+            <Route path="/media" element={<AdminProtectedRoute><Content /></AdminProtectedRoute>} />
+            <Route path="/media/:mediaSlug" element={<AdminProtectedRoute><Content /></AdminProtectedRoute>} />
             <Route path="/account" element={<Account />} />
             <Route path="/submit-event" element={<SubmitEvent />} />
             <Route path="/create-event" element={<SubmitEvent />} />
@@ -63,6 +66,7 @@ const App = () => (
             <Route path="/admin/venues" element={<AdminProtectedRoute><AdminVenues /></AdminProtectedRoute>} />
             <Route path="/admin/venues/:venueId" element={<AdminProtectedRoute><EditVenue /></AdminProtectedRoute>} />
             <Route path="/admin/imports" element={<AdminProtectedRoute><ManageImports /></AdminProtectedRoute>} />
+            <Route path="/admin/artists" element={<AdminProtectedRoute><AdminArtists /></AdminProtectedRoute>} />
             <Route path="/manage-content" element={<AdminProtectedRoute><ManageContent /></AdminProtectedRoute>} />
             <Route path="/map-test" element={<MapTest />} />
             <Route path="/auth" element={<Auth />} />
