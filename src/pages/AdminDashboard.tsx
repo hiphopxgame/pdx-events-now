@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import AdminProtectedRoute from '@/components/AdminProtectedRoute';
 import { supabase } from '@/integrations/supabase/client';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import SpreadsheetEventImporter from '@/components/SpreadsheetEventImporter';
 import ImportManager from '@/components/ImportManager';
 
@@ -297,30 +297,28 @@ const AdminDashboard = () => {
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {quickActions.map((action, index) => (
-              <Card 
-                key={index} 
-                className="bg-white shadow-lg hover:shadow-xl transition-shadow cursor-pointer group border-emerald-100"
-                onClick={() => navigate(action.path)}
-              >
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between">
-                    <action.icon className="h-8 w-8 text-primary group-hover:text-primary/80 transition-colors" />
-                    {action.badge && (
-                      <Badge variant={action.badgeVariant} className="animate-pulse">
-                        {action.badge}
-                      </Badge>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <CardTitle className="text-lg mb-2 group-hover:text-primary transition-colors">
-                    {action.title}
-                  </CardTitle>
-                  <p className="text-sm text-gray-600">
-                    {action.description}
-                  </p>
-                </CardContent>
-              </Card>
+              <Link key={index} to={action.path}>
+                <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow cursor-pointer group border-emerald-100">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center justify-between">
+                      <action.icon className="h-8 w-8 text-primary group-hover:text-primary/80 transition-colors" />
+                      {action.badge && (
+                        <Badge variant={action.badgeVariant} className="animate-pulse">
+                          {action.badge}
+                        </Badge>
+                      )}
+                    </div>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <CardTitle className="text-lg mb-2 group-hover:text-primary transition-colors">
+                      {action.title}
+                    </CardTitle>
+                    <p className="text-sm text-gray-600">
+                      {action.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         </div>
