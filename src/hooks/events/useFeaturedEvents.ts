@@ -27,8 +27,9 @@ export const useFeaturedEvents = () => {
         .from('user_events')
         .select('*')
         .eq('is_featured', true)
+        .is('api_source', null)
         .eq('status', 'approved')
-        .gte('start_date', new Date().toISOString().split('T')[0])
+        .gte('start_date', new Date().toISOString())
         .order('start_date', { ascending: true });
 
       if (userError) {
@@ -51,8 +52,18 @@ export const useFeaturedEvents = () => {
       })) as Event[];
       const allFeaturedEvents = [...transformedApiEvents, ...transformedUserEvents];
 
-      // Sort by start date
-      return allFeaturedEvents.sort((a, b) => 
+      // Filter out past events and sort by start date (include today)
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const upcomingFeatured = allFeaturedEvents.filter(e => {
+        const sd = new Date(e.start_date);
+        if (isNaN(sd.getTime())) return false;
+        const sdDateOnly = new Date(sd);
+        sdDateOnly.setHours(0, 0, 0, 0);
+        return sdDateOnly >= today;
+      });
+
+      return upcomingFeatured.sort((a, b) => 
         new Date(a.start_date).getTime() - new Date(b.start_date).getTime()
       );
     },
