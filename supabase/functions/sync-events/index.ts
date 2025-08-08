@@ -143,6 +143,8 @@ serve(async (req) => {
     return new Response('ok', { headers: corsHeaders })
   }
 
+  try {
+
     const authHeader = req.headers.get('Authorization') || ''
     const token = authHeader.replace('Bearer ', '')
     if (!token) {
