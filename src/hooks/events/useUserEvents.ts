@@ -31,7 +31,7 @@ export const useUserEvents = () => {
 
 export const useApprovedUserEvents = () => {
   return useQuery({
-    queryKey: ['approved-user-events-v2'], // Updated cache key
+    queryKey: ['approved-user-events-v3'], // Updated cache key to refresh after RLS fix
     queryFn: async () => {
       const { data, error } = await supabase
         .from('user_events')

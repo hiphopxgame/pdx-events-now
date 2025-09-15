@@ -687,13 +687,16 @@ export type Database = {
       }
       cbake_orders: {
         Row: {
+          company_name: string | null
           created_at: string
           delivery: string
           dough_type: string
           email: string
           estimated_total: number | null
           filling: string
+          first_name: string
           id: string
+          last_name: string | null
           name: string
           order_type: string
           phone: string | null
@@ -706,13 +709,16 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          company_name?: string | null
           created_at?: string
           delivery: string
           dough_type: string
           email: string
           estimated_total?: number | null
           filling: string
+          first_name: string
           id?: string
+          last_name?: string | null
           name: string
           order_type: string
           phone?: string | null
@@ -725,13 +731,16 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          company_name?: string | null
           created_at?: string
           delivery?: string
           dough_type?: string
           email?: string
           estimated_total?: number | null
           filling?: string
+          first_name?: string
           id?: string
+          last_name?: string | null
           name?: string
           order_type?: string
           phone?: string | null

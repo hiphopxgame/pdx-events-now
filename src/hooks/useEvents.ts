@@ -11,7 +11,7 @@ export const useEvents = (options: UseEventsOptions = {}) => {
   const { data: userEvents = [], isLoading: userLoading, error: userError } = useApprovedUserEvents();
 
   return useQuery({
-    queryKey: ['events-v2', options], // Updated cache key
+    queryKey: ['events-v3', options], // Updated cache key to refresh after RLS fix
     queryFn: async () => {
       // Transform user events to match the Event interface
       const transformedUserEvents = transformUserEventsToEvents(userEvents);
