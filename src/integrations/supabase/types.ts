@@ -7,13 +7,58 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
   }
   public: {
     Tables: {
+      _members: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          display_name: string | null
+          email: string | null
+          id: string
+          is_public: boolean | null
+          social_accounts: Json | null
+          updated_at: string
+          user_id: string
+          username: string
+          verified: boolean | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          is_public?: boolean | null
+          social_accounts?: Json | null
+          updated_at?: string
+          user_id: string
+          username: string
+          verified?: boolean | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          is_public?: boolean | null
+          social_accounts?: Json | null
+          updated_at?: string
+          user_id?: string
+          username?: string
+          verified?: boolean | null
+        }
+        Relationships: []
+      }
       admin_accounts: {
         Row: {
           created_at: string | null
@@ -172,6 +217,198 @@ export type Database = {
           youtube_url?: string
         }
         Relationships: []
+      }
+      artist_photos: {
+        Row: {
+          artist_id: string
+          caption: string | null
+          created_at: string
+          display_order: number | null
+          id: string
+          image_url: string
+          is_featured: boolean | null
+          position_x: number | null
+          position_y: number | null
+          scale: number | null
+          updated_at: string
+        }
+        Insert: {
+          artist_id: string
+          caption?: string | null
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          image_url: string
+          is_featured?: boolean | null
+          position_x?: number | null
+          position_y?: number | null
+          scale?: number | null
+          updated_at?: string
+        }
+        Update: {
+          artist_id?: string
+          caption?: string | null
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          image_url?: string
+          is_featured?: boolean | null
+          position_x?: number | null
+          position_y?: number | null
+          scale?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artist_photos_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "artist_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "artist_photos_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "artist_profiles_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      artist_profiles: {
+        Row: {
+          apple_music_url: string | null
+          avatar_url: string | null
+          bandcamp_url: string | null
+          bio: string | null
+          created_at: string
+          display_order: number | null
+          email: string | null
+          facebook_url: string | null
+          id: string
+          instagram_url: string | null
+          is_archived: boolean | null
+          is_email_public: boolean | null
+          is_featured: boolean | null
+          is_public: boolean | null
+          name: string
+          soundcloud_url: string | null
+          spotify_url: string | null
+          tiktok_url: string | null
+          twitter_url: string | null
+          updated_at: string
+          user_id: string | null
+          website_url: string | null
+          youtube_url: string | null
+        }
+        Insert: {
+          apple_music_url?: string | null
+          avatar_url?: string | null
+          bandcamp_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_order?: number | null
+          email?: string | null
+          facebook_url?: string | null
+          id?: string
+          instagram_url?: string | null
+          is_archived?: boolean | null
+          is_email_public?: boolean | null
+          is_featured?: boolean | null
+          is_public?: boolean | null
+          name: string
+          soundcloud_url?: string | null
+          spotify_url?: string | null
+          tiktok_url?: string | null
+          twitter_url?: string | null
+          updated_at?: string
+          user_id?: string | null
+          website_url?: string | null
+          youtube_url?: string | null
+        }
+        Update: {
+          apple_music_url?: string | null
+          avatar_url?: string | null
+          bandcamp_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_order?: number | null
+          email?: string | null
+          facebook_url?: string | null
+          id?: string
+          instagram_url?: string | null
+          is_archived?: boolean | null
+          is_email_public?: boolean | null
+          is_featured?: boolean | null
+          is_public?: boolean | null
+          name?: string
+          soundcloud_url?: string | null
+          spotify_url?: string | null
+          tiktok_url?: string | null
+          twitter_url?: string | null
+          updated_at?: string
+          user_id?: string | null
+          website_url?: string | null
+          youtube_url?: string | null
+        }
+        Relationships: []
+      }
+      artist_videos: {
+        Row: {
+          artist_id: string
+          created_at: string
+          description: string | null
+          display_order: number | null
+          id: string
+          is_featured: boolean | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+          youtube_id: string
+          youtube_url: string
+        }
+        Insert: {
+          artist_id: string
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          is_featured?: boolean | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+          youtube_id: string
+          youtube_url: string
+        }
+        Update: {
+          artist_id?: string
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          is_featured?: boolean | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+          youtube_id?: string
+          youtube_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artist_videos_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "artist_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "artist_videos_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "artist_profiles_public"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       bitcoin_crypto_data: {
         Row: {
@@ -337,6 +574,361 @@ export type Database = {
           zip_code?: string | null
         }
         Relationships: []
+      }
+      cbake_cart_items: {
+        Row: {
+          created_at: string
+          dough_type: string | null
+          filling: string | null
+          id: string
+          product_id: string | null
+          product_name: string
+          quantity: number
+          special_instructions: string | null
+          unit_price: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          dough_type?: string | null
+          filling?: string | null
+          id?: string
+          product_id?: string | null
+          product_name: string
+          quantity?: number
+          special_instructions?: string | null
+          unit_price: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          dough_type?: string | null
+          filling?: string | null
+          id?: string
+          product_id?: string | null
+          product_name?: string
+          quantity?: number
+          special_instructions?: string | null
+          unit_price?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      cbake_messages: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          inquiry_type: string
+          message: string
+          name: string
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          inquiry_type: string
+          message: string
+          name: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          inquiry_type?: string
+          message?: string
+          name?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cbake_messages_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "cbake_profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      cbake_newsletter_subscriptions: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      cbake_orders: {
+        Row: {
+          created_at: string
+          delivery: string
+          dough_type: string
+          email: string
+          estimated_total: number | null
+          filling: string
+          id: string
+          name: string
+          order_type: string
+          phone: string | null
+          product_id: string | null
+          product_name: string | null
+          quantity: number
+          special_instructions: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          delivery: string
+          dough_type: string
+          email: string
+          estimated_total?: number | null
+          filling: string
+          id?: string
+          name: string
+          order_type: string
+          phone?: string | null
+          product_id?: string | null
+          product_name?: string | null
+          quantity?: number
+          special_instructions?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          delivery?: string
+          dough_type?: string
+          email?: string
+          estimated_total?: number | null
+          filling?: string
+          id?: string
+          name?: string
+          order_type?: string
+          phone?: string | null
+          product_id?: string | null
+          product_name?: string | null
+          quantity?: number
+          special_instructions?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cbake_orders_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "cbake_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cbake_orders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "cbake_profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      cbake_products: {
+        Row: {
+          base_price: number | null
+          created_at: string
+          description: string | null
+          display_order: number | null
+          id: string
+          image_url: string | null
+          ingredients: string | null
+          is_active: boolean
+          name: string
+          origin: string | null
+          product_type: string
+          tags: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          base_price?: number | null
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_url?: string | null
+          ingredients?: string | null
+          is_active?: boolean
+          name: string
+          origin?: string | null
+          product_type: string
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          base_price?: number | null
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_url?: string | null
+          ingredients?: string | null
+          is_active?: boolean
+          name?: string
+          origin?: string | null
+          product_type?: string
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      cbake_profiles: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string | null
+          id: string
+          is_admin: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          full_name?: string | null
+          id?: string
+          is_admin?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          id?: string
+          is_admin?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      cbake_quotes: {
+        Row: {
+          admin_notes: string | null
+          business_name: string | null
+          catering_services: Json | null
+          created_at: string
+          email: string
+          event_date: string | null
+          event_type: string | null
+          guest_count: number | null
+          id: string
+          name: string
+          phone: string | null
+          quoted_amount: number | null
+          special_requirements: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          business_name?: string | null
+          catering_services?: Json | null
+          created_at?: string
+          email: string
+          event_date?: string | null
+          event_type?: string | null
+          guest_count?: number | null
+          id?: string
+          name: string
+          phone?: string | null
+          quoted_amount?: number | null
+          special_requirements?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          business_name?: string | null
+          catering_services?: Json | null
+          created_at?: string
+          email?: string
+          event_date?: string | null
+          event_type?: string | null
+          guest_count?: number | null
+          id?: string
+          name?: string
+          phone?: string | null
+          quoted_amount?: number | null
+          special_requirements?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      consultation_access_log: {
+        Row: {
+          access_type: string
+          accessed_at: string | null
+          accessed_by: string | null
+          consultation_id: string | null
+          id: string
+          ip_address: unknown | null
+          user_agent: string | null
+        }
+        Insert: {
+          access_type: string
+          accessed_at?: string | null
+          accessed_by?: string | null
+          consultation_id?: string | null
+          id?: string
+          ip_address?: unknown | null
+          user_agent?: string | null
+        }
+        Update: {
+          access_type?: string
+          accessed_at?: string | null
+          accessed_by?: string | null
+          consultation_id?: string | null
+          id?: string
+          ip_address?: unknown | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consultation_access_log_consultation_id_fkey"
+            columns: ["consultation_id"]
+            isOneToOne: false
+            referencedRelation: "pormar_consultation_requests"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       contact_messages: {
         Row: {
@@ -1087,84 +1679,6 @@ export type Database = {
         }
         Relationships: []
       }
-      "hiphop-orders": {
-        Row: {
-          amount: number
-          created_at: string
-          currency: string | null
-          id: string
-          metadata: Json | null
-          product_type: string
-          quantity: number | null
-          status: string | null
-          stripe_session_id: string | null
-          updated_at: string
-          user_id: string | null
-        }
-        Insert: {
-          amount: number
-          created_at?: string
-          currency?: string | null
-          id?: string
-          metadata?: Json | null
-          product_type: string
-          quantity?: number | null
-          status?: string | null
-          stripe_session_id?: string | null
-          updated_at?: string
-          user_id?: string | null
-        }
-        Update: {
-          amount?: number
-          created_at?: string
-          currency?: string | null
-          id?: string
-          metadata?: Json | null
-          product_type?: string
-          quantity?: number | null
-          status?: string | null
-          stripe_session_id?: string | null
-          updated_at?: string
-          user_id?: string | null
-        }
-        Relationships: []
-      }
-      "hiphop-profiles": {
-        Row: {
-          avatar_url: string | null
-          created_at: string
-          display_name: string | null
-          hip_hop_cards_owned: number | null
-          hip_hop_cash_balance: number | null
-          hip_hop_land_owned: number | null
-          id: string
-          updated_at: string
-          username: string | null
-        }
-        Insert: {
-          avatar_url?: string | null
-          created_at?: string
-          display_name?: string | null
-          hip_hop_cards_owned?: number | null
-          hip_hop_cash_balance?: number | null
-          hip_hop_land_owned?: number | null
-          id: string
-          updated_at?: string
-          username?: string | null
-        }
-        Update: {
-          avatar_url?: string | null
-          created_at?: string
-          display_name?: string | null
-          hip_hop_cards_owned?: number | null
-          hip_hop_cash_balance?: number | null
-          hip_hop_land_owned?: number | null
-          id?: string
-          updated_at?: string
-          username?: string | null
-        }
-        Relationships: []
-      }
       "hiphop-subscribers": {
         Row: {
           created_at: string
@@ -1200,45 +1714,6 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
-      }
-      hiphopworld_card_collections: {
-        Row: {
-          card_id: string
-          collected_at: string
-          collector_user_id: string
-          id: string
-          individual_balance: number
-        }
-        Insert: {
-          card_id: string
-          collected_at?: string
-          collector_user_id: string
-          id?: string
-          individual_balance?: number
-        }
-        Update: {
-          card_id?: string
-          collected_at?: string
-          collector_user_id?: string
-          id?: string
-          individual_balance?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "hiphopworld_card_collections_card_id_fkey"
-            columns: ["card_id"]
-            isOneToOne: false
-            referencedRelation: "hiphopworld_cards"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "hiphopworld_card_collections_collector_user_id_fkey"
-            columns: ["collector_user_id"]
-            isOneToOne: false
-            referencedRelation: "hiphopworld_profiles"
-            referencedColumns: ["user_id"]
-          },
-        ]
       }
       hiphopworld_cards: {
         Row: {
@@ -1330,6 +1805,48 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
         ]
+      }
+      hiphopworld_orders: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string | null
+          id: string
+          metadata: Json | null
+          product_type: string
+          quantity: number | null
+          status: string | null
+          stripe_session_id: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string | null
+          id?: string
+          metadata?: Json | null
+          product_type: string
+          quantity?: number | null
+          status?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string | null
+          id?: string
+          metadata?: Json | null
+          product_type?: string
+          quantity?: number | null
+          status?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
       }
       hiphopworld_profiles: {
         Row: {
@@ -1642,6 +2159,77 @@ export type Database = {
         }
         Relationships: []
       }
+      member_social_accounts: {
+        Row: {
+          connected_at: string
+          id: string
+          member_id: string
+          provider: string
+          provider_email: string | null
+          provider_id: string
+          provider_username: string | null
+        }
+        Insert: {
+          connected_at?: string
+          id?: string
+          member_id: string
+          provider: string
+          provider_email?: string | null
+          provider_id: string
+          provider_username?: string | null
+        }
+        Update: {
+          connected_at?: string
+          id?: string
+          member_id?: string
+          provider?: string
+          provider_email?: string | null
+          provider_id?: string
+          provider_username?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_social_accounts_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      members: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+          username: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+          username: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+          username?: string
+        }
+        Relationships: []
+      }
       multichain_profiles: {
         Row: {
           avatar_url: string | null
@@ -1724,7 +2312,14 @@ export type Database = {
             foreignKeyName: "music_videos_approved_by_fkey"
             columns: ["approved_by"]
             isOneToOne: false
-            referencedRelation: "public_por_eve_profiles"
+            referencedRelation: "por_eve_profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "music_videos_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "por_eve_public_profiles"
             referencedColumns: ["id"]
           },
           {
@@ -1738,118 +2333,14 @@ export type Database = {
             foreignKeyName: "music_videos_artist_id_fkey"
             columns: ["artist_id"]
             isOneToOne: false
-            referencedRelation: "public_por_eve_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      oregon_tires_appointments: {
-        Row: {
-          actual_duration_minutes: number | null
-          actual_duration_seconds: number | null
-          assigned_employee_id: string | null
-          completed_at: string | null
-          created_at: string
-          customer_address: string | null
-          customer_city: string | null
-          customer_state: string | null
-          customer_zip: string | null
-          email: string
-          first_name: string
-          id: string
-          language: string
-          last_name: string
-          license_plate: string | null
-          message: string | null
-          phone: string | null
-          preferred_date: string
-          preferred_time: string
-          service: string
-          service_location: string | null
-          started_at: string | null
-          status: string
-          tire_size: string | null
-          travel_cost_estimate: number | null
-          travel_distance_miles: number | null
-          updated_at: string
-          vehicle_id: string | null
-          vin: string | null
-        }
-        Insert: {
-          actual_duration_minutes?: number | null
-          actual_duration_seconds?: number | null
-          assigned_employee_id?: string | null
-          completed_at?: string | null
-          created_at?: string
-          customer_address?: string | null
-          customer_city?: string | null
-          customer_state?: string | null
-          customer_zip?: string | null
-          email: string
-          first_name: string
-          id?: string
-          language?: string
-          last_name: string
-          license_plate?: string | null
-          message?: string | null
-          phone?: string | null
-          preferred_date: string
-          preferred_time: string
-          service: string
-          service_location?: string | null
-          started_at?: string | null
-          status?: string
-          tire_size?: string | null
-          travel_cost_estimate?: number | null
-          travel_distance_miles?: number | null
-          updated_at?: string
-          vehicle_id?: string | null
-          vin?: string | null
-        }
-        Update: {
-          actual_duration_minutes?: number | null
-          actual_duration_seconds?: number | null
-          assigned_employee_id?: string | null
-          completed_at?: string | null
-          created_at?: string
-          customer_address?: string | null
-          customer_city?: string | null
-          customer_state?: string | null
-          customer_zip?: string | null
-          email?: string
-          first_name?: string
-          id?: string
-          language?: string
-          last_name?: string
-          license_plate?: string | null
-          message?: string | null
-          phone?: string | null
-          preferred_date?: string
-          preferred_time?: string
-          service?: string
-          service_location?: string | null
-          started_at?: string | null
-          status?: string
-          tire_size?: string | null
-          travel_cost_estimate?: number | null
-          travel_distance_miles?: number | null
-          updated_at?: string
-          vehicle_id?: string | null
-          vin?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "oregon_tires_appointments_assigned_employee_id_fkey"
-            columns: ["assigned_employee_id"]
-            isOneToOne: false
-            referencedRelation: "oretir_employees"
+            referencedRelation: "por_eve_profiles_public"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "oregon_tires_appointments_vehicle_id_fkey"
-            columns: ["vehicle_id"]
+            foreignKeyName: "music_videos_artist_id_fkey"
+            columns: ["artist_id"]
             isOneToOne: false
-            referencedRelation: "customer_vehicles"
+            referencedRelation: "por_eve_public_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1952,6 +2443,7 @@ export type Database = {
           tire_size: string | null
           travel_cost_estimate: number | null
           travel_distance_miles: number | null
+          updated_at: string
           vehicle_id: string | null
           vin: string | null
         }
@@ -1983,6 +2475,7 @@ export type Database = {
           tire_size?: string | null
           travel_cost_estimate?: number | null
           travel_distance_miles?: number | null
+          updated_at?: string
           vehicle_id?: string | null
           vin?: string | null
         }
@@ -2014,6 +2507,7 @@ export type Database = {
           tire_size?: string | null
           travel_cost_estimate?: number | null
           travel_distance_miles?: number | null
+          updated_at?: string
           vehicle_id?: string | null
           vin?: string | null
         }
@@ -2128,15 +2622,7 @@ export type Database = {
           sent_at?: string
           subject?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "oregon_tires_email_logs_appointment_id_fkey"
-            columns: ["appointment_id"]
-            isOneToOne: false
-            referencedRelation: "oregon_tires_appointments"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       oretir_employee_schedules: {
         Row: {
@@ -3077,7 +3563,14 @@ export type Database = {
             foreignKeyName: "fk_user_events_created_by"
             columns: ["created_by"]
             isOneToOne: false
-            referencedRelation: "public_por_eve_profiles"
+            referencedRelation: "por_eve_profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_user_events_created_by"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "por_eve_public_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -3195,19 +3688,142 @@ export type Database = {
       }
     }
     Views: {
-      public_por_eve_profiles: {
+      artist_profiles_public: {
+        Row: {
+          apple_music_url: string | null
+          avatar_url: string | null
+          bandcamp_url: string | null
+          bio: string | null
+          created_at: string | null
+          display_order: number | null
+          facebook_url: string | null
+          id: string | null
+          instagram_url: string | null
+          is_featured: boolean | null
+          is_public: boolean | null
+          name: string | null
+          soundcloud_url: string | null
+          spotify_url: string | null
+          tiktok_url: string | null
+          twitter_url: string | null
+          updated_at: string | null
+          website_url: string | null
+          youtube_url: string | null
+        }
+        Insert: {
+          apple_music_url?: string | null
+          avatar_url?: string | null
+          bandcamp_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          facebook_url?: string | null
+          id?: string | null
+          instagram_url?: string | null
+          is_featured?: boolean | null
+          is_public?: boolean | null
+          name?: string | null
+          soundcloud_url?: string | null
+          spotify_url?: string | null
+          tiktok_url?: string | null
+          twitter_url?: string | null
+          updated_at?: string | null
+          website_url?: string | null
+          youtube_url?: string | null
+        }
+        Update: {
+          apple_music_url?: string | null
+          avatar_url?: string | null
+          bandcamp_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          facebook_url?: string | null
+          id?: string | null
+          instagram_url?: string | null
+          is_featured?: boolean | null
+          is_public?: boolean | null
+          name?: string | null
+          soundcloud_url?: string | null
+          spotify_url?: string | null
+          tiktok_url?: string | null
+          twitter_url?: string | null
+          updated_at?: string | null
+          website_url?: string | null
+          youtube_url?: string | null
+        }
+        Relationships: []
+      }
+      por_eve_profiles_public: {
         Row: {
           avatar_url: string | null
           bandcamp_url: string | null
-          city: string | null
+          created_at: string | null
           display_name: string | null
           facebook_url: string | null
           id: string | null
           instagram_url: string | null
+          project_id: string | null
+          soundcloud_url: string | null
+          spotify_url: string | null
+          twitter_url: string | null
+          updated_at: string | null
+          username: string | null
+          website_url: string | null
+          youtube_url: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bandcamp_url?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          facebook_url?: string | null
+          id?: string | null
+          instagram_url?: string | null
+          project_id?: string | null
+          soundcloud_url?: string | null
+          spotify_url?: string | null
+          twitter_url?: string | null
+          updated_at?: string | null
+          username?: string | null
+          website_url?: string | null
+          youtube_url?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bandcamp_url?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          facebook_url?: string | null
+          id?: string | null
+          instagram_url?: string | null
+          project_id?: string | null
+          soundcloud_url?: string | null
+          spotify_url?: string | null
+          twitter_url?: string | null
+          updated_at?: string | null
+          username?: string | null
+          website_url?: string | null
+          youtube_url?: string | null
+        }
+        Relationships: []
+      }
+      por_eve_public_profiles: {
+        Row: {
+          avatar_url: string | null
+          bandcamp_url: string | null
+          city: string | null
+          created_at: string | null
+          display_name: string | null
+          facebook_url: string | null
+          id: string | null
+          instagram_url: string | null
+          project_id: string | null
           soundcloud_url: string | null
           spotify_url: string | null
           state: string | null
           twitter_url: string | null
+          updated_at: string | null
           username: string | null
           website_url: string | null
           youtube_url: string | null
@@ -3216,14 +3832,17 @@ export type Database = {
           avatar_url?: string | null
           bandcamp_url?: string | null
           city?: string | null
+          created_at?: string | null
           display_name?: string | null
           facebook_url?: string | null
           id?: string | null
           instagram_url?: string | null
+          project_id?: string | null
           soundcloud_url?: string | null
           spotify_url?: string | null
           state?: string | null
           twitter_url?: string | null
+          updated_at?: string | null
           username?: string | null
           website_url?: string | null
           youtube_url?: string | null
@@ -3232,14 +3851,17 @@ export type Database = {
           avatar_url?: string | null
           bandcamp_url?: string | null
           city?: string | null
+          created_at?: string | null
           display_name?: string | null
           facebook_url?: string | null
           id?: string | null
           instagram_url?: string | null
+          project_id?: string | null
           soundcloud_url?: string | null
           spotify_url?: string | null
           state?: string | null
           twitter_url?: string | null
+          updated_at?: string | null
           username?: string | null
           website_url?: string | null
           youtube_url?: string | null
@@ -3251,6 +3873,10 @@ export type Database = {
       approve_import_batch: {
         Args: { batch_id: string }
         Returns: undefined
+      }
+      can_access_consultation: {
+        Args: { consultation_id: string }
+        Returns: boolean
       }
       create_admin_user: {
         Args: Record<PropertyKey, never>
@@ -3267,27 +3893,31 @@ export type Database = {
       get_admin_users: {
         Args: Record<PropertyKey, never>
         Returns: {
-          id: string
-          email: string
-          name: string
-          is_admin: boolean
           created_at: string
-          updated_at: string
+          email: string
+          id: string
+          is_admin: boolean
           last_sign_in_at: string
+          name: string
+          updated_at: string
         }[]
       }
       handle_community_purchase: {
-        Args: { p_user_id: string; p_cash_amount: number }
+        Args: { p_cash_amount: number; p_user_id: string }
         Returns: undefined
       }
       has_role: {
         Args: {
-          _user_id: string
           _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
         }
         Returns: boolean
       }
       is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_cbake_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
@@ -3313,13 +3943,13 @@ export type Database = {
       }
       set_admin_by_email: {
         Args:
-          | { user_email: string }
-          | { user_email: string; admin_status?: boolean }
           | {
-              user_email: string
               admin_status?: boolean
               target_project_id?: string
+              user_email: string
             }
+          | { admin_status?: boolean; user_email: string }
+          | { user_email: string }
         Returns: boolean
       }
       setup_admin_user: {
@@ -3329,6 +3959,14 @@ export type Database = {
       upgrade_to_artist: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      user_hosts_game: {
+        Args: { game_id: string; user_id: string }
+        Returns: boolean
+      }
+      user_participates_in_game: {
+        Args: { game_id: string; user_id: string }
+        Returns: boolean
       }
     }
     Enums: {

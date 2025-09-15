@@ -26,7 +26,14 @@ export default function EventsArchive() {
       
       const { data, error } = await supabase
         .from('user_events')
-        .select('*, created_by')
+        .select(`
+          *, 
+          created_by,
+          por_eve_profiles!created_by (
+            display_name,
+            username
+          )
+        `)
         .eq('status', 'approved')
         .lt('start_date', now.toISOString().split('T')[0])
         .order('start_date', { ascending: false });
@@ -146,6 +153,7 @@ export default function EventsArchive() {
                     venueCity: userEvent.venue_city || '',
                     venueState: userEvent.venue_state || '',
                     endTime: userEvent.end_time || '',
+                    por_eve_profiles: userEvent.por_eve_profiles,
                   };
                   
                   return (

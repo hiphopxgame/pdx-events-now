@@ -29,6 +29,10 @@ interface Event {
   recurrencePattern?: string;
   createdBy?: string;
   endTime?: string;
+  por_eve_profiles?: {
+    display_name?: string;
+    username?: string;
+  };
 }
 
 interface EventCardProps {
@@ -59,6 +63,14 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
   };
 
   useEffect(() => {
+    // Try to get user info from the joined profile data first
+    if (event.por_eve_profiles) {
+      const profileData = event.por_eve_profiles;
+      setSubmittedByUser(profileData.display_name || profileData.username || 'Unknown User');
+      return;
+    }
+
+    // Fallback to individual fetch if profile data not included
     const fetchUserInfo = async () => {
       const userId = event.createdBy || event.submittedBy;
       console.log('Fetching user info for:', userId, 'Event:', event.title);
@@ -92,7 +104,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
     };
 
     fetchUserInfo();
-  }, [event.createdBy, event.submittedBy, event.title]);
+  }, [event.createdBy, event.submittedBy, event.title, event.por_eve_profiles]);
 
   const handleVenueClick = (e: React.MouseEvent) => {
     console.log('Venue link clicked:', event.venue);

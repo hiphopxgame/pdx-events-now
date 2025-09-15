@@ -62,6 +62,10 @@ export interface UserEvent {
   created_at: string;
   updated_at: string;
   created_by: string | null;
+  por_eve_profiles?: {
+    display_name?: string;
+    username?: string;
+  };
 }
 
 export interface UseEventsOptions {

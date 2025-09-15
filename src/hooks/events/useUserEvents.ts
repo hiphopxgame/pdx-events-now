@@ -35,7 +35,14 @@ export const useApprovedUserEvents = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('user_events')
-        .select('*, created_by')
+        .select(`
+          *, 
+          created_by,
+          por_eve_profiles!created_by (
+            display_name,
+            username
+          )
+        `)
         .eq('status', 'approved')
         .order('start_date', { ascending: true });
 
