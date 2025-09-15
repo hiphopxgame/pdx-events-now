@@ -132,7 +132,7 @@ export const DonationSection = () => {
         </Button>
         
         <p className="text-xs text-center text-muted-foreground">
-          Secure payment powered by Stripe. Your support helps us improve the platform for everyone!
+          Secure payment powered by PayPal. Your support helps us improve the platform for everyone!
         </p>
       </CardContent>
     </Card>

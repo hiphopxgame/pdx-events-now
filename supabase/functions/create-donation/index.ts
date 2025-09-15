@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
@@ -26,11 +25,6 @@ serve(async (req) => {
       throw new Error("Amount must be at least $1.00");
     }
 
-    // Initialize Stripe
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
-      apiVersion: "2023-10-16",
-    });
-
     // Get authenticated user (optional for donations)
     let user = null;
     const authHeader = req.headers.get("Authorization");
@@ -40,44 +34,87 @@ serve(async (req) => {
       user = data.user;
     }
 
-    // Create a one-time payment session for donation
-    const session = await stripe.checkout.sessions.create({
-      customer_email: donorEmail || user?.email || undefined,
-      line_items: [
-        {
-          price_data: {
-            currency: "usd",
-            product_data: { 
-              name: "Support Portland.Events Development",
-              description: "Help us build a better event discovery platform for Portland and beyond!"
-            },
-            unit_amount: amount, // Amount in cents
-          },
-          quantity: 1,
-        },
-      ],
-      mode: "payment",
-      success_url: `${req.headers.get("origin")}/donation-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.get("origin")}/donation-cancelled`,
-      metadata: {
-        donor_name: donorName || "Anonymous",
-        message: message || "",
-        user_id: user?.id || "",
+    // PayPal API configuration
+    const paypalClientId = Deno.env.get("PAYPAL_CLIENT_ID");
+    const paypalClientSecret = Deno.env.get("PAYPAL_CLIENT_SECRET");
+    const paypalBaseUrl = "https://api-m.sandbox.paypal.com"; // Use https://api-m.paypal.com for production
+    
+    if (!paypalClientId || !paypalClientSecret) {
+      throw new Error("PayPal credentials not configured");
+    }
+
+    // Get PayPal access token
+    const authResponse = await fetch(`${paypalBaseUrl}/v1/oauth2/token`, {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Accept-Language": "en_US",
+        "Authorization": `Basic ${btoa(`${paypalClientId}:${paypalClientSecret}`)}`,
+        "Content-Type": "application/x-www-form-urlencoded",
       },
+      body: "grant_type=client_credentials",
     });
+
+    if (!authResponse.ok) {
+      throw new Error("Failed to get PayPal access token");
+    }
+
+    const authData = await authResponse.json();
+    const accessToken = authData.access_token;
+
+    // Create PayPal order
+    const orderResponse = await fetch(`${paypalBaseUrl}/v2/checkout/orders`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${accessToken}`,
+        "PayPal-Request-Id": crypto.randomUUID(),
+      },
+      body: JSON.stringify({
+        intent: "CAPTURE",
+        purchase_units: [
+          {
+            amount: {
+              currency_code: "USD",
+              value: (amount / 100).toFixed(2), // Convert cents to dollars
+            },
+            description: "Support Portland.Events Development",
+          },
+        ],
+        application_context: {
+          return_url: `${req.headers.get("origin")}/donation-success`,
+          cancel_url: `${req.headers.get("origin")}/donation-cancelled`,
+          brand_name: "Portland.Events",
+          user_action: "PAY_NOW",
+        },
+      }),
+    });
+
+    if (!orderResponse.ok) {
+      const errorData = await orderResponse.text();
+      console.error("PayPal order creation failed:", errorData);
+      throw new Error("Failed to create PayPal order");
+    }
+
+    const orderData = await orderResponse.json();
+    const approvalUrl = orderData.links.find((link: any) => link.rel === "approve")?.href;
+
+    if (!approvalUrl) {
+      throw new Error("No approval URL found in PayPal response");
+    }
 
     // Record the donation in our database
     await supabaseClient.from("donations").insert({
       user_id: user?.id || null,
       email: donorEmail || user?.email || null,
-      stripe_session_id: session.id,
+      stripe_session_id: orderData.id, // Reusing this field for PayPal order ID
       amount: amount,
       donor_name: donorName || "Anonymous",
       message: message || "",
       status: "pending",
     });
 
-    return new Response(JSON.stringify({ url: session.url }), {
+    return new Response(JSON.stringify({ url: approvalUrl }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
