@@ -49,13 +49,20 @@ export const Header = () => {
             <span>{domainConfig.branding.primary}</span>
           </Link>
           
-          <nav className="hidden md:flex space-x-1">
+           <nav className="hidden md:flex space-x-1">
             <button 
               onClick={(e) => handleNavClick('/events', e)}
               className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none cursor-pointer"
             >
               <Calendar className="h-4 w-4 mr-2" />
               Events
+            </button>
+            <button 
+              onClick={(e) => handleNavClick('/events/archive', e)}
+              className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none cursor-pointer"
+            >
+              <Calendar className="h-4 w-4 mr-2" />
+              Archive
             </button>
             <button 
               onClick={(e) => handleNavClick('/venues', e)}

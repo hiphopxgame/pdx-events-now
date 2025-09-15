@@ -30,6 +30,7 @@ import ManageImports from "./pages/ManageImports";
 import AdminCreateEvent from "./pages/AdminCreateEvent";
 import Artists from "./pages/Artists";
 import AdminArtists from "./pages/AdminArtists";
+import EventsArchive from "./pages/EventsArchive";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/events" element={<Events />} />
+            <Route path="/events/archive" element={<EventsArchive />} />
             <Route path="/events/:eventSlug" element={<Event />} />
             <Route path="/venues" element={<Venues />} />
             <Route path="/venue/:venueName" element={<Venue />} />

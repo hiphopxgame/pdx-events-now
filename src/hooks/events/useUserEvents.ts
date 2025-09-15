@@ -37,7 +37,6 @@ export const useApprovedUserEvents = () => {
         .from('user_events')
         .select('*, created_by')
         .eq('status', 'approved')
-        .gte('start_date', new Date().toISOString().split('T')[0]) // Only future/current events
         .order('start_date', { ascending: true });
 
       if (error) {

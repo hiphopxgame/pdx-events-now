@@ -6,9 +6,13 @@ export const applyEventFilters = (events: Event[], options: UseEventsOptions): E
   let filteredEvents = [...events];
 
   // Filter out past events - only show current and upcoming events
+  // Consider an event current if it's today or in the future
   const now = new Date();
+  now.setHours(0, 0, 0, 0); // Set to start of today
+  
   filteredEvents = filteredEvents.filter(event => {
     const eventDate = new Date(event.start_date);
+    eventDate.setHours(0, 0, 0, 0); // Set to start of event day
     return eventDate >= now;
   });
 
