@@ -35,8 +35,9 @@ export const useApprovedUserEvents = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('user_events')
-        .select('*')
+        .select('*, created_by')
         .eq('status', 'approved')
+        .gte('start_date', new Date().toISOString().split('T')[0]) // Only future/current events
         .order('start_date', { ascending: true });
 
       if (error) {

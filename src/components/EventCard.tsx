@@ -69,7 +69,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onEventClick }) => 
             .from('por_eve_profiles')
             .select('display_name, username')
             .eq('id', userId)
-            .maybeSingle();
+            .single();
 
           if (error) {
             console.error('Error fetching user info:', error);

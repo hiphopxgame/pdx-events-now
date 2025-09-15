@@ -5,6 +5,13 @@ import { getLocationFilter } from '@/utils/domainConfig';
 export const applyEventFilters = (events: Event[], options: UseEventsOptions): Event[] => {
   let filteredEvents = [...events];
 
+  // Filter out past events - only show current and upcoming events
+  const now = new Date();
+  filteredEvents = filteredEvents.filter(event => {
+    const eventDate = new Date(event.start_date);
+    return eventDate >= now;
+  });
+
   // Location filter based on domain
   const locationFilter = getLocationFilter();
   if (locationFilter) {
